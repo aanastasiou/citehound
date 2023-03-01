@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# Athanasios Anastasiou Dec 2021
-# Downloads all of the available MeSH XML files and creates an "index"
+# Athanasios Anastasiou Mar 2023
+#
+# Downloads all available MeSH XML files from Medline and creates an "index"
 # file that is used in creating a summary file from all of these XML 
 # files. This file summarises all of the transactions in the MESH data
 # over the described timespan.
 #
 
 banner () {
-    echo -e "BibInsight -- fetchMESH\nDownloading MESH historical data\n\n"
+    echo -e "Citehound -- fetchMESH\nDownloading MESH historical data\n\n"
 }
 
 

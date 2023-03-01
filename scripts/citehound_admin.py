@@ -32,6 +32,8 @@ import citehound.models.grid
 import citehound.utils
 from neomodel import install_all_labels, remove_all_labels
 
+import urllib.request
+
 
 @click.group()
 def citehound_admin():
@@ -230,6 +232,38 @@ def data(dataset_type, dataset_path):
     Selects an importer and imports a data file into Citehound
     """
     citehound.IM.import_data(dataset_type.upper(), dataset_path)
+
+@citehound_admin.group()
+def fetch():
+    """
+    Download data dependencies
+    """
+    pass
+
+@fetch.command()
+@click.option("--out-dir", "-od", type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True))
+def ror(out_dir):
+    """
+    Latest version of the ROR dataset
+    """
+    with urllib.request.urlopen("https://zenodo.org/api/records/?communities=ror-data&sort=mostrecent") as rp:
+        available_releases_data = json.loads(rp.read().decode("utf8"))
+    # Get the URLs and their creation dates and sort them in reverse order according to date
+    downloads = sorted(list(map(lambda x:{"created":x["created"],
+                                          "url":x["files"][0]["links"]["self"]},
+                                available_releases_data["hits"]["hits"])), 
+                       key=lambda x:["created"], 
+                       reverse=True)
+
+    click.echo(downloads)
+
+@fetch.command()
+def mesh():
+    """
+    Latest version of the MeSH dataset
+    """
+    pass
+
 
 
 if __name__ == "__main__":

@@ -53,7 +53,7 @@ def get_a_code(chars, code_length=8):
 @click.group()
 def citehound_mesh():
     """
-    Citehound MeSH tree preprocessor
+    MeSH data preprocessor
     """
     pass
 
@@ -64,7 +64,7 @@ def citehound_mesh():
               default="MESH_master_tree.json", help="Determines the output JSON file.")
 def preprocess(input_dir, output_file):
     """
-    Citehound -- MESH Importing
+    MESH data importing
 
     Scans a set of MESH XML files and produces one single JSON tree that incorporates all temporal changes in the
     codes.
@@ -197,7 +197,7 @@ def preprocess(input_dir, output_file):
               help="Produces one file per year within the year-begin, year-end range.")
 def visualise(input_file, top_level_element, year_begin, year_end, output_file, yearly):
     """
-    Visualise.
+    MeSH tree visualisation.
 
     Samples the main JSON tree that includes all historical changes to produce intermediate network and renderings of
     the tree's evolution for specific codes.
