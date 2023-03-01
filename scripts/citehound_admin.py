@@ -42,7 +42,14 @@ def citehound_admin():
     pass
 
 
-@citehound_admin.command()
+@citehound_admin.group()
+def db():
+    """
+    Database operations
+    """
+    pass
+
+@db.command()
 @click.argument("output-filename", type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 @click.option("--output-format", "-f",
               type=click.Choice(["json", "gml", "dot"], case_sensitive=False),
@@ -56,7 +63,7 @@ def citehound_admin():
               type=click.BOOL,
               default=False,
               help="Drops any entities that appear to not be connected with others in the current schema.")
-def db_getschema(output_filename, output_format, schema_ext, isolated):
+def getschema(output_filename, output_format, schema_ext, isolated):
     """
     Visualises the current schema of the database
     """
@@ -117,8 +124,8 @@ def db_getschema(output_filename, output_format, schema_ext, isolated):
             networkx.drawing.nx_pydot.write_dot(net_ob, f"{final_output_filename}.dot")
 
 
-@citehound_admin.command()
-def db_problink():
+@db.command()
+def problink():
     """
     Runs a probabilistic linking step that links countries and institutions.
 
@@ -171,9 +178,9 @@ def db_problink():
     click.echo("Finished linking.")
 
 
-@citehound_admin.command()
+@db.command()
 @click.option("--n_items", type=int, )
-def db_reset(n_items):
+def reset(n_items):
     """
     !!!DELETES ALL RECORDS AND REMOVES THE SCHEMA FROM THE CURRENT DATABASE!!!
     """
@@ -186,8 +193,8 @@ def db_reset(n_items):
         click.echo("\n\nThe database has been reset.\n")
 
 
-@citehound_admin.command()
-def db_init():
+@db.command()
+def init():
     """
     Initialises (an empty) Neo4j database with the Citehound schema.
     """
@@ -199,8 +206,15 @@ def db_init():
         click.echo("\n\nThe database has been initialised.\n")
 
 
-@citehound_admin.command()
-def import_ls():
+@citehound_admin.group()
+def ingest():
+    """
+    Data import operations
+    """
+    pass
+
+@ingest.command()
+def ls():
     """
     Lists the available data importers.
     """
@@ -208,10 +222,10 @@ def import_ls():
         click.echo(f"{an_importer['name']}\t{an_importer['description']}")
 
 
-@citehound_admin.command()
+@ingest.command()
 @click.argument("dataset_type", type=str)
 @click.argument("dataset_path", type=click.Path(exists=True))
-def import_data(dataset_type, dataset_path):
+def data(dataset_type, dataset_path):
     """
     Selects an importer and imports a data file into Citehound
     """
