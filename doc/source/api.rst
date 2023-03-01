@@ -11,4 +11,4 @@ Citehound API
     api_models
     api_datainput
     api_utilities
-    api_scripts
+    api_exceptions
