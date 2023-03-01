@@ -1,0 +1,6 @@
+TODO List as of Wed Mar 1 12:26:32 UTC 2023
+../citehound/__init__.py:26 TODO: HIGH, Document these functions.
+../citehound/__init__.py:84 TODO: MID, This could be parametrised with an abstract class to count specific objects.
+../citehound/__init__.py:227 TODO: LOW, Can this be turned into some kind of map?
+../citehound/__init__.py:255 TODO: HIGH, Turn this error into an exception
+../citehound/batchprocess.py:90 TODO: MEDIUM, Relationships without data would lack a self._rel_data. But establishing it here would require an if on every "apply". So better split this into two classes

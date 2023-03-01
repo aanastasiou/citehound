@@ -15,10 +15,11 @@ Citehound is a Python module that enables large scale analysis of bibliographica
    :caption: Contents:
    
 
+
+   motivation
    installation
    operation
    examples
-   motivation
    methods
    devnotes
    current_todos
