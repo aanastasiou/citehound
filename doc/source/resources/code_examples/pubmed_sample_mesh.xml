@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2019//EN"
+        "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd">
+<PubmedArticleSet>
+    <PubmedArticle>
+
+            ...
+            ...
+            <MeshHeadingList>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D000544">Alzheimer Disease</DescriptorName>
+                    <QualifierName MajorTopicYN="N" UI="Q000175">diagnosis</QualifierName>
+                    <QualifierName MajorTopicYN="Y" UI="Q000209">etiology</QualifierName>
+                    <QualifierName MajorTopicYN="N" UI="Q000378">metabolism</QualifierName>
+                    <QualifierName MajorTopicYN="Y" UI="Q000628">therapy</QualifierName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D016229">Amyloid beta-Peptides</DescriptorName>
+                    <QualifierName MajorTopicYN="N" UI="Q000378">metabolism</QualifierName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D000818">Animals</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D015415">Biomarkers</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D019468">Disease Management</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D004198">Disease Susceptibility</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D006801">Humans</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D019636">Neurodegenerative Diseases</DescriptorName>
+                    <QualifierName MajorTopicYN="N" UI="Q000209">etiology</QualifierName>
+                    <QualifierName MajorTopicYN="N" UI="Q000378">metabolism</QualifierName>
+                    <QualifierName MajorTopicYN="N" UI="Q000628">therapy</QualifierName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D018570">Risk Assessment</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D012307">Risk Factors</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D012720">Severity of Illness Index</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D016875">tau Proteins</DescriptorName>
+                    <QualifierName MajorTopicYN="N" UI="Q000378">metabolism</QualifierName>
+                </MeshHeading>
+            </MeshHeadingList>
+        ...
+        ...
+        ...
+        ...
+    </PubmedArticle>
+</PubmedArticleSet>

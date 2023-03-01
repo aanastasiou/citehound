@@ -1,0 +1,1064 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2019//EN"
+        "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd">
+<PubmedArticleSet>
+    <PubmedArticle>
+        <MedlineCitation Owner="NLM" Status="MEDLINE">
+            <PMID Version="1">33302541</PMID>
+            <DateCompleted>
+                <Year>2021</Year>
+                <Month>04</Month>
+                <Day>15</Day>
+            </DateCompleted>
+            <DateRevised>
+                <Year>2021</Year>
+                <Month>04</Month>
+                <Day>15</Day>
+            </DateRevised>
+            <Article PubModel="Electronic">
+                <Journal>
+                    <ISSN IssnType="Electronic">1420-3049</ISSN>
+                    <JournalIssue CitedMedium="Internet">
+                        <Volume>25</Volume>
+                        <Issue>24</Issue>
+                        <PubDate>
+                            <Year>2020</Year>
+                            <Month>Dec</Month>
+                            <Day>08</Day>
+                        </PubDate>
+                    </JournalIssue>
+                    <Title>Molecules (Basel, Switzerland)</Title>
+                    <ISOAbbreviation>Molecules</ISOAbbreviation>
+                </Journal>
+                <ArticleTitle>Comprehensive Review on Alzheimer's Disease: Causes and Treatment.</ArticleTitle>
+                <ELocationID EIdType="pii" ValidYN="Y">E5789</ELocationID>
+                <ELocationID EIdType="doi" ValidYN="Y">10.3390/molecules25245789</ELocationID>
+                <Abstract>
+                    <AbstractText>Alzheimer's disease (AD) is a disorder that causes degeneration of the cells in the
+                        brain and it is the main cause of dementia, which is characterized by a decline in thinking and
+                        independence in personal daily activities. AD is considered a multifactorial disease: two main
+                        hypotheses were proposed as a cause for AD, cholinergic and amyloid hypotheses. Additionally,
+                        several risk factors such as increasing age, genetic factors, head injuries, vascular diseases,
+                        infections, and environmental factors play a role in the disease. Currently, there are only two
+                        classes of approved drugs to treat AD, including inhibitors to cholinesterase enzyme and
+                        antagonists to <i>N</i>-methyl d-aspartate (NMDA), which are effective only in treating the
+                        symptoms of AD, but do not cure or prevent the disease. Nowadays, the research is focusing on
+                        understanding AD pathology by targeting several mechanisms, such as abnormal tau protein
+                        metabolism, &#946;-amyloid, inflammatory response, and cholinergic and free radical damage,
+                        aiming to develop successful treatments that are capable of stopping or modifying the course of
+                        AD. This review discusses currently available drugs and future theories for the development of
+                        new therapies for AD, such as disease-modifying therapeutics (DMT), chaperones, and natural
+                        compounds.
+                    </AbstractText>
+                </Abstract>
+                <AuthorList CompleteYN="Y">
+                    <Author ValidYN="Y">
+                        <LastName>Breijyeh</LastName>
+                        <ForeName>Zeinab</ForeName>
+                        <Initials>Z</Initials>
+                        <Identifier Source="ORCID">0000-0003-1233-7826</Identifier>
+                        <AffiliationInfo>
+                            <Affiliation>Pharmaceutical Sciences Department, Faculty of Pharmacy, Al-Quds University,
+                                Jerusalem 20002, Palestine.
+                            </Affiliation>
+                        </AffiliationInfo>
+                    </Author>
+                    <Author ValidYN="Y">
+                        <LastName>Karaman</LastName>
+                        <ForeName>Rafik</ForeName>
+                        <Initials>R</Initials>
+                        <Identifier Source="ORCID">0000-0001-5526-4490</Identifier>
+                        <AffiliationInfo>
+                            <Affiliation>Pharmaceutical Sciences Department, Faculty of Pharmacy, Al-Quds University,
+                                Jerusalem 20002, Palestine.
+                            </Affiliation>
+                        </AffiliationInfo>
+                    </Author>
+                </AuthorList>
+                <Language>eng</Language>
+                <PublicationTypeList>
+                    <PublicationType UI="D016428">Journal Article</PublicationType>
+                    <PublicationType UI="D016454">Review</PublicationType>
+                </PublicationTypeList>
+                <ArticleDate DateType="Electronic">
+                    <Year>2020</Year>
+                    <Month>12</Month>
+                    <Day>08</Day>
+                </ArticleDate>
+            </Article>
+            <MedlineJournalInfo>
+                <Country>Switzerland</Country>
+                <MedlineTA>Molecules</MedlineTA>
+                <NlmUniqueID>100964009</NlmUniqueID>
+                <ISSNLinking>1420-3049</ISSNLinking>
+            </MedlineJournalInfo>
+            <ChemicalList>
+                <Chemical>
+                    <RegistryNumber>0</RegistryNumber>
+                    <NameOfSubstance UI="D016229">Amyloid beta-Peptides</NameOfSubstance>
+                </Chemical>
+                <Chemical>
+                    <RegistryNumber>0</RegistryNumber>
+                    <NameOfSubstance UI="D015415">Biomarkers</NameOfSubstance>
+                </Chemical>
+                <Chemical>
+                    <RegistryNumber>0</RegistryNumber>
+                    <NameOfSubstance UI="D016875">tau Proteins</NameOfSubstance>
+                </Chemical>
+            </ChemicalList>
+            <CitationSubset>IM</CitationSubset>
+            <MeshHeadingList>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D000544">Alzheimer Disease</DescriptorName>
+                    <QualifierName MajorTopicYN="N" UI="Q000175">diagnosis</QualifierName>
+                    <QualifierName MajorTopicYN="Y" UI="Q000209">etiology</QualifierName>
+                    <QualifierName MajorTopicYN="N" UI="Q000378">metabolism</QualifierName>
+                    <QualifierName MajorTopicYN="Y" UI="Q000628">therapy</QualifierName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D016229">Amyloid beta-Peptides</DescriptorName>
+                    <QualifierName MajorTopicYN="N" UI="Q000378">metabolism</QualifierName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D000818">Animals</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D015415">Biomarkers</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D019468">Disease Management</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D004198">Disease Susceptibility</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D006801">Humans</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D019636">Neurodegenerative Diseases</DescriptorName>
+                    <QualifierName MajorTopicYN="N" UI="Q000209">etiology</QualifierName>
+                    <QualifierName MajorTopicYN="N" UI="Q000378">metabolism</QualifierName>
+                    <QualifierName MajorTopicYN="N" UI="Q000628">therapy</QualifierName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D018570">Risk Assessment</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D012307">Risk Factors</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D012720">Severity of Illness Index</DescriptorName>
+                </MeshHeading>
+                <MeshHeading>
+                    <DescriptorName MajorTopicYN="N" UI="D016875">tau Proteins</DescriptorName>
+                    <QualifierName MajorTopicYN="N" UI="Q000378">metabolism</QualifierName>
+                </MeshHeading>
+            </MeshHeadingList>
+            <KeywordList Owner="NOTNLM">
+                <Keyword MajorTopicYN="N">Alzheimer&#8217;s disease</Keyword>
+                <Keyword MajorTopicYN="N">chaperons</Keyword>
+                <Keyword MajorTopicYN="N">disease-modifying therapy</Keyword>
+                <Keyword MajorTopicYN="N">heat shock proteins</Keyword>
+                <Keyword MajorTopicYN="N">neurodegeneration</Keyword>
+                <Keyword MajorTopicYN="N">risk factors</Keyword>
+                <Keyword MajorTopicYN="N">tau protein</Keyword>
+                <Keyword MajorTopicYN="N">&#946;-amyloid peptide</Keyword>
+            </KeywordList>
+        </MedlineCitation>
+        <PubmedData>
+            <History>
+                <PubMedPubDate PubStatus="received">
+                    <Year>2020</Year>
+                    <Month>11</Month>
+                    <Day>05</Day>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="revised">
+                    <Year>2020</Year>
+                    <Month>12</Month>
+                    <Day>03</Day>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="accepted">
+                    <Year>2020</Year>
+                    <Month>12</Month>
+                    <Day>06</Day>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="entrez">
+                    <Year>2020</Year>
+                    <Month>12</Month>
+                    <Day>11</Day>
+                    <Hour>1</Hour>
+                    <Minute>1</Minute>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="pubmed">
+                    <Year>2020</Year>
+                    <Month>12</Month>
+                    <Day>12</Day>
+                    <Hour>6</Hour>
+                    <Minute>0</Minute>
+                </PubMedPubDate>
+                <PubMedPubDate PubStatus="medline">
+                    <Year>2021</Year>
+                    <Month>4</Month>
+                    <Day>16</Day>
+                    <Hour>6</Hour>
+                    <Minute>0</Minute>
+                </PubMedPubDate>
+            </History>
+            <PublicationStatus>epublish</PublicationStatus>
+            <ArticleIdList>
+                <ArticleId IdType="pubmed">33302541</ArticleId>
+                <ArticleId IdType="pii">molecules25245789</ArticleId>
+                <ArticleId IdType="doi">10.3390/molecules25245789</ArticleId>
+                <ArticleId IdType="pmc">PMC7764106</ArticleId>
+            </ArticleIdList>
+            <ReferenceList>
+                <Reference>
+                    <Citation>Obes Rev. 2018 Feb;19(2):269-280</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29024348</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Alzheimers Dis. 2018;62(2):503-522</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29480184</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mol Psychiatry. 2020 Oct;25(10):2630-2640</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30733594</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>EXCLI J. 2017 Jan 10;16:35-39</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28337117</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Annu Rev Neurosci. 1980;3:77-95</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">6251745</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Biomed Sci. 2020 Jan 6;27(1):18</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31906949</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Alzheimers Dis. 2006 Nov;10(2-3):145-63</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">17119284</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Alzheimers Dement (Amst). 2017 Feb 09;7:69-87</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28275702</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Drug Intell Clin Pharm. 1984 Sep;18(9):684-91</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">6383752</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neuron. 2009 Aug 13;63(3):287-303</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">19679070</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Alzheimers Dis. 2017;57(4):1041-1048</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27662322</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Curr Neuropharmacol. 2017;15(6):926-935</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28093977</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Front Neurosci. 2019 Feb 28;13:164</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30872998</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Alzheimers Dis. 2019;68(2):493-510</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30883346</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Int J Mol Sci. 2019 Oct 09;20(20):</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31600883</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Alzheimers Dement. 2015 Dec;11(12):1430-1438</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26079414</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Proc Natl Acad Sci U S A. 1991 Sep 1;88(17):7552-6</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">1652752</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Alzheimers Dement (N Y). 2020 Jul 16;6(1):e12050</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">32695874</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Front Genet. 2018 Nov 30;9:579</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30555513</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mol Neurodegener. 2020 Jan 22;15(1):1</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31964406</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Oxid Med Cell Longev. 2017;2017:7039816</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28168012</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>BMJ Open. 2019 Sep 12;9(9):e030874</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31515431</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Alzheimers Res Ther. 2017 Sep 12;9(1):71</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28899416</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mol Psychiatry. 2017 Jul;22(7):990-1001</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27457810</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Cold Spring Harb Perspect Med. 2011 Sep;1(1):a006189</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">22229116</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Front Pharmacol. 2019 Dec 04;10:1355</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31866858</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Oxid Med Cell Longev. 2016;2016:7361613</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27034741</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Cold Spring Harb Perspect Med. 2017 Jun 1;7(6):</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28003277</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Intern Med. 2006 Sep;260(3):211-23</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">16918818</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Cochrane Database Syst Rev. 2009 Apr 15;(2):CD001191</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">19370562</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Ann Pharmacother. 1994 Jun;28(6):744-51</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">7919566</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neuropsychiatr Dis Treat. 2007 Apr;3(2):211-8</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">19300554</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Ther Adv Neurol Disord. 2011 Jul;4(4):203-16</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">21765871</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>PLoS Med. 2017 Mar 28;14(3):e1002270</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28350801</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Nat Chem Biol. 2014 Jun;10(6):443-9</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">24747528</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Arch Pharm Res. 2013 Apr;36(4):375-99</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">23435942</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Expert Opin Drug Metab Toxicol. 2010 Mar;6(3):345-54</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">20113148</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Folia Neuropathol. 2019;57(2):87-105</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31556570</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neurol Sci. 2011 Apr;32(2):275-9</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">21153601</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mt Sinai J Med. 2010 Jan-Feb;77(1):32-42</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">20101720</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Bioessays. 2012 Jul;34(7):532-41</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">22513506</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>BMC Med. 2014 Nov 11;12:130</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">25385322</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Front Neurosci. 2019 Feb 08;13:43</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30800052</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Iran J Public Health. 2015 Jul;44(7):892-901</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26576367</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Front Genet. 2018 Sep 10;9:362</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30250480</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neural Regen Res. 2016 Oct;11(10):1579-1581</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27904486</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Environ Public Health. 2012;2012:472751</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">22523504</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Curr Neuropharmacol. 2012 Sep;10(3):272-85</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">23450042</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Brain. 2018 Jul 1;141(7):1917-1933</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29850777</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Drugs. 2000 Nov;60(5):1095-122</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">11129124</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Folia Neuropathol. 2009;47(4):289-99</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">20054780</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Prion. 2014 Mar-Apr;8(2):</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">24818993</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neurobiol Dis. 2014 Dec;72 Pt A:13-21</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">24844148</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Menopause. 2010 Jul;17(4):874-86</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">20616674</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neurosci Bull. 2014 Apr;30(2):253-70</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">24664867</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Alzheimers Dement. 2016 Mar;12(3):292-323</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27012484</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Nat Rev Neurol. 2013 Feb;9(2):106-18</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">23296339</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Oncotarget. 2017 Dec 15;9(19):15132-15143</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29599933</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neuron. 2014 May 21;82(4):756-71</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">24853936</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Ther Adv Drug Saf. 2018 Mar;9(3):171-178</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29492246</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Alzheimers Dement (N Y). 2016 Dec 23;3(1):10-22</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29067316</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Cent Nerv Syst Dis. 2020 Feb 29;12:1179573520907397</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">32165850</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Alzheimers Dis. 2018;62(3):1223-1240</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29254093</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Biomed Res Int. 2014;2014:796869</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">25374890</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Iran J Public Health. 2013 Nov;42(11):1253-8</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26171337</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mt Sinai J Med. 2011 Jul-Aug;78(4):596-612</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">21748748</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Acta Pharmacol Sin. 2017 Sep;38(9):1205-1235</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28713158</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Clin Med (Lond). 2016 Jun;16(3):247-53</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27251914</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Drugs Aging. 2000 Mar;16(3):199-226</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">10803860</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Biochem Pharmacol. 2014 Apr 15;88(4):508-16</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">24462903</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Curr Top Med Chem. 2016;16(25):2729-40</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27072701</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Front Neurosci. 2017 Apr 21;11:192</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28484363</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Aging Dis. 2019 Apr 1;10(2):383-403</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31011484</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Ageing Res Rev. 2015 Nov;24(Pt B):178-90</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26307455</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Prim Care Companion CNS Disord. 2011;13(5):</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">22295259</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>JAMA Neurol. 2016 May 1;73(5):561-71</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27018940</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Drug Des Devel Ther. 2015 Jan 07;9:321-31</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">25609918</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Alzheimers Dis. 2011;26(3):431-9</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">21673408</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Neurol Neurosurg Psychiatry. 1999 Oct;67(4):558</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">10610396</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Biomed Res Int. 2013;2013:524820</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">23865055</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Oncotarget. 2018 Oct 5;9(78):34691-34698</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30410669</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Dialogues Clin Neurosci. 2000 Jun;2(2):91-100</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">22034442</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Prev Alzheimers Dis. 2017;4(2):109-115</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29071250</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>EMBO Mol Med. 2018 Nov;10(11):</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30224383</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Alzheimers Dis. 2002 Jun;4(3):179-89</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">12226537</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Cureus. 2018 May 21;10(5):e2660</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30042911</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Eur Neurol. 1998 Oct;40(3):130-40</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">9748670</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Lancet. 2020 Aug 8;396(10248):413-446</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">32738937</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mol Psychiatry. 2015 Feb;20(1):109-17</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">25349165</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Clin Interv Aging. 2015 Jul 14;10:1163-72</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26203236</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Int J Exp Pathol. 2005 Jun;86(3):139-45</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">15910548</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Curr Neuropharmacol. 2016;14(1):101-15</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26813123</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Proc Natl Acad Sci U S A. 2017 Jan 24;114(4):629-631</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28082723</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Alzheimers Dis. 2014;42(4):1221-7</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">25024306</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Front Neurol. 2018 May 09;9:325</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29867734</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Neurochem. 2005 Jan;92(2):294-301</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">15663477</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Sci Rep. 2018 Jul 2;8(1):9915</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29967544</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neurology. 1984 Jul;34(7):939-44</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">6610841</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Curr Neuropharmacol. 2017;15(7):996-1009</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28294067</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Alzheimers Dement (N Y). 2019 Jun 04;5:175-183</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31194017</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Adv Neurobiol. 2017;18:183-197</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">28889268</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Biol Psychiatry. 2013 Sep 1;74(5):367-74</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">23607970</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Nat Rev Neurol. 2019 Oct;15(10):565-581</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31501588</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Genet Med. 2016 May;18(5):421-30</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26312828</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Int J Mol Sci. 2019 May 10;20(9):</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31083327</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Dis Mon. 1985 Apr;31(4):1-69</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">3886334</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Alzheimers Res Ther. 2020 Aug 12;12(1):95</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">32787971</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neuropsychiatr Dis Treat. 2015 Jul 16;11:1723-37</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26213471</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Cureus. 2020 Feb 13;12(2):e6976</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">32206454</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Mol Biol. 2019 Apr 19;431(9):1843-1868</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30664867</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neuropsychiatr Dis Treat. 2007 Jun;3(3):303-33</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">19300564</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mol Med Rep. 2019 Aug;20(2):1479-1487</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31257471</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Int J Mol Sci. 2018 Sep 01;19(9):</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30200516</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mater Sci Eng C Mater Biol Appl. 2016 Aug 1;65:151-63</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27157738</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Continuum (Minneap Minn). 2016 Apr;22(2 Dementia):419-34</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27042902</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Clin Nutr Res. 2018 Oct;7(4):229-240</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30406052</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mol Neurobiol. 2007 Jun;35(3):203-16</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">17917109</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Alzheimers Res Ther. 2016 Feb 17;8:7</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26883213</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Pharmaceutics. 2020 Mar 22;12(3):</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">32235699</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Genome Res. 2011 Mar;21(3):364-76</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">21163940</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mol Psychiatry. 2019 Jul 9;:</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31289348</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Cold Spring Harb Perspect Med. 2012 Aug 01;2(8):</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">22908189</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Int J Mol Sci. 2018 Apr 11;19(4):</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29641484</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Steroid Biochem Mol Biol. 2016 Jun;160:134-47</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26969397</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Front Neurosci. 2018 Jan 30;12:25</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">29440986</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neurobiol Aging. 2009 Apr;30(4):607-14</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">17889406</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mol Biol Cell. 2015 Jan 1;26(1):151-60</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">25355951</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Alzheimers Dement. 2011 May;7(3):263-9</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">21514250</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Mol Cell Proteomics. 2019 Mar;18(3):546-560</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30606734</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Genome Med. 2015 Oct 20;7:106</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">26482651</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Biol Chem. 2019 Mar 22;294(12):4477-4487</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30692199</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Neural Regen Res. 2019 Apr;14(4):658-665</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">30632506</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Alzheimers Dis. 2020;73(1):147-161</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">31771053</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Front Mol Neurosci. 2020 Aug 04;13:137</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">32848600</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>J Geriatr Psychiatry Neurol. 2010 Dec;23(4):213-27</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">21045163</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Subcell Biochem. 2012;65:329-52</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">23225010</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Ther Clin Risk Manag. 2007 Dec;3(6):1113-23</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">18516265</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>PLoS One. 2016 Jun 23;11(6):e0157053</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">27336725</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Cochrane Database Syst Rev. 2000;(3):CD000202</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">10908463</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>EMBO Rep. 2007 Feb;8(2):141-6</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">17268505</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+                <Reference>
+                    <Citation>Drug Des Devel Ther. 2013 Dec 06;7:1471-8</Citation>
+                    <ArticleIdList>
+                        <ArticleId IdType="pubmed">24353405</ArticleId>
+                    </ArticleIdList>
+                </Reference>
+            </ReferenceList>
+        </PubmedData>
+    </PubmedArticle>
+</PubmedArticleSet>
