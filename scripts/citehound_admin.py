@@ -1,26 +1,81 @@
 #!/bin/env python
 """
-Usage: citehound_admin.py [OPTIONS] COMMAND [ARGS]...
 
-  Citehound -- Administrator.
+Administrator
+-------------
 
-Options:
-  --help  Show this message and exit.
+::
 
-Commands:
-  db-getschema  Visualises the current schema of the database
-  db-init       Initialises (an empty) Neo4j database with the Citehound...
-  db-problink   Runs a probabilistic linking step that links countries...
-  db-reset      !!!DELETES ALL RECORDS AND REMOVES THE SCHEMA FROM THE...
-  import-data   Selects an importer and imports a data file into Citehound
-  import-ls     Lists the available data importers.
+    Usage: citehound_admin.py [OPTIONS] COMMAND [ARGS]...
+    
+      Citehound -- Administrator.
+    
+    Options:
+      --help  Show this message and exit.
+    
+    Commands:
+      db      Database operations
+      fetch   Download data dependencies
+      ingest  Data import operations
 
+
+Database operations
+-------------------
+
+::
+
+    Usage: citehound_admin.py db [OPTIONS] COMMAND [ARGS]...
+    
+      Database operations
+    
+    Options:
+      --help  Show this message and exit.
+    
+    Commands:
+      getschema  Visualises the current schema of the database
+      init       Initialises (an empty) Neo4j database with the Citehound...
+      link       Runs a probabilistic linking step that links countries and...
+      reset      !!!DELETES ALL RECORDS AND REMOVES THE SCHEMA FROM THE...
+
+Fetch external datasets
+-----------------------
+
+::
+
+    Usage: citehound_admin.py fetch [OPTIONS] COMMAND [ARGS]...
+    
+      Download data dependencies
+    
+    Options:
+      --help  Show this message and exit.
+    
+    Commands:
+      mesh  Latest version of the MeSH dataset
+      ror   Latest version of the ROR dataset
+
+
+List and use data loaders
+-------------------------
+
+::
+
+    Usage: citehound_admin.py ingest [OPTIONS] COMMAND [ARGS]...
+    
+      Data import operations
+    
+    Options:
+      --help  Show this message and exit.
+    
+    Commands:
+      data  Selects an importer and imports a data file into Citehound
+      ls    Lists the available data importers.
 
 :author: Athanasios Anastasiou
-:date: Jan 2018, May 2018, Dec 2021
+:date: Mar 2023
 """
 
 import os
+import sys
 import click
 import json
 import networkx
@@ -32,7 +87,8 @@ import citehound.models.grid
 import citehound.utils
 from neomodel import install_all_labels, remove_all_labels
 
-import urllib.request
+import requests
+import datetime
 
 
 @click.group()
@@ -127,7 +183,7 @@ def getschema(output_filename, output_format, schema_ext, isolated):
 
 
 @db.command()
-def problink():
+def link():
     """
     Runs a probabilistic linking step that links countries and institutions.
 
@@ -246,24 +302,79 @@ def ror(out_dir):
     """
     Latest version of the ROR dataset
     """
-    with urllib.request.urlopen("https://zenodo.org/api/records/?communities=ror-data&sort=mostrecent") as rp:
-        available_releases_data = json.loads(rp.read().decode("utf8"))
-    # Get the URLs and their creation dates and sort them in reverse order according to date
-    downloads = sorted(list(map(lambda x:{"created":x["created"],
-                                          "url":x["files"][0]["links"]["self"]},
-                                available_releases_data["hits"]["hits"])), 
-                       key=lambda x:["created"], 
-                       reverse=True)
+    # Get all release data from Zenodo
+    try:
+        release_data = requests.get("https://zenodo.org/api/records/?communities=ror-data&sort=mostrecent", allow_redirects=True)
+        available_releases_data = json.loads(release_data.content.decode("utf8"))
+    except requests.exceptions.RequestException as e:
+        raise SystemExit(e)
 
-    click.echo(downloads)
+    try:
+        # Get the URLs and their creation dates and sort them in reverse order according to date.
+        # In this way, the latest release is the first entry in the list.
+        downloads = sorted(list(map(lambda x:{"created":datetime.datetime.fromisoformat(x["created"]),
+                                              "url":x["files"][0]["links"]["self"],
+                                              "key":x["files"][0]["key"]},
+                                    available_releases_data["hits"]["hits"])), 
+                           key=lambda x:["created"], 
+                           reverse=True)
+    except requests.exceptions.RequestException as e:
+        raise SystemExit(e)
+    
+    # Get the actual release file
+    try:
+        release_file = requests.get(downloads[0]["url"])
+    except requests.exceptions.RequestException as e:
+        raise SystemExit(e)
+
+    # Save it to disk
+    with open(f"{out_dir}/{downloads[0]['key']}", "wb") as fd:
+        fd.write(release_file.content)
+
+    # Done    
+    click.echo(f"{downloads[0]['key']} downloaded")
+
 
 @fetch.command()
-def mesh():
+@click.option("--out-dir", "-od", type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True))
+@click.option("--from", "from_year", type=int, default=2002)
+@click.option("--to", "to_year", type=int, default=-1)
+def mesh(from_year, to_year, out_dir):
     """
     Latest version of the MeSH dataset
     """
-    pass
+    pattern_before_2011 = "1999-2010/xmlmesh/desc"
+    pattern_after_2011 = "/xmlmesh/desc"
+    download_url = "https://nlmpubs.nlm.nih.gov/projects/mesh/"
+    today = datetime.datetime.now().year
 
+    if to_year == -1:
+        to_year = today
+
+    if  2002 > from_year > today or from_year < 0:
+        click.echo(f"from_year cannot be less than 2002, received {from_year}\n\n")
+        sys.exit(-1)
+
+    if to_year > today or to_year < from_year or to_year<-1:
+        click.echo(f"to_year cannot be greater than {today} or less than {from_year}.\n\n")
+        sys.exit(-1)
+
+    for a_year in range(from_year, to_year):
+        if a_year<2011:
+            file_path = f"{pattern_before_2011}{a_year}.xml"
+        else:
+            file_path = f"{a_year}{pattern_after_2011}{a_year}.xml"
+
+        click.echo(f"Working on {a_year}")
+
+        try:
+            file_data = requests.get(f"{download_url}{file_path}", allow_redirects=True)
+        except requests.exceptions.RequestException as e:
+            raise SystemExit(e)
+
+        # Save it to disk
+        with open(f"{out_dir}/{os.path.basename(file_path)}", "wb") as fd:
+            fd.write(file_data.content)
 
 
 if __name__ == "__main__":

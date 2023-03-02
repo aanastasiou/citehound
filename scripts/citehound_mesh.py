@@ -1,17 +1,57 @@
 #!/bin/env python
 """
-Usage: citehound_mesh_preprocess.py [OPTIONS]
+::
 
-  Citehound -- MESH Importing
+    Usage: citehound_mesh.py [OPTIONS] COMMAND [ARGS]...
+    
+      MeSH data preprocessor
+    
+    Options:
+      --help  Show this message and exit.
+    
+    Commands:
+      preprocess  MESH data importing
+      visualise   MeSH tree visualisation.
 
-  Scans a set of MESH XML files and produces one single JSON tree that
-  incorporates all temporal changes in the codes.
+MeSH Preprocessing
+------------------
 
-Options:
-  -i, --input-dir DIRECTORY  Determines the directory containing the
-                             downloaded historical MESH XML data.
-  -o, --output-file FILE     Determines the output JSON file.
-  --help                     Show this message and exit.
+::
+
+    Usage: citehound_mesh.py preprocess [OPTIONS]
+    
+      MESH data importing
+    
+      Scans a set of MESH XML files and produces one single JSON tree that
+      incorporates all temporal changes in the codes.
+    
+    Options:
+      -i, --input-dir DIRECTORY  Determines the directory containing the
+                                 downloaded historical MESH XML data.
+      -o, --output-file FILE     Determines the output JSON file.
+      --help                     Show this message and exit.
+
+MeSH Visualisation
+------------------
+
+::
+
+    Usage: citehound_mesh.py visualise [OPTIONS] INPUT_FILE TOP_LEVEL_ELEMENT
+    
+      MeSH tree visualisation.
+    
+      Samples the main JSON tree that includes all historical changes to produce
+      intermediate network and renderings of the tree's evolution for specific
+      codes.
+    
+    Options:
+      -b, --year-begin INTEGER
+      -e, --year-end INTEGER
+      -o, --output-file FILE    Determines the output AND TYPE (via extension)
+      --yearly / --not-yearly   Produces one file per year within the year-begin,
+                                year-end range.
+      --help                    Show this message and exit.
+
 
 :author: Athanasios Anastasiou
 :date: April 2018, Dec 2021
