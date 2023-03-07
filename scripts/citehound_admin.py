@@ -89,6 +89,7 @@ from neomodel import install_all_labels, remove_all_labels
 
 import requests
 import datetime
+from xml.etree import ElementTree
 
 
 @click.group()
@@ -376,6 +377,41 @@ def mesh(from_year, to_year, out_dir):
         with open(f"{out_dir}/{os.path.basename(file_path)}", "wb") as fd:
             fd.write(file_data.content)
 
+
+@fetch.command()
+@click.argument("pmid_file", type=click.Path(exists=True, file_okay=True, dir_okay=False))
+def pubmedxml(pmid_file):
+    """
+    Pubmed result set as XML file
+    """
+    if "NCBI_API_KEY" not in os.environ:
+        pass
+
+    BATCH_SIZE = 300
+    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&api_key={os.environ['NCBI_API_KEY']}&rettype=medline&retmode=xml&id="
+    declaration_and_doctype = '''<?xml version="1.0" ?>
+    <!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2019//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd">
+    '''
+    # Get the PMID data
+    # PMID data should be provided in one row per article (PMID) in a text file
+    with open(pmid_file) as fd:
+        data = list(map(lambda x: x.rstrip(),fd.readlines()))
+
+    # Create the batch requests and format them as coma separated lists
+    data_batches = [",".join(data[k:k+BATCH_SIZE]) for k in range(0, len(data), BATCH_SIZE)]
+    pubmed_xml_data = None
+    for a_batch in data_batches:
+        try:
+            xml_data = requests.get(url+a_batch, allow_redirects=True)
+        except requests.exceptions.RequestException as e:
+            raise SystemExit(e)
+        if pubmed_xml_data is None:
+            pubmed_xml_data = ElementTree.fromstring(xml_data.content.decode("utf8"))
+        else:
+            pubmed_xml_data.extend(ElementTree.parse(xml_data).getroot())
+    click.echo(ElementTree.tostring(pubmed_xml_data, 
+                                    encoding="utf8", 
+                                    method="xml",))
 
 if __name__ == "__main__":
     citehound_admin()

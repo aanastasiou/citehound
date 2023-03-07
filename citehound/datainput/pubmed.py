@@ -143,26 +143,36 @@ class PUBMEDDataItemInsert(PUBMEDDataItemReader):
                 # In this case, if left unchecked, the PMID index will fail.
                 try:
                     # Create the article. If the article exists in the database it will raise the UniqueProperty exception
-                    the_article = models.pubmed.PubmedArticle(article_id=article_data['PMID'],
-                                                              title=article_data['ArticleTitle'],
-                                                              journal_iso=article_data['ISOAbbreviation'],
-                                                              pub_date=article_data['PubDate'],
-                                                              abstract=article_data['Abstract'],
-                                                              doi=article_data["DOI"]).save()
+                    the_article = pubmed.PubmedArticle(article_id=article_data['PMID'],
+                                                       title=article_data['ArticleTitle'],
+                                                       journal_iso=article_data['ISOAbbreviation'],
+                                                       pub_date=article_data['PubDate'],
+                                                       abstract=article_data['Abstract'],
+                                                       doi=article_data["DOI"]).save()
 
                     # TODO: LOW, Remove this double try once the problems with neomodel are fixed
                     try:
                         with neomodel.db.transaction:
                             # Get or create the MeSH terms
-                            the_term = models.pubmed.PubmedMeSHTerm.get_or_create(*list(map(lambda x: {"dui": x["UI"], "descriptor_name": x["DescriptorName"]}, article_data["MeshHeadingList"])))
+                            the_term = pubmed.PubmedMeSHTerm.get_or_create(*list(map(lambda x: {"dui": x["UI"], 
+                                                                                                "descriptor_name": x["DescriptorName"]}, 
+                                                                                      article_data["MeshHeadingList"])))
                             # Get or create the MeSH term qualifiers
                             # The following creates a list of lists with one entry per MeSH Term
-                            the_qualifiers = list(map(lambda x:models.pubmed.PubmedMeSHTermQualifier.get_or_create(*list(map(lambda u:{"qui":u["QUI"], "qualifier_name":u["QualifierName"]}, x["Qualifiers"]))), article_data["MeshHeadingList"]))
+                            the_qualifiers = list(map(lambda x:pubmed.PubmedMeSHTermQualifier.get_or_create(*list(map(lambda u:{"qui":u["QUI"], 
+                                                                                                                                "qualifier_name":u["QualifierName"]}, 
+                                                                                                                      x["Qualifiers"]))), article_data["MeshHeadingList"]))
                             # Get or create the authors
-                            the_author = models.pubmed.PubmedAuthor.get_or_create(*list(map(lambda x:{"fore_name": x["ForeName"], "initials": x["Initials"], "last_name": x["LastName"], "full_name": "{} {} {}".format(x["ForeName"], x["Initials"], x["LastName"])}, article_data["AuthorList"])))
+                            the_author = pubmed.PubmedAuthor.get_or_create(*list(map(lambda x:{"fore_name": x["ForeName"], 
+                                                                                               "initials": x["Initials"], 
+                                                                                               "last_name": x["LastName"], 
+                                                                                               "full_name": f"{x['ForeName']} {x['Initials']} {x['LastName']}"}, 
+                                                                                      article_data["AuthorList"])))
                             # Get or create affiliations
                             # TODO: HIGH, Remove the exterior list from the interior x["Affiliation"] once the code has been updated
-                            the_affiliation = list(map(lambda x:models.pubmed.PubmedAffiliation.get_or_create(*list(map(lambda y:{"original_affiliation":y}, [x["Affiliation"]]))), article_data["AuthorList"]))
+                            the_affiliation = list(map(lambda x:pubmed.PubmedAffiliation.get_or_create(*list(map(lambda y:{"original_affiliation":y}, 
+                                                                                                                 [x["Affiliation"]]))), 
+                                                       article_data["AuthorList"]))
 
                             # Create connections
                             # Connect the mesh terms
@@ -213,15 +223,36 @@ class PUBMEDDataItemBatchInsert(BaseDataItemBatchReaderMixin, PUBMEDDataItemRead
         try:
             with neomodel.db.transaction:
                 # Create the articles
-                articles = models.pubmed.PubmedArticle.get_or_create(*list(map(lambda x: {"article_id": x["PMID"], "title": x["ArticleTitle"], "journal_iso":x["ISOAbbreviation"], "pub_date": x["PubDate"], "abstract": x["Abstract"], "doi": x["DOI"]}, a_batch)))
+                articles = pubmed.PubmedArticle.get_or_create(*list(map(lambda x: {"article_id": x["PMID"], 
+                                                                                   "title": x["ArticleTitle"], 
+                                                                                   "journal_iso":x["ISOAbbreviation"], 
+                                                                                   "pub_date": x["PubDate"], 
+                                                                                   "abstract": x["Abstract"], 
+                                                                                   "doi": x["DOI"]}, 
+                                                                        a_batch)))
                 # Create the MeSH terms
-                article_mesh_terms = list(map(lambda x:models.pubmed.PubmedMeSHTerm.get_or_create(*list(map(lambda y: {"dui": y["UI"], "descriptor_name": y["DescriptorName"]}, x["MeshHeadingList"]))), a_batch))
+                article_mesh_terms = list(map(lambda x:pubmed.PubmedMeSHTerm.get_or_create(*list(map(lambda y: {"dui": y["UI"], 
+                                                                                                                "descriptor_name": y["DescriptorName"]}, 
+                                                                                                     x["MeshHeadingList"]))), 
+                                              a_batch))
                 # Create the Qualifiers
-                article_mesh_terms_qualifiers = list(map(lambda x: list(map(lambda y:models.pubmed.PubmedMeSHTermQualifier.get_or_create(*list(map(lambda z: {"qui": z["QUI"], "qualifier_name": z["QualifierName"]}, y["Qualifiers"]))), x["MeshHeadingList"])), a_batch))
+                article_mesh_terms_qualifiers = list(map(lambda x: list(map(lambda y:pubmed.PubmedMeSHTermQualifier.get_or_create(*list(map(lambda z: {"qui": z["QUI"], 
+                                                                                                                                                       "qualifier_name": z["QualifierName"]}, 
+                                                                                                                                            y["Qualifiers"]))), 
+                                                                                      x["MeshHeadingList"])), 
+                                                         a_batch))
                 # Create the Authors
-                article_authors = list(map(lambda x: models.pubmed.PubmedAuthor.get_or_create(*list(map(lambda y: {"fore_name": y["ForeName"], "initials": y["Initials"], "last_name": y["LastName"], "full_name": "{} {} {}".format(y["ForeName"], y["Initials"], y["LastName"])}, x["AuthorList"]))), a_batch))
+                article_authors = list(map(lambda x: pubmed.PubmedAuthor.get_or_create(*list(map(lambda y: {"fore_name": y["ForeName"], 
+                                                                                                            "initials": y["Initials"], 
+                                                                                                            "last_name": y["LastName"], 
+                                                                                                            "full_name": f"{y['ForeName']} {y['Initials']} {y['LastName']}"}, 
+                                                                                                 x["AuthorList"]))), 
+                                           a_batch))
                 # Create the Author's Affiliations
-                article_authors_affiliations = list(map(lambda x:list(map(lambda y: models.pubmed.PubmedAffiliation.get_or_create(*list(map(lambda z: {"original_affiliation":z}, [y["Affiliation"]]))), x["AuthorList"])), a_batch))
+                article_authors_affiliations = list(map(lambda x:list(map(lambda y: pubmed.PubmedAffiliation.get_or_create(*list(map(lambda z: {"original_affiliation":z}, 
+                                                                                                                                     [y["Affiliation"]]))), 
+                                                                          x["AuthorList"])), 
+                                                        a_batch))
                 # Connect the newly created entities
                 for an_article in enumerate(articles):
 
