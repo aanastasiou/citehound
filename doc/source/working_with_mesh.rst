@@ -4,9 +4,9 @@ Working With the MeSH hierarchy
 Rationale
 ---------
 The MeSH hierarchy is a complex data structure to represent and query. However importing 
-and linking it with the rest of the datasets is a very important part of bibInsight.
+and linking it with the rest of the datasets is a very important part of Citehound.
 
-In brief, because of full detailed knowledge of the MeSH hieararchy, bibInsight can 
+In brief, because of full detailed knowledge of the MeSH hieararchy, Citehound can 
 embed a set of codes in a common lineage / history and automatically summarise 
 publications in the different thematic subjects of the MeSH hierarhcy.
 
@@ -28,7 +28,7 @@ descriptor, please see [here](https://www.nlm.nih.gov/mesh/xml_data_elements.htm
 
 Extracted Data Items
 --------------------
-For the purposes of bibInsight, we are focusing on the following fields:
+For the purposes of Citehound, we are focusing on the following fields:
 
 * `DescriptorUI <https://www.nlm.nih.gov/mesh/xml_data_elements.html#DescriptorUI>`_
 * `DescriptorName <https://www.nlm.nih.gov/mesh/xml_data_elements.html#DescriptorName>`_
@@ -123,7 +123,7 @@ name
 
 Concepts, Terms and Allowable Qualifiers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-These are part of a :code:`DescriptorRecord` and if ingested can enrich the hierarchy further. At the moment, none of these elements are inserted in the bibInsight database.
+These are part of a :code:`DescriptorRecord` and if ingested can enrich the hierarchy further. At the moment, none of these elements are inserted in the Citehound database.
 
 * **Concepts:** Each descriptor is associated with one or more distinct concepts that help indexers (**human beings**) to decide on the right descriptor semantically.
 * **Terms:** Each Concept is associated with one or more Terms which are verbatim phrases that describe a particular concept.
@@ -131,10 +131,10 @@ These are part of a :code:`DescriptorRecord` and if ingested can enrich the hier
   across descriptors and specialise their meaning further.
 
            
-bibInsight Schema
+Citehound Schema
 -----------------
 
-bibInsight represents each descriptor via an :code:`AssociableMeSHTerm` entity. This entity has the fields mentioned in the `Extracted Data Items`_ section and 
+Citehound represents each descriptor via an :code:`AssociableMeSHTerm` entity. This entity has the fields mentioned in the `Extracted Data Items`_ section and 
 a series of relationships as follows:
 
 * :code:`SPECIALISATION_OF`, to represent the fundamental hierarchy

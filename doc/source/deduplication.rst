@@ -19,7 +19,7 @@ Data
 
 * Perform Advanced search on `Pubmed <https://www.ncbi.nlm.nih.gov/pubmed/>`_ for 'dementia'
 * Download data in XML
-* Import XML into bibInsight ``IMPORT PUBMED FROM 'file://localhost/../data/pubmed_result.xml' AS dementia USING {'dbConURI':'mongodb://localhost:27017', 'dropFirst':True, 'insertEvery':20000, 'db':'test'};``
+* Import XML into Citehound ``IMPORT PUBMED FROM 'file://localhost/../data/pubmed_result.xml' AS dementia USING {'dbConURI':'mongodb://localhost:27017', 'dropFirst':True, 'insertEvery':20000, 'db':'test'};``
 * Extract list of affiliations with ``createHelperStructures.js`` from ``src/queries/mongodb``
 * Save that list of affiliations to a text file (here ``test.txt``)
 

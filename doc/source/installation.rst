@@ -195,6 +195,7 @@ To import ROR to your ``project_base``:
 
    * ``> citehound_admin.py fetch ror``
    * This downloads the latest release of ROR to the current working directory.
+
      - To send the file to a different directory, add the option ``--od``. For 
        more information please see :ref:`citehound_admin_doc`.
 
@@ -259,8 +260,9 @@ The typical workflow is as follows:
 2. Fetch the MESH datasets
 
    * ``> citehound_admin.py fetch mesh``
+
      * This will download a set of XML files in the current working directory. These 
-       datasets are fetched from a `pre-determined location <https://www.nlm.nih.gov/databases/download/mesh.html>`.
+       datasets are fetched from a `pre-determined location <https://www.nlm.nih.gov/databases/download/mesh.html>`_.
 
 3. Pre-process the XML datasets
 
