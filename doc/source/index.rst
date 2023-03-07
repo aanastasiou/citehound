@@ -8,6 +8,15 @@ Welcome to Citehound's documentation!
 
 Citehound is a Python module that enables large scale analysis of bibliographical data.
 
+If your literature review is of the order of a few thousand papers that fit your search criteria, 
+Citehound can help you navigate, make sense of and track down the subset of papers that are more 
+likely to help in your research.
+
+Out of the box, Citehound has excellent support for Pubmed data, including full integration 
+with the Medical Subject Headings (MeSH) and ROR datasets.
+
+And, if you have access to other bibliogaphical data sources, Citehound can still be adapted to it 
+via its unifying data model.
 
 
 .. toctree::

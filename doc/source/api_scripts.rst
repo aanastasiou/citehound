@@ -1,6 +1,8 @@
 Scripts
 =======
 
+.. _citehound_admin_doc:
+
 ``citehound_admin.py``
 -----------------------
 .. automodule:: scripts.citehound_admin

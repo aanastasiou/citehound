@@ -50,8 +50,9 @@ Fetch external datasets
       --help  Show this message and exit.
     
     Commands:
-      mesh  Latest version of the MeSH dataset
-      ror   Latest version of the ROR dataset
+      mesh       Latest version of the MeSH dataset
+      pubmedxml  Pubmed result set as XML file
+      ror        Latest version of the ROR dataset
 
 
 List and use data loaders
@@ -90,6 +91,7 @@ from neomodel import install_all_labels, remove_all_labels
 import requests
 import datetime
 from xml.etree import ElementTree
+import time
 
 
 @click.group()
@@ -298,7 +300,7 @@ def fetch():
     pass
 
 @fetch.command()
-@click.option("--out-dir", "-od", type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True))
+@click.option("--out-dir", "-od", type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True), default="./")
 def ror(out_dir):
     """
     Latest version of the ROR dataset
@@ -385,13 +387,14 @@ def pubmedxml(pmid_file):
     Pubmed result set as XML file
     """
     if "NCBI_API_KEY" not in os.environ:
-        pass
+        # If a key is not available, medline limits calls to 1 per second.
+        inter_call_delay = 1
+    else:
+        # otherwise this limit is raised to 10 calls per second.
+        inter_call_delay = 0.1
 
     BATCH_SIZE = 300
     url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&api_key={os.environ['NCBI_API_KEY']}&rettype=medline&retmode=xml&id="
-    declaration_and_doctype = '''<?xml version="1.0" ?>
-    <!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2019//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd">
-    '''
     # Get the PMID data
     # PMID data should be provided in one row per article (PMID) in a text file
     with open(pmid_file) as fd:
@@ -409,6 +412,7 @@ def pubmedxml(pmid_file):
             pubmed_xml_data = ElementTree.fromstring(xml_data.content.decode("utf8"))
         else:
             pubmed_xml_data.extend(ElementTree.parse(xml_data).getroot())
+        time.sleep(inter_call_delay)
     click.echo(ElementTree.tostring(pubmed_xml_data, 
                                     encoding="utf8", 
                                     method="xml",))
