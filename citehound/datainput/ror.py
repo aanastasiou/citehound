@@ -110,7 +110,9 @@ class RORDataItemBatchInsert(BaseDataItemBatchReaderMixin, RORDataItemReader):
                 institutes = grid.Institute.get_or_create(*list(map(lambda x: {"grid": x["grid"], "name": x["name"], "lat": x["geo_coordinates"][0]["lat"], "lng": x["geo_coordinates"][0]["lng"]}, active_institutes)))
                 cities = grid.City.get_or_create(*list(map(lambda x: {"geonames_id": x["city"][0]["geonames_id"], 
                                                                       "name": x["city"][0]["name"], 
-                                                                      "is_valid_geo_id": x["city"][0]["is_valid_geo_id"]} if x["city"][0]["is_valid_geo_id"] else {"name": x["city"][0]["name"], 
+                                                                      "is_valid_geo_id": x["city"][0]["is_valid_geo_id"]} 
+                                                                      if x["city"][0]["is_valid_geo_id"] else 
+                                                                     {"name": x["city"][0]["name"],
                                                                       "is_valid_geo_id": x["city"][0]["is_valid_geo_id"]}, 
                                                            active_institutes)))
 

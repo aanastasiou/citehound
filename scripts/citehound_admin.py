@@ -240,18 +240,26 @@ def link():
 
 
 @db.command()
-@click.option("--n_items", type=int, )
-def reset(n_items):
+@click.argument("what-to-drop", type=click.Choice(["all", "article_data", "ror"]))
+def drop(what_to_drop):
     """
-    !!!DELETES ALL RECORDS AND REMOVES THE SCHEMA FROM THE CURRENT DATABASE!!!
+    Delete records and (optionally) remove the schema from the database.
     """
-    n_items_in_db = citehound.IM.number_of_items_in_db
-    if n_items != n_items_in_db:
-        click.echo("\n\nSafety verification FAILED.\nNo action was taken.\n\n")
-    else:
+    if (what_to_drop == "all"):
+        click.echo("Dropping all records and reseting the database")
         citehound.IM.cypher_query("MATCH (a) DETACH DELETE (a)")
         remove_all_labels()
         click.echo("\n\nThe database has been reset.\n")
+
+    if (what_to_drop == "article_data"):
+        click. echo("Dropping article data (Articles, Authors and Affiliations)")
+        citehound.IM.cypher_query("MATCH (a) WHERE 'Article' IN labels(a) OR 'Author' IN labels(a) OR 'Affiliation' IN labels(a) DETACH DELETE a")
+        click.echo("\n\nArticle data removed.\n")
+
+    if (what_to_drop == "ror"):
+        click.echo("Dropping all ROR records")
+        citehound.IM.cypher_query("MATCH (a) WHERE 'City' IN labels(a) OR 'Country' IN labels(a) OR 'Institute' IN labels(a) DETACH DELETE a")
+        click.echo("\n\nROR data removed.\n")
 
 
 @db.command()

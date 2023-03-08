@@ -1,6 +1,6 @@
 '''
-The models that are associated with the importing of the GRID Database.
-For more information please see https://www.grid.ac
+The models that are associated with the importing of the ROR (ex GRID) Database.
+For more information please see http://ror.org, https://www.grid.ac
 
 :author: Athanasios Anastasiou
 :date: Mar 2023
