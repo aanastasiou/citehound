@@ -203,9 +203,9 @@ def link():
     bim.link_sets_of_entities("match (aCountry:Country) return toLower(aCountry.name) as theIndex, aCountry as theNode",
                                "match (an_affiliation:PubmedAffiliation) return toLower(an_affiliation.original_affiliation) as theIndex, an_affiliation as theNode",
                                COUNTRY_ASSOCIATION_LABEL,
-                               sessionID="MySessionStep1",
-                               preProcessingFunction = citehound.utils.affiliation_standardisation,
-                               percEntriesRIGHT=0.95)
+                               session_id="MySessionStep1",
+                               pre_processing_function = citehound.utils.affiliation_standardisation,
+                               perc_entries_right = 0.95)
 
     # Now, for each country that actually matched, get its institutions and try to match institutions too
     matched_countries = bim.cypher_query(
@@ -224,17 +224,17 @@ def link():
             f"match (a:Institute)-[:IN_CITY]-(:City)-[:IN_COUNTRY]-(b:Country{{name:'{aCountry}'}}) return distinct toLower(a.name) as theIndex,a as theNode",
             f"match (a:PubmedAffiliation)-[:ASSOCIATED_WITH{{rel_label:'FROM_COUNTRY'}}]-(b:Country{{name:'{aCountry}'}}) return distinct toLower(a.original_affiliation) as theIndex, a as theNode",
             INSTITUTE_ASSOCIATION_LABEL,
-            sessionID="MySessionStep2",
-            preProcessingFunction=citehound.utils.affiliation_standardisation,
-            percEntriesRIGHT=0.95)
+            session_id="MySessionStep2",
+            pre_processing_function=citehound.utils.affiliation_standardisation,
+            perc_entries_right=0.95)
 
     # Now grab those articles which where not connected NEITHER WITH A COUNTRY OR UNIVERSITY
     bim.link_sets_of_entities("match (a:Institute) return distinct toLower(a.name) as theIndex,a as theNode",
                                "match (a:PubmedAffiliation) where not (a)-[:ASSOCIATED_WITH{rel_label:'FROM_COUNTRY'}]-() and not (a)-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-() return distinct toLower(a.original_affiliation) as theIndex, a as theNode",
                                INSTITUTE_ASSOCIATION_LABEL,
-                               sessionID="MySessionStep3",
-                               preProcessingFunction=citehound.utils.affiliation_standardisation,
-                               percEntriesRIGHT=0.95)
+                               session_id="MySessionStep3",
+                               pre_processing_function=citehound.utils.affiliation_standardisation,
+                               perc_entries_right=0.95)
 
     click.echo("Finished linking.")
 

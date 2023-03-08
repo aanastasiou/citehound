@@ -144,8 +144,8 @@ class InsightManager:
 
             return toRet
 
-        def probLinkSetsOfEntities(self, associableQueryLeft, associableQueryRight, relationshipLabel,
-                                   sessionID=None, percEntriesRIGHT=0.95, comparisonCutoff=0.9, preProcessingFunction=None):
+        def link_sets_of_entities(self, associable_query_left, associable_quey_right, relationship_label,
+                                   session_id=None, perc_entries_right=0.95, comparison_cutoff=0.9, pre_processing_function=None):
             """
                 Performs probabilistic linking between TWO sets of entities based on values of specific fields.
 
@@ -169,26 +169,26 @@ class InsightManager:
 
                 Parameters:
                     percEntries             : Focuses the length distribution of the LEFT
-                    comparisonCutoff        : The cut off of the soft comparison
-                    preProcessingFunction   : The function that is applied to the LEFT to pre-process it
+                    comparison_cutoff        : The cut off of the soft comparison
+                    pre_processing_function   : The function that is applied to the LEFT to pre-process it
                     tokenisationFunction    : The function that splits the long string of the RIGHT into tokens to send it to the comparison function
-                    sessionID               : An identifier that identifies the links that are established by this particular run
+                    session_id               : An identifier that identifies the links that are established by this particular run
 
 
                 Notes:
                     A link has two outcomes: Matched and non-Matched. There should be a way to return those entities that were not matched, although these can be discovered by a query later on.
             """
-            if sessionID is None:
+            if session_id is None:
                 # If no session ID was provided, we have to give this session a unique identifier
-                sessionID = str(uuid.uuid4())
+                session_id = str(uuid.uuid4())
             k = 0
 
             # Constants required for the linking to run
             splitRule = re.compile("\s*(,|;|\.)\s*")
 
             # Run the queries to create two sets
-            dictLEFT = self.cypher_query(associableQueryLeft, result_as="dict")
-            dictRIGHT = self.cypher_query(associableQueryRight, result_as="dict")
+            dictLEFT = self.cypher_query(associable_query_left, result_as="dict")
+            dictRIGHT = self.cypher_query(associable_quey_right, result_as="dict")
 
             # To reduce the number of comparisons trim down the length of countries to the lengths of X% of the most common lengths.
 
@@ -206,7 +206,7 @@ class InsightManager:
             # Now pick as much as the user specified
             m = 0
             cumsum_len = len(cumsum) - 1
-            while cumsum[m] <= percEntriesRIGHT and m < cumsum_len:
+            while cumsum[m] <= perc_entries_right and m < cumsum_len:
                 m += 1
             # Now trim the index
             trimmed_lengths = list(map(lambda x: x[0], all_items_left_histogram[:m]))
@@ -226,7 +226,7 @@ class InsightManager:
                 # Standardise entry
                 # TODO: LOW, Can this be turned into some kind of map?
                 # This function has some side effects. You work on those side-effects
-                standardised_item_right = preProcessingFunction(an_item_right[0]) if preProcessingFunction else an_item_right[0]
+                standardised_item_right = pre_processing_function(an_item_right[0]) if pre_processing_function else an_item_right[0]
 
                 # Tokenise and retain anything within the determined country len for
                 # the first stage as a set to remove duplicates
@@ -237,7 +237,7 @@ class InsightManager:
                 # Now collect appearances of LEFT into the RIGHT
                 for aKeyComponent in item_right_tokens_to_compare:
                     # This is the point of actual comparison
-                    comparison_result = difflib.get_close_matches(aKeyComponent, all_trimmed_items_left, cutoff=comparisonCutoff)
+                    comparison_result = difflib.get_close_matches(aKeyComponent, all_trimmed_items_left, cutoff=comparison_cutoff)
                     if len(comparison_result) >= 1:
                         # OK, now we have matches and have to establish links.
                         # Here, we ignore the headings of the values of the index and simply link the contents
@@ -245,12 +245,12 @@ class InsightManager:
                         an_item_left_items = list(trimmed_items_left[comparison_result[0]].values())
                         for aRIGHTItem in an_item_right_items:
                             for aLEFTItem in an_item_left_items:
-                                # aRIGHTItem.associations.connect(aLEFTItem, {'process_id': sessionID, 'rel_label': relationshipLabel})
+                                # aRIGHTItem.associations.connect(aLEFTItem, {'process_id': session_id, 'rel_label': relationship_label})
                                 # if isinstance(aRIGHTItem, coreModels.AssociableItem) and isinstance(aLEFTItem, coreModels.AssociableItem):
-                                #     aRIGHTItem.associations.connect(aLEFTItem, {'process_id': sessionID, 'rel_label': relationshipLabel})
+                                #     aRIGHTItem.associations.connect(aLEFTItem, {'process_id': session_id, 'rel_label': relationship_label})
                                 batched_links.add_item(batchprocess.ItemRelationship(aRIGHTItem.associations, aLEFTItem,
-                                                                                     {"process_id": sessionID,
-                                                                                      "rel_label": relationshipLabel}))
+                                                                                     {"process_id": session_id,
+                                                                                      "rel_label": relationship_label}))
                     else:
                         # TODO: HIGH, Turn this error into an exception
                         # sys.stdout.write("{}:Can't match to country\n".format(an_affiliation.id))
