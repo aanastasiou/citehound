@@ -71,8 +71,10 @@ bibliographical datset?"*).
 
 The rest of this guide describes steps 3 onwards focusing on bibliographical data originating from Pubmed.
 
+
 Creating a new Citehound project
 =================================
+
 Within Citehound, every different "literature review" or "bibliographical data research project" has its own underlying
 database.
 
@@ -130,40 +132,23 @@ Importing a Pubmed bibliographical dataset to a project
 Citehound was originally developed to process XML files exported from Pubmed.
 
 The option to export a search "result set" as an XML file **used to** be available from Pubmed's search page but
-not any more. Unfortunately, the currently available options to export data, result in datasets that are severely
-limited in terms of data processing.
+not any more. Unfortunately, the currently available options to export data from the search page, result in datasets 
+that are severely limited in terms of data processing.
 
-However, even in this case of Pubmed's elevated difficulty in accessing bibliographical data there are still at least
-two ways to obtain feature rich data for research. These are as follows:
+Citehound includes a convenient tool that can download Pubmed data in XML format given a list of PMIDs.
 
-1. Using third party tools
+Obtaining Pubmed XML data
+-------------------------
 
-   * An option that is feasible for result sets of up to a few thousand items
-
-2. Using a local copy of the dataset
-
-   * An option that has the potential to process the whole of Pubmed database (at the order of magnitude of a few
-     hundred Gigabytes of XML files).
-
-In this section we are going to focus on option 1 that is suitable for datasets that contain up to 10000 papers. This is
-a hard-limit that is imposed by pubmed.gov. For analyses of larger datasets it would be worth proceeding along option 2.
-
-Obtaining Pubmed XML data using third party tools
--------------------------------------------------
-
-To download the publication data in XML format, you can now use `PubMed2XL <https://pubmed2xl.com/xml/>`_. A third
-party tool that eases (for absolutely no reason) the interaction with the Pubmed XML database [#]_.
-
-The process is simple:
+To download a given set of publication data in XML format:
 
 1. Run your query on pubmed.gov.
-2. Export your result set in PMID format.
-3. Navigate to pubmed2xl.com
-4. Paste your list of PMID's
-5. Download the resulting XML file (as, for example ``pubmed_resultset.xml``).
+2. Export your result set in PMID format, suppose it is saved in ``pubmed_articles.pmid``.
+3. To fetch the article data in XML format:
+   
+   * ``> citehound_admin.py fetch pubmedxml pubmed_articles.pmid > pubmed_articles.xml``
 
-
-Now, given a Pubmed XML file, importing it to Citehound is achieved by:
+Now, given the ``pubmed_articles.xml`` Pubmed XML file, importing it to Citehound is achieved by:
 
 1. Make sure that your ``pubmed_project_1`` is activated:
 
@@ -172,7 +157,7 @@ Now, given a Pubmed XML file, importing it to Citehound is achieved by:
 
 2. Import the dataset
 
-   * ``> bibadmin_admin.py import-data PUBMED pubmed_resultset.xml``
+   * ``> citehound_admin.py ingest data PUBMED pubmed_articles.xml``
 
 
 This concludes with importing a bibliographic dataset in Citehound.
@@ -195,19 +180,18 @@ Data linking
 
 
 At this point, we have three different datasets in the system but without any connections between them. In order to link
-your newly imported Pubmed bibliographical dataset with GRID, you need to run a "probabilistic linking" step.
+the newly imported Pubmed bibliographical dataset with ROR, you need to run a "probabilistic linking" step.
 
 This is achieved with:
 
 ::
 
-    > citehound_admin.py db-problink
+    > citehound_admin.py db link
 
 Very briefly, this script applies blocking on countries and then for each country runs a probabilistic linkage step
 for the country's institutions.
 
-For more information about the topic of "Record Linkage"
-please `start here <https://en.wikipedia.org/wiki/Record_linkage>`_
+For more information about the topic of "Record Linkage", `start here <https://en.wikipedia.org/wiki/Record_linkage>`_
 
 Conclusion
 ==========

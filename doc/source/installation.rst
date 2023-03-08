@@ -135,7 +135,7 @@ Configuration
    ::
 
        > cd citehound
-       > citehound_admin.py db-init
+       > citehound_admin.py db init
 
 This concludes with the basic configuration of the Citehound package.
 
