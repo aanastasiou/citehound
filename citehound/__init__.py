@@ -1,5 +1,5 @@
 """
-BibInsight core functionality.
+Citehound core functionality.
 
 :author: Athanasios Anastasiou
 :date: Mar 2023
@@ -37,7 +37,7 @@ class InsightManager:
 
         def __init__(self, connection_uri=None, uname=None, pword=None, host="localhost", port=7687):
             """
-            Initialises the main object.
+            Initialise the main object.
 
             Note: If none of the expected configuration parameters are provided, the constructor will try
             to initialise the object via the connection_uri environment variable. If that fails, it will
