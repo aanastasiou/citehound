@@ -115,7 +115,7 @@ def db():
 @db.command()
 @click.argument("output-filename", type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
 @click.option("--output-format", "-f",
-              type=click.Choice(["json", "gml", "dot"], case_sensitive=False),
+              type=click.Choice(["graphml", "dot"], case_sensitive=False),
               help="Determine the output format",
               default="json")
 @click.option("--schema-ext/--no-schema-ext",
@@ -134,57 +134,57 @@ def getschema(output_filename, output_format, schema_ext, isolated):
         return dict(filter(lambda x: x[0] not in attrs_to_drop, a_dict.items()))
 
     final_output_filename = os.path.splitext(output_filename)[0]
+
     schema_data = citehound.IM.cypher_query("call db.schema.visualization", resolve_objects=False, result_as="raw")
-    if output_format == "json":
-        with open(f"{final_output_filename}.json", "w") as fd:
-            json.dump(schema_data, fd, indent=4)
-    else:
-        # Build the network first
-        network_data = schema_data[0]
-        net_ob = networkx.DiGraph()
-        for a_node in network_data[0]:
-            net_ob.add_node(a_node.id,
-                            labels=tuple(a_node.labels),
-                            nname=a_node._properties["name"],
-                            indexes=a_node._properties["indexes"],
-                            constraints=a_node._properties["constraints"]
-                            )
 
-        for a_relationship in network_data[1]:
-            net_ob.add_edge(a_relationship.start_node.id,
-                            a_relationship.end_node.id, type=a_relationship.type, **a_relationship._properties)
-        if not isolated:
-            net_ob.remove_nodes_from(list(filter(lambda x: net_ob.degree(x) == 0, net_ob.nodes())))
+    # Build the network first
+    network_data = schema_data[0]
+    net_ob = networkx.DiGraph()
+    for a_node in network_data[0]:
+        net_ob.add_node(a_node.id,
+                        labels=",".join(a_node.labels),
+                        nname=a_node._properties["name"],
+                        #indexes=",".join(a_node._properties["indexes"]),
+                        #constraints=",".join(a_node._properties["constraints"])
+                        )
 
-        if output_format == "gml":
-            networkx.write_gml(net_ob, f"{final_output_filename}.gml", stringizer=repr)
-        elif output_format == "dot":
-            # Re-format the network
-            for a_node_idx, a_node_data in net_ob.nodes(data=True):
-                a_node_data["label"] = f"{a_node_data['nname']}"
-            for a_rel_node_begin, a_rel_node_end, a_rel_data in net_ob.edges(data=True):
-                a_rel_data["label"] = f"{a_rel_data['type']}"
+    for a_relationship in network_data[1]:
+        net_ob.add_edge(a_relationship.start_node.id,
+                        a_relationship.end_node.id, type=a_relationship.type)
 
-            names_to_remove = ["AssociableItem",
-                               "PersistentElement",
-                               "ElementDomain"]
-            if schema_ext:
-                names_to_remove.extend(["Article", "Author", "Affiliation"])
-            else:
-                names_to_remove.extend(list(map(lambda x: x[1]["nname"],
-                                                filter(lambda x: x[1]["nname"] not in ["Article",
-                                                                                       "Author",
-                                                                                       "Affiliation",
-                                                                                       "Institute",
-                                                                                       "InstituteType",
-                                                                                       "City",
-                                                                                       "Country"],
-                                                       net_ob.nodes(data=True)))))
+    if not isolated:
+        net_ob.remove_nodes_from(list(filter(lambda x: net_ob.degree(x) == 0, net_ob.nodes())))
 
-            net_ob.remove_nodes_from(list(map(lambda x: x[0],
-                                              filter(lambda x: x[1]["nname"] in names_to_remove,
-                                                     net_ob.nodes(data=True)))))
-            networkx.drawing.nx_pydot.write_dot(net_ob, f"{final_output_filename}.dot")
+    if output_format == "graphml":
+        networkx.write_graphml(net_ob, f"{final_output_filename}.graphml")
+
+    elif output_format == "dot":
+        # Re-format the network
+        for a_node_idx, a_node_data in net_ob.nodes(data=True):
+            a_node_data["label"] = f"{a_node_data['nname']}"
+        for a_rel_node_begin, a_rel_node_end, a_rel_data in net_ob.edges(data=True):
+            a_rel_data["label"] = f"{a_rel_data['type']}"
+
+        names_to_remove = ["AssociableItem",
+                           "PersistentElement",
+                           "ElementDomain"]
+        if schema_ext:
+            names_to_remove.extend(["Article", "Author", "Affiliation"])
+        else:
+            names_to_remove.extend(list(map(lambda x: x[1]["nname"],
+                                            filter(lambda x: x[1]["nname"] not in ["Article",
+                                                                                   "Author",
+                                                                                   "Affiliation",
+                                                                                   "Institute",
+                                                                                   "InstituteType",
+                                                                                   "City",
+                                                                                   "Country"],
+                                                   net_ob.nodes(data=True)))))
+
+        net_ob.remove_nodes_from(list(map(lambda x: x[0],
+                                          filter(lambda x: x[1]["nname"] in names_to_remove,
+                                                 net_ob.nodes(data=True)))))
+        networkx.drawing.nx_pydot.write_dot(net_ob, f"{final_output_filename}.dot")
 
 
 @db.command()
