@@ -252,7 +252,7 @@ def drop(what_to_drop):
         post_action = "\n\nThe database has been reset.\n"
         action = "MATCH (a) DETACH DELETE (a)"
 
-    if (what_to_drop == "article_data"):
+    if (what_to_drop == "article-data"):
         pre_action = "Dropping article data (Articles, Authors and Affiliations)"
         post_action = "\n\nArticle data removed.\n"
         action = "MATCH (a) WHERE 'Article' IN labels(a) OR 'Author' IN labels(a) OR 'Affiliation' IN labels(a) DETACH DELETE a"
