@@ -61,6 +61,7 @@ class PUBMEDDataItemReader(XMLDataItemReader):
             l_doc_pub_title = an_element.findall("MedlineCitation/Article/ArticleTitle")
             doc_pub_title = "".join(map(lambda x: "".join(x.itertext()), l_doc_pub_title))
 
+            # TODO: HIGH, Send this to the logging stream
             if doc_pub_title is None:
                 print("ERROR ERROR ERROR:{}".format(doc_identifier))
 
