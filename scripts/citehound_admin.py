@@ -24,6 +24,7 @@ Database operations
 
 ::
 
+
     Usage: citehound_admin.py db [OPTIONS] COMMAND [ARGS]...
     
       Database operations
@@ -32,10 +33,11 @@ Database operations
       --help  Show this message and exit.
     
     Commands:
+      drop       Delete records and (optionally) remove the schema from the...
       getschema  Visualises the current schema of the database
       init       Initialises (an empty) Neo4j database with the Citehound...
       link       Runs a probabilistic linking step that links countries and...
-      reset      !!!DELETES ALL RECORDS AND REMOVES THE SCHEMA FROM THE...
+
 
 Fetch external datasets
 -----------------------
@@ -240,26 +242,33 @@ def link():
 
 
 @db.command()
-@click.argument("what-to-drop", type=click.Choice(["all", "article_data", "ror"]))
+@click.argument("what-to-drop", type=click.Choice(["all", "all-and-labels", "article-data", "ror"]))
 def drop(what_to_drop):
     """
     Delete records and (optionally) remove the schema from the database.
     """
-    if (what_to_drop == "all"):
-        click.echo("Dropping all records and reseting the database")
-        citehound.IM.cypher_query("MATCH (a) DETACH DELETE (a)")
-        remove_all_labels()
-        click.echo("\n\nThe database has been reset.\n")
+    if (what_to_drop in ["all", "all-and-labels"]):
+        pre_action = "Dropping all records and reseting the database"
+        post_action = "\n\nThe database has been reset.\n"
+        action = "MATCH (a) DETACH DELETE (a)"
 
     if (what_to_drop == "article_data"):
-        click. echo("Dropping article data (Articles, Authors and Affiliations)")
-        citehound.IM.cypher_query("MATCH (a) WHERE 'Article' IN labels(a) OR 'Author' IN labels(a) OR 'Affiliation' IN labels(a) DETACH DELETE a")
-        click.echo("\n\nArticle data removed.\n")
+        pre_action = "Dropping article data (Articles, Authors and Affiliations)"
+        post_action = "\n\nArticle data removed.\n"
+        action = "MATCH (a) WHERE 'Article' IN labels(a) OR 'Author' IN labels(a) OR 'Affiliation' IN labels(a) DETACH DELETE a"
 
     if (what_to_drop == "ror"):
-        click.echo("Dropping all ROR records")
-        citehound.IM.cypher_query("MATCH (a) WHERE 'City' IN labels(a) OR 'Country' IN labels(a) OR 'Institute' IN labels(a) DETACH DELETE a")
-        click.echo("\n\nROR data removed.\n")
+        pre_action = "Dropping all ROR records."
+        post_action = "\n\nROR data removed.\n"
+        action = "MATCH (a) WHERE 'City' IN labels(a) OR 'Country' IN labels(a) OR 'Institute' IN labels(a) DETACH DELETE a"
+
+    click.echo(pre_action)
+    citehound.IM.cypher_query(action)
+    click.echo(post_action)
+
+    if (what_to_drop == "all-and-labels"):
+        neomodel.remove_labels()
+        click.echo("Labels removed.\n")
 
 
 @db.command()
