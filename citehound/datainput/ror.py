@@ -3,6 +3,7 @@
 :date: Mar 2023
 """
 
+import sys
 import os
 
 from lxml import etree  # Handles XML
@@ -64,7 +65,7 @@ class RORDataItemReader(JSONDataItemReader):
                        "name": an_element["name"],
                        "city": list(map(lambda x: {"is_valid_geo_id": True, 
                                                    "geonames_id": x["geonames_city"]["id"], 
-                                                   "name": x["city"]} if x["geonames_city"] not in (None, {}) else {"is_valid_geo_id": False, 
+                                                   "name": x["geonames_city"]["city"]} if x["geonames_city"] not in (None, {}) else {"is_valid_geo_id": False, 
                                                                                                                      "geonames_id": "", "name": x["city"]}, 
                                         an_element["addresses"])),
                        "country": an_element["country"],
@@ -135,6 +136,13 @@ class RORDataItemBatchInsert(BaseDataItemBatchReaderMixin, RORDataItemReader):
                         an_institute[1].institute_types.connect(aType)
         except neo4j.exceptions.ClientError as ex:
             pass
+
+        # except (neo4j.exceptions.ClientError, neomodel.exceptions.UniqueProperty) as ex:
+        #     with open("thedump.json", "w") as fd:
+        #         json.dump(a_batch, fd)
+        #     print("ERROR!!!ERROR!!!ERROR!!!ERROR!!!ERROR!!!\n\n\n\n\n")
+        #     sys.exit(-1)
+        #     pass
         # Save the relationships to be established AFTER all nodes have been saved
         self._institute_relationships.extend(list(map(lambda x: {"grid": x["grid"], 
                                                                  "relationships": x["relationships"]}, 
