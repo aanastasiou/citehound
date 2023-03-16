@@ -71,7 +71,9 @@ class RORDataItemReader(JSONDataItemReader):
                        "country": an_element["country"],
                        "geo_coordinates": list(map(lambda x: {"lat": x["lat"], "lng": x["lng"]}, an_element["addresses"])),
                        "types": an_element["types"],
-                       "relationships": an_element["relationships"]})
+                       # For more details around the reason for the filtering here, please see:
+                       # https://github.com/ror-community/ror-updates/wiki/ROR-Metadata-Policies#relationships
+                       "relationships": list(filter(lambda x:x["type"] in ("Parent", "Related"),an_element["relationships"]))})
         return record
 
 

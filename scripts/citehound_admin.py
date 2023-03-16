@@ -113,11 +113,7 @@ def db():
     pass
 
 @db.command()
-@click.argument("output-filename", type=click.Path(file_okay=True, dir_okay=False, resolve_path=True))
-@click.option("--output-format", "-f",
-              type=click.Choice(["graphml", "dot"], case_sensitive=False),
-              help="Determine the output format",
-              default="json")
+@click.argument("output-format", type=click.Choice(["graphml", "dot"], case_sensitive=False),)
 @click.option("--schema-ext/--no-schema-ext",
               type=click.BOOL,
               default=False,
@@ -126,14 +122,12 @@ def db():
               type=click.BOOL,
               default=False,
               help="Drops any entities that appear to not be connected with others in the current schema.")
-def getschema(output_filename, output_format, schema_ext, isolated):
+def getschema(output_format, schema_ext, isolated):
     """
     Visualises the current schema of the database
     """
     def filter_dict_attr(a_dict, attrs_to_drop):
         return dict(filter(lambda x: x[0] not in attrs_to_drop, a_dict.items()))
-
-    final_output_filename = os.path.splitext(output_filename)[0]
 
     schema_data = citehound.IM.cypher_query("call db.schema.visualization", resolve_objects=False, result_as="raw")
 
@@ -156,7 +150,7 @@ def getschema(output_filename, output_format, schema_ext, isolated):
         net_ob.remove_nodes_from(list(filter(lambda x: net_ob.degree(x) == 0, net_ob.nodes())))
 
     if output_format == "graphml":
-        networkx.write_graphml(net_ob, f"{final_output_filename}.graphml")
+        networkx.write_graphml(net_ob, sys.stdout)
 
     elif output_format == "dot":
         # Re-format the network
@@ -184,7 +178,7 @@ def getschema(output_filename, output_format, schema_ext, isolated):
         net_ob.remove_nodes_from(list(map(lambda x: x[0],
                                           filter(lambda x: x[1]["nname"] in names_to_remove,
                                                  net_ob.nodes(data=True)))))
-        networkx.drawing.nx_pydot.write_dot(net_ob, f"{final_output_filename}.dot")
+        networkx.drawing.nx_pydot.write_dot(net_ob, sys.stdout)
 
 
 @db.command()

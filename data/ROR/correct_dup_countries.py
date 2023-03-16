@@ -61,7 +61,7 @@ def correct_dup_countries(data_in, corrections_file):
             country_name = a_correction[1][1]
             click.echo(f"Correcting {country_name}")
             for an_entry in code_country[country_code]["indexed_data"]:
-                data[an_entry[0]]["country_name"] = country_name
+                data[an_entry[0]]["country"]["country_name"] = country_name
 
         click.echo("Done...\n\n")
         with open(f"{os.path.splitext(data_in)[0]}_country_corrected.json", "w") as fd:
