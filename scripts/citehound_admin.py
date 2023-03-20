@@ -395,7 +395,10 @@ def mesh(from_year, to_year, out_dir):
 @click.argument("pmid_file", type=click.Path(exists=True, file_okay=True, dir_okay=False))
 def pubmedxml(pmid_file):
     """
-    Pubmed result set as XML file
+    Pubmed result set as XML file. 
+
+    PMID_FILE should be a text file with one PMID per line. 
+    The XML result set is returned on stdout.
     """
     if "NCBI_API_KEY" not in os.environ:
         # If a key is not available, medline limits calls to 1 per second.
@@ -422,8 +425,9 @@ def pubmedxml(pmid_file):
         if pubmed_xml_data is None:
             pubmed_xml_data = ElementTree.fromstring(xml_data.content.decode("utf8"))
         else:
-            pubmed_xml_data.extend(ElementTree.parse(xml_data).getroot())
+            pubmed_xml_data.extend(ElementTree.fromstring(xml_data.content.decode("utf8")))
         time.sleep(inter_call_delay)
+
     click.echo(ElementTree.tostring(pubmed_xml_data, 
                                     encoding="utf8", 
                                     method="xml",))
