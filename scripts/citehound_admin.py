@@ -95,6 +95,8 @@ import datetime
 from xml.etree import ElementTree
 import time
 
+import neoads
+
 
 @click.group()
 def citehound_admin():
@@ -431,6 +433,78 @@ def pubmedxml(pmid_file):
     click.echo(ElementTree.tostring(pubmed_xml_data, 
                                     encoding="utf8", 
                                     method="xml",))
+
+@citehound_admin.group()
+def query():
+    """
+    Standard query operations over the database.
+    """
+    pass
+
+@query.command()
+def ls():
+    """
+    List all available queries
+    """
+    # Get the standard queries map
+    q_map = neoads.AbstractMap.inflate(neomodel.db.cypher_query("MATCH (a:AbstractMap{name:'') return a", resolve_objects=True))[0][0][0]
+
+
+@query.command()
+def init():
+    """
+    Initialises the standard queries in the database
+    """
+    # Add a set of pre-defined queries
+    queries=[("N_ARTICLES_PER_YEAR",
+              "MATCH (a:Article) RETURN COUNT(a) AS n_articles, date(a.pub_date).year AS year ORDER BY year DESC",
+              "Number of articles per year"),
+             ("ARTICLES_OF_YEAR",
+              "MATCH (a:Article) WHERE date(a.pub_date).year=$year RETURN a.article_id, a.doi, a.title, date(a.pub_date) as pub_date ORDER BY pub_date DESC",
+              "A list of articles uploaded within a specific year. Expects parameter 'year'"),
+             ("N_ARTICLES_PER_AUTHOR",
+              "MATCH (a:Author)<-[r:AUTHORED_BY]-() RETURN id(a) as author_id, a.full_name AS author_name, COUNT(r) AS n_articles_authored ORDER BY n_articles_authored DESC",
+              "Number of articles per author"),
+             ("ARTICLES_OF_AUTHOR",
+              "MATCH (a:Article)-[:AUTHORED_BY]->(u:Author) WHERE id(u)=$author_id RETURN a.article_id, a.doi, a.title, date(a.pub_date) AS pub_date ORDER BY pub_date DESC",
+              "A list of articles authored by a specific author. Expects parameter 'author_id', see N_ARTICLES_PER_AUTHOR")  
+            ]
+
+    # Check if STD_QUERIES is already defined
+
+    # If not then initialise it
+    the_map = neoads.AbstractMap(name="STD_QUERIES").save()
+    query_key = neoads.CompositeString("query").save()
+    desc_key = neoads.CompositeString("description").save()
+    # Add items
+    for a_query_name, a_query_value, a_query_description in queries:
+        q_name_ob = neoads.CompositeString(a_query_name).save()
+        q_value_ob = neoads.CompositeArrayObjectDataFrame(a_query_value).save()
+        q_desc_ob = neoads.CompositeString(a_query_description).save()
+        # The inner map has to be populated first
+        q_new_map = neoads.AbstractMap().save()
+        q_new_map[query_key] = q_value_ob
+        q_new_map[desc_key] = q_desc_ob
+        # The map can now be attached to the outer map
+        the_map[q_name_ob] = q_new_map
+            
+@query.command()
+def run():
+    """
+    Select and run a specific predefined query on the database, possibly including parameters
+    """
+    pass
+
+@query.command()
+def ls():
+    """
+    List all pre-dfeined queries.
+    """
+    pass
+
+
+
+
 
 if __name__ == "__main__":
     citehound_admin()

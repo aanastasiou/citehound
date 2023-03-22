@@ -2,9 +2,28 @@
 
 This is a list of essential queries that should be provided along with the default system.
 
+## Articles
+
+### Articles Per Year
+
+```
+MATCH (a:Article) RETURN COUNT(a) AS n_articles, date(a.pub_date).year AS year ORDER BY year DESC
+```
+
+### Articles of a specific year
+
+```
+MATCH (a:Article) WHERE date(a.pub_date).year={YEAR} RETURN a.article_id, a.doi, a.title, date(a.pub_date) as pub_date ORDER BY pub_date DESC
+```
+
+Where:
+
+* `YEAR` is the specific year
+
+
 ## Authors
 
-### Nmber of articles per Author
+### Number of articles per Author
 
 ```
 MATCH (a:Author)<-[r:AUTHORED_BY]-() RETURN id(a) as author_id, a.full_name AS author_name, COUNT(r) AS n_articles_authored ORDER BY n_articles_authored DESC
@@ -41,7 +60,7 @@ MATCH (i:Institute)<-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-(:Affiliatio
 MATCH (i:Institute)<-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-(:Affiliation)<-[:AFFILIATED_WITH]-(u:Author) return i.grid as institute_id, i.name as institute_name, count(u) as n_affiliated_authors ORDER BY n_affiliated_authors DESC
 ```
 
-### Return articles associated with a specific institute
+### Articles associated with a given institute
 
 ```
 MATCH (i:Institute)<-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-(:Affiliation)<-[:AFFILIATED_WITH]-(:Author)<-[:AUTHORED_BY]-(a:Article) WHERE i.grid="{INSTITITE_GRID}" RETURN distinct a.article_id, a.doi, a.title, date(a.pub_date) AS pub_date ORDER BY pub_date DESC
@@ -54,13 +73,16 @@ Where:
 
 # Country
 
-### Number of articles per country
+### Number of articles per country (where all affiliations are associated with that same country)
 
 ```
 MATCH (a:Article)-[:AUTHORED_BY]->(u:Author)-[:AFFILIATED_WITH]->(f:Affiliation)-[:ASSOCIATED_WITH]-(c:Country) RETURN c.code AS country_code, c.name AS country_name, COUNT(a) AS articles_produced ORDER BY articles_produced DESC
 ```
 
-### Return the articles produced within a specific country
+### Articles from two or more countries.
+
+
+### Articles associated ONLY with a specific country
 
 ```
 MATCH (a:Article)-[:AUTHORED_BY]->(u:Author)-[:AFFILIATED_WITH]->(f:Affiliation)-[:ASSOCIATED_WITH]-(c:Country) WHERE c.code={COUNTRY_CODE} RETURN  a.article_id AS article_id, a.doi AS doi, a.title AS title, date(a.pub_date) AS pub_date ORDER BY pub_date DESC
@@ -72,6 +94,8 @@ Where:
 Notes:
 * Articles are returned in reverse chronological order.
 
+### Articles from authors in two or more countries
+
 
 
 ## Very basic figures describing the whole collection
@@ -79,11 +103,25 @@ Notes:
 * Total Number of papers
 * Total Number of authors
 * Total number of affiliations
-* Total Number of affiliations linked to a City
-* Total number fo affiliations linked to a country
+* Total Number of affiliations linked to an institute
+* Total number of affiliations linked to a country
 
 ```
-match (a:Article) with count(a) as n_articles match (u:Author) with n_articles, count(u) as n_authors with n_articles, n_authors match (f:Affiliation) with n_articles, n_authors, count(f) as n_affiliations return n_articles, n_authors, n_affiliations
+MATCH (a:Article) 
+      WITH COUNT(a) AS n_articles
+           MATCH (u:Author) 
+	         WITH n_articles, COUNT(u) AS n_authors
+		      MATCH (f:Affiliation) 
+			        WITH n_articles, n_authors, COUNT(f) AS n_affiliations
+			         MATCH (:Affiliation)-[r:ASSOCIATED_WITH{rel_label:"FROM_COUNTRY"}]->()
+				       WITH n_articles, n_authors, n_affiliations, COUNT(r) AS n_affiliations_asc_to_country
+				            MATCH (:Affiliation)-[r:ASSOCIATED_WITH{rel_label:"FROM_INSTITUTE"}]->()
+					          return n_articles, n_authors, n_affiliations, n_affiliations_asc_to_country, COUNT(r) as n_affiliations_asc_to_institute
 ```
 
+### Affiliations to institute per year
+```
+MATCH (a:Article)-[:AUTHORED_BY]->(:Author)-[:AFFILIATED_WITH]->(:Affiliation)-[r:ASSOCIATED_WITH{rel_label:"FROM_INSTITUTE"}]->()
+					          return COUNT(r) as n_affiliations_asc_to_institute, date(a.pub_date).year as year order by year desc
+```
 
