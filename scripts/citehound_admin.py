@@ -89,6 +89,7 @@ import citehound.models.pubmed
 import citehound.models.grid
 import citehound.utils
 from neomodel import install_all_labels, remove_all_labels
+import neomodel
 
 import requests
 import datetime
@@ -447,7 +448,11 @@ def ls():
     List all available queries
     """
     # Get the standard queries map
-    q_map = neoads.AbstractMap.inflate(neomodel.db.cypher_query("MATCH (a:AbstractMap{name:'') return a", resolve_objects=True))[0][0][0]
+    q_map = neomodel.db.cypher_query("MATCH (a:AbstractMap{name:'STD_QUERIES'}) return a", resolve_objects=True)[0][0][0]
+    click.echo("Query, Description")
+    for a_key in q_map.keys_set[0].elements.all():
+        click.echo(f"{a_key.value[0].value},{q_map[a_key.value[0]][neoads.CompositeString('description')].value}")
+    
 
 
 @query.command()
@@ -494,16 +499,6 @@ def run():
     Select and run a specific predefined query on the database, possibly including parameters
     """
     pass
-
-@query.command()
-def ls():
-    """
-    List all pre-dfeined queries.
-    """
-    pass
-
-
-
 
 
 if __name__ == "__main__":
