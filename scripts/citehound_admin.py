@@ -98,6 +98,8 @@ import time
 
 import neoads
 
+import pandas
+
 
 @click.group()
 def citehound_admin():
@@ -443,15 +445,24 @@ def query():
     pass
 
 @query.command()
-def ls():
+@click.option("--verbose", "-v", is_flag=True, help="Includes actual queries in the listing")
+def ls(verbose):
     """
     List all available queries
     """
     # Get the standard queries map
-    q_map = neomodel.db.cypher_query("MATCH (a:AbstractMap{name:'STD_QUERIES'}) return a", resolve_objects=True)[0][0][0]
-    click.echo("Query, Description")
+    try:
+        q_map = neoads.AbstractMap.nodes.get(name="STD_QUERIES")
+    except neoads.AbstractMap.DoesNotExist as e:
+        click.echo("Standard queries have not been installed in this database yet.\n")
+        sys.exit(-1)
+    click.echo("QueryName, Description")
     for a_key in q_map.keys_set[0].elements.all():
-        click.echo(f"{a_key.value[0].value},{q_map[a_key.value[0]][neoads.CompositeString('description')].value}")
+        items_to_output=[a_key.value[0].value,
+                        q_map[a_key.value[0]][neoads.CompositeString('description')].value,]
+        if verbose:
+            items_to_output.append(q_map[a_key.value[0]][neoads.CompositeString('query')].value)
+        click.echo(",".join(items_to_output))
     
 
 
@@ -476,30 +487,65 @@ def init():
             ]
 
     # Check if STD_QUERIES is already defined
+    try:
+        the_map = neoads.AbstractMap.nodes(name="STD_QUERIES")
+    except neoads.AbstractMap.DoesNotExist as e:
+        # If not then initialise it
+        the_map = neoads.AbstractMap(name="STD_QUERIES").save()
+        query_key = neoads.CompositeString("query").save()
+        desc_key = neoads.CompositeString("description").save()
+        # Add items
+        for a_query_name, a_query_value, a_query_description in queries:
+            q_name_ob = neoads.CompositeString(a_query_name).save()
+            q_value_ob = neoads.CompositeArrayObjectDataFrame(a_query_value).save()
+            q_desc_ob = neoads.CompositeString(a_query_description).save()
+            # The inner map has to be populated first
+            q_new_map = neoads.AbstractMap().save()
+            q_new_map[query_key] = q_value_ob
+            q_new_map[desc_key] = q_desc_ob
+            # The map can now be attached to the outer map
+            the_map[q_name_ob] = q_new_map
+        sys.exit(0)
 
-    # If not then initialise it
-    the_map = neoads.AbstractMap(name="STD_QUERIES").save()
-    query_key = neoads.CompositeString("query").save()
-    desc_key = neoads.CompositeString("description").save()
-    # Add items
-    for a_query_name, a_query_value, a_query_description in queries:
-        q_name_ob = neoads.CompositeString(a_query_name).save()
-        q_value_ob = neoads.CompositeArrayObjectDataFrame(a_query_value).save()
-        q_desc_ob = neoads.CompositeString(a_query_description).save()
-        # The inner map has to be populated first
-        q_new_map = neoads.AbstractMap().save()
-        q_new_map[query_key] = q_value_ob
-        q_new_map[desc_key] = q_desc_ob
-        # The map can now be attached to the outer map
-        the_map[q_name_ob] = q_new_map
+    click.echo("Standard queries have already been installed in this database.\n")
+    
             
 @query.command()
-def run():
+@click.argument("query-name", type=str)
+@click.option("--parameter", "-p", multiple=True)
+def run(query_name, parameter):
     """
     Select and run a specific predefined query on the database, possibly including parameters
     """
-    pass
+    # Get the standard queries map
+    try:
+        q_map = neoads.AbstractMap.nodes.get(name="STD_QUERIES")
+    except neoads.AbstractMap.DoesNotExist as e:
+        click.echo("Standard queries have not been installed in this database yet.\n")
+        sys.exit(-1)
 
+    # Package parameters
+    params = {}
+    for a_param in parameter:
+        if "=" not in a_param:
+            click.echo(f"Parameters are expected as -p param=param_value. Please revise {a_param} adn try again")
+            sys.exit(-1)
+        key, value = a_param.split("=")
+        if not (value.startswith("'") and value.endswith("'")):
+            try:
+                value = int(value)
+            except ValueError:
+                click.echo(f"Parameters without single quotes are assumed to be nummeric, please revise {a_param} and try again")
+                sys.exit(-1)
+        params[key] = value
+
+    # Check if the query exists.
+    if neoads.CompositeString(query_name.upper()) in q_map.keys_set[0]:
+        # Run the query itself and return results
+        z = q_map[neoads.CompositeString(query_name.upper())][neoads.CompositeString("query")].execute(params=params)
+        z.to_csv(sys.stdout, index=False)
+    else:
+        click.echo(f"Query {query_name.upper()} does not exist. Please run 'query ls' to see all available queries in this database")
 
 if __name__ == "__main__":
     citehound_admin()
