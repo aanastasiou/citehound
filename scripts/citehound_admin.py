@@ -479,7 +479,7 @@ def init(list_file, re_init):
 
     # Check the form of the list name
     if re.compile("^[A-Z_][A-Z_]*$").match(list_name) is None:
-        click.echo(f"The file name should be composed of capital letters and _ character, received {list_name}")
+        click.echo(f"The file name should be composed of capital letters and the '_' character, received {list_name}")
         sys.exit(-1)
 
     # Check that the CSV at least has three pre-defined columns
@@ -491,28 +491,34 @@ def init(list_file, re_init):
            click.echo(f"The CSV file must have three columns named QueryName, Description, Cypher.")
            sys.exit(-1)
 
-    # Check if STD_QUERIES is already defined
+    # Check if the list is already defined
     try:
-        the_map = neoads.AbstractMap.nodes.get(name="STD_QUERIES")
+        the_map = neoads.AbstractMap.nodes.get(name=list_name)
     except neoads.AbstractMap.DoesNotExist as e:
-        # If not then initialise it
-        the_map = neoads.AbstractMap(name="STD_QUERIES").save()
-        query_key = neoads.CompositeString("query").save()
-        desc_key = neoads.CompositeString("description").save()
-        # Add items
-        for a_query_name, a_query_value, a_query_description in queries:
-            q_name_ob = neoads.CompositeString(a_query_name).save()
-            q_value_ob = neoads.CompositeArrayObjectDataFrame(a_query_value).save()
-            q_desc_ob = neoads.CompositeString(a_query_description).save()
-            # The inner map has to be populated first
-            q_new_map = neoads.AbstractMap().save()
-            q_new_map[query_key] = q_value_ob
-            q_new_map[desc_key] = q_desc_ob
-            # The map can now be attached to the outer map
-            the_map[q_name_ob] = q_new_map
-        sys.exit(0)
+        # If the list does not exist then create it
+        the_map = neoads.AbstractMap(name=list_name).save()
 
-    click.echo("Standard queries have already been installed in this database.\n")
+    # If the list exists, check if it should be re-initialised
+    if re_init:
+        the_map.destroy()
+
+    # query_key = neoads.CompositeString("query").save()
+    # desc_key = neoads.CompositeString("description").save()
+    # # Add items
+    # for a_query_name, a_query_value, a_query_description in csv_data.iter_rows():
+    #     # Create the entries for each 
+    #     q_name_ob = neoads.CompositeString(a_query_name).save()
+    #     q_value_ob = neoads.CompositeArrayObjectDataFrame(a_query_value).save()
+    #     q_desc_ob = neoads.CompositeString(a_query_description).save()
+    #     # The inner map has to be populated first
+    #     q_new_map = neoads.AbstractMap().save()
+    #     q_new_map[query_key] = q_value_ob
+    #     q_new_map[desc_key] = q_desc_ob
+    #     # The map can now be attached to the outer map
+    #     the_map[q_name_ob] = q_new_map
+    # sys.exit(0)
+
+    # click.echo("Standard queries have already been installed in this database.\n")
     
             
 @query.command()
