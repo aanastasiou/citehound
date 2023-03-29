@@ -79,6 +79,7 @@ List and use data loaders
 
 import os
 import sys
+import re
 import click
 import json
 import networkx
@@ -467,44 +468,28 @@ def ls(verbose):
 
 
 @query.command()
-def init():
+@click.option("--list-file", "-f", 
+              type=click.Path(exists=True, file_okay=True, dir_okay=False))
+@click.option("--re-init", "-r", is_flag=True)
+def init(list_file, re_init):
     """
     Initialises the standard queries in the database
-    """
-    # Add a set of pre-defined queries
-    queries=[("N_ARTICLES_PER_YEAR",
-              "MATCH (a:Article) RETURN date(a.pub_date).year AS year, COUNT(a) AS n_articles ORDER BY year DESC",
-              "Number of articles per year across the whole dataset"),
-             ("ARTICLES_OF_YEAR",
-              "MATCH (a:Article) WHERE date(a.pub_date).year=$year RETURN a.article_id AS article_id, a.doi AS doi, a.title AS title, date(a.pub_date) AS pub_date ORDER BY pub_date DESC",
-              "List of articles added to the dataset on the specific year. Must specify the 'year' parameter"),
-             ("N_ARTICLES_PER_AUTHOR",
-              "MATCH (a:Author)<-[r:AUTHORED_BY]-() RETURN id(a) AS author_id, a.full_name AS author_name, COUNT(r) AS n_articles_authored ORDER BY n_articles_authored DESC",
-              "Number of articles per author"),
-             ("ARTICLES_OF_AUTHOR",
-              "MATCH (a:Article)-[:AUTHORED_BY]->(u:Author) WHERE id(u)=$author_id RETURN a.article_id AS article_id, a.doi AS doi, a.title AS title, date(a.pub_date) AS pub_date ORDER BY pub_date DESC",
-              "List of articles attributed to a specific author. Must specify 'author_id'. See query N_ARTICLES_PER_AUTHOR query to recover a given 'author_id'"),
-             ("N_AFFILIATIONS_PER_AUTHOR",
-              "MATCH (a:Author)-[r:AFFILIATED_WITH]->(b:Affiliation) RETURN id(a) AS author_id, a.full_name AS full_name, count(b) AS affiliation_count ORDER BY cnt DESC",
-              "Number of affiliations per author"),
-             ("N_ARTICLES_PER_INSTITUTE",
-              "MATCH (i:Institute)<-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-(:Affiliation)<-[:AFFILIATED_WITH]-(:Author)<-[:AUTHORED_BY]-(a:Article) RETURN i.grid AS institute_id, i.name AS institute_name, COUNT(a) AS n_articles_produced ORDER BY n_articles_produced DESC",
-              "Number of articles per institute. Articles must have been linked, see 'db link'"),
-             ("N_AUTHORS_PER_INSTITUTE",
-              "MATCH (i:Institute)<-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-(:Affiliation)<-[:AFFILIATED_WITH]-(u:Author) RETURN i.grid AS institute_id, i.name AS institute_name, count(u) AS n_affiliated_authors ORDER BY n_affiliated_authors DESC",
-              "Number of authors affiliated with their respective institutes"),
-             ("ARTICLES_OF_INSTITUTE",
-              "MATCH (i:Institute)<-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-(:Affiliation)<-[:AFFILIATED_WITH]-(:Author)<-[:AUTHORED_BY]-(a:Article) WHERE i.grid=$institute_grid RETURN DISTINCT a.article_id AS article_id, a.doi AS doi, a.title AS title, date(a.pub_date) AS pub_date ORDER BY pub_date DESC",
-              "Articles per institute. The linking operation must have run first, see 'db link'. Expects parameter 'institute_grid', see N_ARTICLES_PER_INSTITUTE on how to recover one"),
-             ("N_ARTICLES_PER_COUNTRY",
-              "MATCH (a:Article)-[:AUTHORED_BY]->(u:Author)-[:AFFILIATED_WITH]->(f:Affiliation)-[:ASSOCIATED_WITH]-(c:Country) RETURN c.code AS country_code, c.name AS country_name, COUNT(a) AS articles_produced ORDER BY articles_produced DESC",
-              "Number of articles associated with a specific country"),
-             ("ARTICLES_OF_COUNTRY",
-              "MATCH (a:Article)-[:AUTHORED_BY]->(u:Author)-[:AFFILIATED_WITH]->(f:Affiliation)-[:ASSOCIATED_WITH]-(c:Country) WHERE c.code=$country_code RETURN  a.article_id AS article_id, a.doi AS doi, a.title AS title, date(a.pub_date) AS pub_date ORDER BY pub_date DESC",
-              "Articles associated with a specific country. Articles must have been linked, see 'db link'. Expects parameter 'country_code')"),
-              ("LINK_DIAGNOSTIC",
-               "MATCH (a:Article) WITH COUNT(a) AS n_articles MATCH (u:Author) WITH n_articles, COUNT(u) AS n_authors MATCH (f:Affiliation) WITH n_articles, n_authors, COUNT(f) AS n_affiliations MATCH (:Affiliation)-[r:ASSOCIATED_WITH{rel_label:'FROM_COUNTRY'}]->() WITH n_articles, n_authors, n_affiliations, COUNT(r) AS n_affiliations_asc_to_country MATCH (:Affiliation)-[r:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]->() RETURN n_articles, n_authors, n_affiliations, n_affiliations_asc_to_country, COUNT(r) as n_affiliations_asc_to_institute",
-               "Returns total numbers of papers, authors, affiliations, affiliations linked to an institute, affiliations linked to a country.")]
+    """    
+    list_name = os.path.basename(list_file).upper()
+
+    # Check the form of the list name
+    if re.compile("^[A-Z_][A-Z_]*$").match(list_name) is None:
+        click.echo(f"The file name should be composed of capital letters and _ character, received {list_name}")
+        sys.exit(-1)
+
+    # Check that the CSV at least has three pre-defined columns
+    csv_data = pandas.read_csv(list_file, index_col=None)
+    if csv_data.columns != 3 or \
+       "QueryName" not in csv_data.columns and \
+       "Description" not in csv_data.columns and \
+       "Cypher" not in csv_data.columns:
+           click.echo(f"The CSV file must have three columns named QueryName, Description, Cypher.")
+           sys.exit(-1)
 
     # Check if STD_QUERIES is already defined
     try:
