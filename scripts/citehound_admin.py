@@ -99,8 +99,7 @@ import time
 
 import neoads
 
-import pandas
-
+import yaml
 
 @click.group()
 def citehound_admin():
@@ -468,14 +467,14 @@ def ls(verbose):
 
 
 @query.command()
-@click.option("--list-file", "-f", 
-              type=click.Path(exists=True, file_okay=True, dir_okay=False))
+@click.argument("list-file", 
+                type=click.Path(exists=True, file_okay=True, dir_okay=False))
 @click.option("--re-init", "-r", is_flag=True)
 def init(list_file, re_init):
     """
     Initialises the standard queries in the database
     """    
-    list_name = os.path.basename(list_file).upper()
+    list_name = os.path.splitext(list_file)[0].upper()
 
     # Check the form of the list name
     if re.compile("^[A-Z_][A-Z_]*$").match(list_name) is None:
@@ -483,44 +482,55 @@ def init(list_file, re_init):
         sys.exit(-1)
 
     # Check that the CSV at least has three pre-defined columns
-    csv_data = pandas.read_csv(list_file, index_col=None)
-    if csv_data.columns != 3 or \
-       "QueryName" not in csv_data.columns and \
-       "Description" not in csv_data.columns and \
-       "Cypher" not in csv_data.columns:
-           click.echo(f"The CSV file must have three columns named QueryName, Description, Cypher.")
+    with open(list_file, "r") as fd:
+        query_data = yaml.safe_load(fd)
+
+    defined_attributes = set()
+    for a_qry_name, a_qry_dat in query_data.items():
+        defined_attributes |= set(a_qry_dat.keys())
+
+    if len(defined_attributes) !=2 and not ("description" in defined_attributes or "cypher" in defined_attributes):
+           click.echo(f"The yaml file must have three columns named QueryName, Description, Cypher.")
            sys.exit(-1)
 
     # Check if the list is already defined
     try:
         the_map = neoads.AbstractMap.nodes.get(name=list_name)
+        # If the list exists then check if it should be re-initialised
+        if re_init:
+            the_map.destroy()
+            the_map = neoads.AbstractMap(name=list_name).save()
+        else:
+            click.echo(f"List {list_name} already exists.")
+            sys.exit(-1)
     except neoads.AbstractMap.DoesNotExist as e:
-        # If the list does not exist then create it
+        # If the list does not exist and it was asked to be recreated then this should
+        # cause an error.
+        if re_init:
+            click.echo(f"List {list_name} cannot be re-initialised because it does not exist")
+            sys.exit(-1)
+        # Otherwise go ahead and create it
         the_map = neoads.AbstractMap(name=list_name).save()
 
-    # If the list exists, check if it should be re-initialised
-    if re_init:
-        the_map.destroy()
+    # At this point, the_map has been initialised in one or another way.
+    # Populate it
 
-    # query_key = neoads.CompositeString("query").save()
-    # desc_key = neoads.CompositeString("description").save()
-    # # Add items
-    # for a_query_name, a_query_value, a_query_description in csv_data.iter_rows():
-    #     # Create the entries for each 
-    #     q_name_ob = neoads.CompositeString(a_query_name).save()
-    #     q_value_ob = neoads.CompositeArrayObjectDataFrame(a_query_value).save()
-    #     q_desc_ob = neoads.CompositeString(a_query_description).save()
-    #     # The inner map has to be populated first
-    #     q_new_map = neoads.AbstractMap().save()
-    #     q_new_map[query_key] = q_value_ob
-    #     q_new_map[desc_key] = q_desc_ob
-    #     # The map can now be attached to the outer map
-    #     the_map[q_name_ob] = q_new_map
-    # sys.exit(0)
+    query_key = neoads.CompositeString("query").save()
+    desc_key = neoads.CompositeString("description").save()
+    # Add items
+    for a_query_name, query_dta in query_data.items():
+        # Create the entries for each 
+        q_name_ob = neoads.CompositeString(a_query_name).save()
+        q_value_ob = neoads.CompositeArrayObjectDataFrame(query_dta["cypher"]).save()
+        q_desc_ob = neoads.CompositeString(query_dta["description"]).save()
+        # The inner map has to be populated first
+        q_new_map = neoads.AbstractMap().save()
+        q_new_map[query_key] = q_value_ob
+        q_new_map[desc_key] = q_desc_ob
+        # The map can now be attached to the outer map
+        the_map[q_name_ob] = q_new_map
 
-    # click.echo("Standard queries have already been installed in this database.\n")
-    
-            
+
 @query.command()
 @click.argument("query-name", type=str)
 @click.option("--parameter", "-p", multiple=True)

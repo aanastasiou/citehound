@@ -16,6 +16,6 @@ setup(name='citehound',
       packages=["citehound", ],
       include_package_data=True,
       zip_safe=True,
-      install_requires=["pygraphviz", "networkx", "neomodel", "lxml", "click", "matplotlib", ],
+      install_requires=["pygraphviz", "networkx", "neomodel", "lxml", "click", "matplotlib", "pyyaml"],
       # entry_points=""
       )
