@@ -446,25 +446,36 @@ def query():
 
 @query.command()
 @click.option("--verbose", "-v", is_flag=True, help="Includes actual queries in the listing")
-def ls(verbose):
+@click.option("--list-name", "-n", type=str, default="STD_QUERIES", help="List the contents of a particular list, default is STD_QUERIES if it has been installed)")
+def ls(verbose, list_name):
     """
     List all available queries
     """
+    IM = neoads.MemoryManager()
+    # TODO: HIGH, Perform a very typical validation for [A-Z_][A-Z_]* pattern on list_name
+    list_name = list_name.upper()
+
     # Get the standard queries map
     try:
-        q_map = neoads.AbstractMap.nodes.get(name="STD_QUERIES")
-    except neoads.AbstractMap.DoesNotExist as e:
-        click.echo("Standard queries have not been installed in this database yet.\n")
+        q_map = IM.get_object(list_name)
+    except neoads.exception.ObjectNotFound as e:
+        click.echo(f"{list_name} has not been installed in this database yet.\n")
         sys.exit(-1)
-    click.echo("QueryName, Description")
-    for a_key in q_map.keys_set[0].elements.all():
-        items_to_output=[a_key.value[0].value,
-                        q_map[a_key.value[0]][neoads.CompositeString('description')].value,]
-        if verbose:
-            items_to_output.append(q_map[a_key.value[0]][neoads.CompositeString('query')].value)
-        click.echo(",".join(items_to_output))
-    
 
+    # Get all contents to memory
+    list_contents={}
+    for a_key in q_map.keys_set[0].elements.all():
+        list_contents[a_key.value[0].value] = {"description":q_map[a_key.value[0]][neoads.CompositeString('description')].value,
+                                               "cypher":q_map[a_key.value[0]][neoads.CompositeString('query')].value}
+
+    # Decide what and how to "print"
+    if verbose:
+        yaml.dump(list_contents, sys.stdout)
+    else:
+        click.echo("QueryName, Description")
+        for a_key, a_val in list_contents.items():
+            click.echo(f"{a_key}, {a_val['description']}")
+        
 
 @query.command()
 @click.argument("list-file", 
@@ -493,9 +504,12 @@ def init(list_file, re_init):
            click.echo(f"The yaml file must have three columns named QueryName, Description, Cypher.")
            sys.exit(-1)
 
+    # Let's interact with the database
+    IM = neoads.MemoryManager()
+
     # Check if the list is already defined
     try:
-        the_map = neoads.AbstractMap.nodes.get(name=list_name)
+        the_map = IM.get_object(list_name)
         # If the list exists then check if it should be re-initialised
         if re_init:
             the_map.destroy()
@@ -503,7 +517,7 @@ def init(list_file, re_init):
         else:
             click.echo(f"List {list_name} already exists.")
             sys.exit(-1)
-    except neoads.AbstractMap.DoesNotExist as e:
+    except neoads.exception.ObjectNotFound as e:
         # If the list does not exist and it was asked to be recreated then this should
         # cause an error.
         if re_init:
@@ -512,6 +526,8 @@ def init(list_file, re_init):
         # Otherwise go ahead and create it
         the_map = neoads.AbstractMap(name=list_name).save()
 
+    # Do a garbage collection step here
+    IM.garbage_collect()
     # At this point, the_map has been initialised in one or another way.
     # Populate it
 
@@ -533,16 +549,22 @@ def init(list_file, re_init):
 
 @query.command()
 @click.argument("query-name", type=str)
+@click.option("--list-name", "-n", type=str, default="STD_QUERIES", help="Choose the query from a particular list, default is STD_QUERIES if it has been installed")
 @click.option("--parameter", "-p", multiple=True)
-def run(query_name, parameter):
+def run(query_name, list_name, parameter):
     """
     Select and run a specific predefined query on the database, possibly including parameters
     """
-    # Get the standard queries map
+
+    # TODO: HIGH, Add validation to list_name here for [A-Z_][A-Z_]*
+    list_name = list_name.upper()
+    IM = neoads.MemoryManager()
+
+    # Get the map
     try:
-        q_map = neoads.AbstractMap.nodes.get(name="STD_QUERIES")
-    except neoads.AbstractMap.DoesNotExist as e:
-        click.echo("Standard queries have not been installed in this database yet.\n")
+        q_map = IM.get_object(list_name)
+    except neoads.exception.ObjectNotFound as e:
+        click.echo(f"{list_name} has not been installed in this database yet.\n")
         sys.exit(-1)
 
     # Package parameters
