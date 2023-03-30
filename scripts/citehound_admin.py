@@ -89,6 +89,7 @@ import citehound.models.core
 import citehound.models.pubmed
 import citehound.models.grid
 import citehound.utils
+from citehound import std_queries
 from neomodel import install_all_labels, remove_all_labels
 import neomodel
 
@@ -478,31 +479,35 @@ def ls(verbose, list_name):
         
 
 @query.command()
-@click.argument("list-file", 
-                type=click.Path(exists=True, file_okay=True, dir_okay=False))
+@click.option("--list-file", "-f", type=click.Path(exists=True, file_okay=True, dir_okay=False))
 @click.option("--re-init", "-r", is_flag=True)
 def init(list_file, re_init):
     """
     Initialises the standard queries in the database
-    """    
-    list_name = os.path.splitext(list_file)[0].upper()
+    """
+    if not list_file:
+        list_name = "STD_QUERIES"
+        query_data = std_queries.STD_QUERIES
 
-    # Check the form of the list name
-    if re.compile("^[A-Z_][A-Z_]*$").match(list_name) is None:
-        click.echo(f"The file name should be composed of capital letters and the '_' character, received {list_name}")
-        sys.exit(-1)
+    else:
+        list_name = os.path.splitext(list_file)[0].upper()
 
-    # Check that the CSV at least has three pre-defined columns
-    with open(list_file, "r") as fd:
-        query_data = yaml.safe_load(fd)
+        # Check the form of the list name
+        if re.compile("^[A-Z_][A-Z_]*$").match(list_name) is None:
+            click.echo(f"The file name should be composed of capital letters and the '_' character, received {list_name}")
+            sys.exit(-1)
 
-    defined_attributes = set()
-    for a_qry_name, a_qry_dat in query_data.items():
-        defined_attributes |= set(a_qry_dat.keys())
+        # Check that the CSV at least has three pre-defined columns
+        with open(list_file, "r") as fd:
+            query_data = yaml.safe_load(fd)
 
-    if len(defined_attributes) !=2 and not ("description" in defined_attributes or "cypher" in defined_attributes):
-           click.echo(f"The yaml file must have three columns named QueryName, Description, Cypher.")
-           sys.exit(-1)
+        defined_attributes = set()
+        for a_qry_name, a_qry_dat in query_data.items():
+            defined_attributes |= set(a_qry_dat.keys())
+
+        if len(defined_attributes) !=2 and not ("description" in defined_attributes or "cypher" in defined_attributes):
+               click.echo(f"The yaml file must have three columns named QueryName, Description, Cypher.")
+               sys.exit(-1)
 
     # Let's interact with the database
     IM = neoads.MemoryManager()
