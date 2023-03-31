@@ -75,6 +75,24 @@ List and use data loaders
       data  Selects an importer and imports a data file into Citehound
       ls    Lists the available data importers.
 
+List, update query collections
+------------------------------
+
+::
+
+    Usage: citehound_admin.py query [OPTIONS] COMMAND [ARGS]...
+    
+      Manage query collections and run standardised queries.
+    
+    Options:
+      --help  Show this message and exit.
+    
+    Commands:
+      init  Initialises a query collection in the database
+      ls    List all available queries within a collection
+      rm    Remove a query collection from the database.
+      run   Select and run a query from a collection.
+
 :author: Athanasios Anastasiou
 :date: Mar 2023
 """
@@ -443,26 +461,26 @@ def pubmedxml(pmid_file):
 @citehound_admin.group()
 def query():
     """
-    Standard query operations over the database.
+    Manage query collections and run standardised queries.
     """
     pass
 
 @query.command()
-@click.option("--verbose", "-v", is_flag=True, help="Includes actual queries in the listing")
-@click.option("--list-name", "-n", type=str, default="STD_QUERIES", help="List the contents of a particular list, default is STD_QUERIES if it has been installed)")
-def ls(verbose, list_name):
+@click.option("--verbose", "-v", is_flag=True, help="Includes actual (cypher) queries in the listing")
+@click.option("--collection-name", "-n", type=str, default="STD_QUERIES", help="List the contents of a particular query collection, default is STD_QUERIES if it has been installed")
+def ls(verbose, collection_name):
     """
-    List all available queries
+    List all available queries within a collection
     """
     IM = neoads.MemoryManager()
-    # TODO: HIGH, Perform a very typical validation for [A-Z_][A-Z_]* pattern on list_name
-    list_name = list_name.upper()
+    # TODO: HIGH, Perform a very typical validation for [A-Z_][A-Z_]* pattern on collection_name
+    collection_name = collection_name.upper()
 
     # Get the standard queries map
     try:
-        q_map = IM.get_object(list_name)
+        q_map = IM.get_object(collection_name)
     except neoads.exception.ObjectNotFound as e:
-        click.echo(f"{list_name} has not been installed in this database yet.\n")
+        click.echo(f"{collection_name} has not been installed in this database yet.\n")
         sys.exit(-1)
 
     # Get all contents to memory
@@ -481,26 +499,28 @@ def ls(verbose, list_name):
         
 
 @query.command()
-@click.option("--list-file", "-f", type=click.Path(exists=True, file_okay=True, dir_okay=False))
+@click.option("--collection-file", "-f", type=click.Path(exists=True, file_okay=True, dir_okay=False))
 @click.option("--re-init", "-r", is_flag=True)
-def init(list_file, re_init):
+def init(collection_file, re_init):
     """
-    Initialises the standard queries in the database
+    Initialises a query collection in the database
+
+    If a --collection_file is not provided, the STD_QUERIES is created.
     """
-    if not list_file:
-        list_name = "STD_QUERIES"
+    if not collection_file:
+        collection_name = "STD_QUERIES"
         query_data = std_queries.STD_QUERIES
 
     else:
-        list_name = os.path.splitext(list_file)[0].upper()
+        collection_name = os.path.splitext(collection_file)[0].upper()
 
         # Check the form of the list name
-        if re.compile("^[A-Z_][A-Z_]*$").match(list_name) is None:
-            click.echo(f"The file name should be composed of capital letters and the '_' character, received {list_name}")
+        if re.compile("^[A-Z_][A-Z_]*$").match(collection_name) is None:
+            click.echo(f"The file name should be composed of capital letters and the '_' character, received {collection_name}")
             sys.exit(-1)
 
         # Check that the CSV at least has three pre-defined columns
-        with open(list_file, "r") as fd:
+        with open(collection_file, "r") as fd:
             query_data = yaml.safe_load(fd)
 
         defined_attributes = set()
@@ -516,22 +536,22 @@ def init(list_file, re_init):
 
     # Check if the list is already defined
     try:
-        the_map = IM.get_object(list_name)
+        the_map = IM.get_object(collection_name)
         # If the list exists then check if it should be re-initialised
         if re_init:
             the_map.destroy()
-            the_map = neoads.AbstractMap(name=list_name).save()
+            the_map = neoads.AbstractMap(name=collection_name).save()
         else:
-            click.echo(f"List {list_name} already exists.")
+            click.echo(f"List {collection_name} already exists.")
             sys.exit(-1)
     except neoads.exception.ObjectNotFound as e:
         # If the list does not exist and it was asked to be recreated then this should
         # cause an error.
         if re_init:
-            click.echo(f"List {list_name} cannot be re-initialised because it does not exist")
+            click.echo(f"List {collection_name} cannot be re-initialised because it does not exist")
             sys.exit(-1)
         # Otherwise go ahead and create it
-        the_map = neoads.AbstractMap(name=list_name).save()
+        the_map = neoads.AbstractMap(name=collection_name).save()
 
     # Do a garbage collection step here
     IM.garbage_collect()
@@ -556,22 +576,22 @@ def init(list_file, re_init):
 
 @query.command()
 @click.argument("query-name", type=str)
-@click.option("--list-name", "-n", type=str, default="STD_QUERIES", help="Choose the query from a particular list, default is STD_QUERIES if it has been installed")
+@click.option("--collection-name", "-n", type=str, default="STD_QUERIES", help="Choose the query from a particular list, default is STD_QUERIES if it has been installed")
 @click.option("--parameter", "-p", multiple=True)
-def run(query_name, list_name, parameter):
+def run(query_name, collection_name, parameter):
     """
-    Select and run a specific predefined query on the database, possibly including parameters
+    Select and run a query from a collection.
     """
 
-    # TODO: HIGH, Add validation to list_name here for [A-Z_][A-Z_]*
-    list_name = list_name.upper()
+    # TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
+    collection_name = collection_name.upper()
     IM = neoads.MemoryManager()
 
-    # Get the map
+    # Get the collection
     try:
-        q_map = IM.get_object(list_name)
+        q_map = IM.get_object(collection_name)
     except neoads.exception.ObjectNotFound as e:
-        click.echo(f"{list_name} has not been installed in this database yet.\n")
+        click.echo(f"{collection_name} has not been installed in this database yet.\n")
         sys.exit(-1)
 
     # Package parameters
@@ -595,34 +615,34 @@ def run(query_name, list_name, parameter):
         z = q_map[neoads.CompositeString(query_name.upper())][neoads.CompositeString("query")].execute(params=params)
         z.to_csv(sys.stdout, index=False)
     else:
-        click.echo(f"Query {query_name.upper()} does not exist. Please run 'query ls' to see all available queries in this database")
+        click.echo(f"Query {query_name.upper()} does not exist. Please run 'query ls' to see all available queries.")
 
 
 @query.command()
-@click.argument("list-name", type=str,)
+@click.argument("collection-name", type=str,)
 @click.option("--confirm", is_flag=True, help="Confirms that the user indeed wishes to delete this list")
-def rm(list_name, confirm):
+def rm(collection_name, confirm):
     """
     Remove a query collection from the database.
     """
 
-    # TODO: HIGH, Add validation to list_name here for [A-Z_][A-Z_]*
-    list_name = list_name.upper()
+    # TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
+    collection_name = collection_name.upper()
     IM = neoads.MemoryManager()
 
-    # Check if the list exists
+    # Check if the collection exists
     try:
-        q_map = IM.get_object(list_name)
+        q_map = IM.get_object(collection_name)
     except neoads.exception.ObjectNotFound as e:
-        click.echo(f"{list_name} has not been installed in this database yet.\n")
+        click.echo(f"{collection_name} has not been installed in this database yet.\n")
         sys.exit(-1)
 
-    # If the list exists, then delete it if the action is confirmed.
+    # If the collection exists, then delete it (if the action is confirmed).
     if confirm:
         q_map.destroy()
         IM.garbage_collect()
     else:
-        click.echo(f"{list_name} exists. If you wish to delete it, please re-run the exact same rm command, appending '--confirm'")
+        click.echo(f"{collection_name} exists and can be deleted. If you wish to delete it, please re-run the exact same rm command, appending '--confirm'")
 
 
 if __name__ == "__main__":
