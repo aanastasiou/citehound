@@ -6,6 +6,7 @@ Administrator
 
 ::
 
+
     Usage: citehound_admin.py [OPTIONS] COMMAND [ARGS]...
     
       Citehound -- Administrator.
@@ -17,6 +18,7 @@ Administrator
       db      Database operations
       fetch   Download data dependencies
       ingest  Data import operations
+      query   Standard query operations over the database.
 
 
 Database operations
@@ -594,6 +596,34 @@ def run(query_name, list_name, parameter):
         z.to_csv(sys.stdout, index=False)
     else:
         click.echo(f"Query {query_name.upper()} does not exist. Please run 'query ls' to see all available queries in this database")
+
+
+@query.command()
+@click.argument("list-name", type=str,)
+@click.option("--confirm", is_flag=True, help="Confirms that the user indeed wishes to delete this list")
+def rm(list_name, confirm):
+    """
+    Remove a query collection from the database.
+    """
+
+    # TODO: HIGH, Add validation to list_name here for [A-Z_][A-Z_]*
+    list_name = list_name.upper()
+    IM = neoads.MemoryManager()
+
+    # Check if the list exists
+    try:
+        q_map = IM.get_object(list_name)
+    except neoads.exception.ObjectNotFound as e:
+        click.echo(f"{list_name} has not been installed in this database yet.\n")
+        sys.exit(-1)
+
+    # If the list exists, then delete it if the action is confirmed.
+    if confirm:
+        q_map.destroy()
+        IM.garbage_collect()
+    else:
+        click.echo(f"{list_name} exists. If you wish to delete it, please re-run the exact same rm command, appending '--confirm'")
+
 
 if __name__ == "__main__":
     citehound_admin()
