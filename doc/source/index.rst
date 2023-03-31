@@ -28,6 +28,7 @@ via its unifying data model.
    motivation
    installation
    operation
+   queries
    examples
    methods
    devnotes
