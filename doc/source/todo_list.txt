@@ -1,6 +1,52 @@
-TODO List as of Wed Mar 1 12:26:32 UTC 2023
-../citehound/__init__.py:26 TODO: HIGH, Document these functions.
-../citehound/__init__.py:84 TODO: MID, This could be parametrised with an abstract class to count specific objects.
-../citehound/__init__.py:227 TODO: LOW, Can this be turned into some kind of map?
-../citehound/__init__.py:255 TODO: HIGH, Turn this error into an exception
-../citehound/batchprocess.py:90 TODO: MEDIUM, Relationships without data would lack a self._rel_data. But establishing it here would require an if on every "apply". So better split this into two classes
+TODO List as of Fri Mar 31 11:05:33 UTC 2023
+../citehound//__init__.py:26 TODO: HIGH, Document these functions.
+../citehound//__init__.py:84 TODO: MID, This could be parametrised with an abstract class to count specific objects.
+../citehound//__init__.py:227 TODO: LOW, Can this be turned into some kind of map?
+../citehound//__init__.py:255 TODO: HIGH, Turn this error into an exception
+../citehound//batchprocess.py:90 TODO: MEDIUM, Relationships without data would lack a self._rel_data. But establishing it here would require an if on every "apply". So better split this into two classes
+TODO List as of Fri Mar 31 11:05:40 UTC 2023
+../citehound/datainput//_datainput_old.py:199 TODO: Medium, needs tests.
+../citehound/datainput//_datainput_old.py:296 TODO: Medium, Needs testing.
+../citehound/datainput//_datainput_old.py:397 TODO: If treenumber_historic_index is not just one for a given code, then this should be an error condition
+../citehound/datainput//_datainput_old.py:409 TODO: LOW, This is a bit of a roundabout way of saving something that was a dictionary as a list only to immediatelly read it back and re-create the dictionary. Revise.
+../citehound/datainput//_datainput_old.py:546 TODO: HIGH, THIS QUERY NEEDS REVISION and to become parametrisable by the user
+../citehound/datainput//_datainput_old.py:583 TODO: MEDIUM, Affiliations might be more than one (?)
+../citehound/datainput//_datainput_old.py:683 TODO: MEDIUM, Need to make sure that obsolete and redirected entries are handled appropriately.
+../citehound/datainput//_datainput_old.py:685 TODO: LOW, Need to remove this extra try, catch which deals with this issue https://github.com/neo4j-contrib/neomodel/issues/303
+../citehound/datainput//_datainput_old.py:718 TODO: LOW, Need to remove this extra try, catch which deals with this issue https://github.com/neo4j-contrib/neomodel/issues/303
+../citehound/datainput//_datainput_old.py:810 TODO: MEDIUM, Need to make sure that obsolete and redirected entries are handled appropriately.
+../citehound/datainput//_datainput_old.py:812 TODO: LOW, Need to remove this extra try, catch which deals with this issue https://github.com/neo4j-contrib/neomodel/issues/303
+../citehound/datainput//_datainput_old.py:857 TODO: LOW, Need to remove this extra try, catch which deals with this issue https://github.com/neo4j-contrib/neomodel/issues/303
+../citehound/datainput//_datainput_old.py:887 TODO: Low, Revise this for any better alternatives
+../citehound/datainput//_datainput_old.py:910 TODO: LOW, Remove this double try once the problems with neomodel are fixed
+../citehound/datainput//_datainput_old.py:921 TODO: HIGH, Remove the exterior list from the interior x["Affiliation"] once the code has been updated
+../citehound/datainput//_datainput_old.py:966 TODO: HIGH, The XML reader can have an internal "skip" step to be moving automatically to the next item if an item does not satisfy an internal criterion as it happens with the pubmed filters here.
+../citehound/datainput//grid.py:84 TODO: MEDIUM, Need to make sure that obsolete and redirected entries are handled appropriately.
+../citehound/datainput//grid.py:86 TODO: LOW, Need to remove this extra try, catch which deals with this issue https://github.com/neo4j-contrib/neomodel/issues/303
+../citehound/datainput//grid.py:119 TODO: LOW, Need to remove this extra try, catch which deals with this issue https://github.com/neo4j-contrib/neomodel/issues/303
+../citehound/datainput//mesh.py:22 TODO: Medium, needs tests.
+../citehound/datainput//mesh.py:119 TODO: Medium, Needs testing.
+../citehound/datainput//mesh.py:220 TODO: If treenumber_historic_index is not just one for a given code, then this should be an error condition
+../citehound/datainput//mesh.py:232 TODO: LOW, This is a bit of a roundabout way of saving something that was a dictionary as a list only to immediatelly read it back and re-create the dictionary. Revise.
+../citehound/datainput//pubmed.py:50 TODO: HIGH, THIS QUERY NEEDS REVISION and to become parametrisable by the user
+../citehound/datainput//pubmed.py:64 TODO: HIGH, Send this to the logging stream
+../citehound/datainput//pubmed.py:88 TODO: MEDIUM, Affiliations might be more than one (?)
+../citehound/datainput//pubmed.py:131 TODO: Low, Revise this for any better alternatives
+../citehound/datainput//pubmed.py:154 TODO: LOW, Remove this double try once the problems with neomodel are fixed
+../citehound/datainput//pubmed.py:173 TODO: HIGH, Remove the exterior list from the interior x["Affiliation"] once the code has been updated
+../citehound/datainput//pubmed.py:220 TODO: HIGH, The XML reader can have an internal "skip" step to be moving automatically to the next item if an item does not satisfy an internal criterion as it happens with the pubmed filters here.
+../citehound/datainput//ror.py:106 TODO: MEDIUM, Need to make sure that obsolete and redirected entries are handled appropriately.
+../citehound/datainput//ror.py:108 TODO: LOW, Need to remove this extra try, catch which deals with this issue https://github.com/neo4j-contrib/neomodel/issues/303
+../citehound/datainput//ror.py:162 TODO: LOW, Need to remove this extra try, catch which deals with this issue https://github.com/neo4j-contrib/neomodel/issues/303
+TODO List as of Fri Mar 31 11:05:47 UTC 2023
+../citehound/models//core.py:20 TODO: MED, This works for unweighted, propertyless edges that denote a simple association. But to denote that this edge is part of a graph, we need more information associated with this edge. If the edge model cannot be extended, this field should be turned into a JSON field with a given format.
+../citehound/models//core.py:82 TODO: MED, Add //PubmedArticle[MedlineCitation/Article/AuthorList/Author[Identifier[@Source="ORCID"]]
+../citehound/models//core.py:95 TODO: MED, Add //PubmedArticle[MedlineCitation/Article/AuthorList/Author[Identifier[@Source="ORCID"]]/AffiliationInfo/Identifier[@Source="GRID"]]
+TODO List as of Fri Mar 31 11:07:07 UTC 2023
+../scripts//citehound_admin.py:476 TODO: HIGH, Perform a very typical validation for [A-Z_][A-Z_]* pattern on collection_name
+../scripts//citehound_admin.py:586 TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
+../scripts//citehound_admin.py:629 TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
+../scripts//citehound_mesh.py:60 TODO: HIGH, Need to confirm the following note (there is a script about it already).
+../scripts//citehound_mesh.py:211 TODO: MID, If treenumber_historic_index is not just one for a given code, then this should be an error condition
+../scripts//citehound_mesh.py:303 TODO: LOW, add a JSON file to customise the appearance of the network (node_colour, edge_colour, thinckness, etc)
+../scripts//citehound_mesh.py:376 TODO: HIGH, Note write_gml here and adjust once this is addressed: https://github.com/networkx/networkx/discussions/5233
