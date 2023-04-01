@@ -465,38 +465,6 @@ def query():
     """
     pass
 
-@query.command()
-@click.option("--verbose", "-v", is_flag=True, help="Includes actual (cypher) queries in the listing")
-@click.option("--collection-name", "-n", type=str, default="STD_QUERIES", help="List the contents of a particular query collection, default is STD_QUERIES if it has been installed")
-def ls(verbose, collection_name):
-    """
-    List all available queries within a collection
-    """
-    IM = neoads.MemoryManager()
-    # TODO: HIGH, Perform a very typical validation for [A-Z_][A-Z_]* pattern on collection_name
-    collection_name = collection_name.upper()
-
-    # Get the standard queries map
-    try:
-        q_map = IM.get_object(collection_name)
-    except neoads.exception.ObjectNotFound as e:
-        click.echo(f"{collection_name} has not been installed in this database yet.\n")
-        sys.exit(-1)
-
-    # Get all contents to memory
-    list_contents={}
-    for a_key in q_map.keys_set[0].elements.all():
-        list_contents[a_key.value[0].value] = {"description":q_map[a_key.value[0]][neoads.CompositeString('description')].value,
-                                               "cypher":q_map[a_key.value[0]][neoads.CompositeString('query')].value}
-
-    # Decide what and how to "print"
-    if verbose:
-        yaml.dump(list_contents, sys.stdout)
-    else:
-        click.echo("QueryName, Description")
-        for a_key, a_val in list_contents.items():
-            click.echo(f"{a_key}, {a_val['description']}")
-        
 
 @query.command()
 @click.option("--collection-file", "-f", type=click.Path(exists=True, file_okay=True, dir_okay=False))
@@ -505,7 +473,7 @@ def init(collection_file, re_init):
     """
     Initialises a query collection in the database
 
-    If a --collection_file is not provided, the STD_QUERIES is created.
+    If a --collection_file is not provided and STD_QUERIES does not exist, it is created.
     """
     if not collection_file:
         collection_name = "STD_QUERIES"
@@ -534,27 +502,38 @@ def init(collection_file, re_init):
     # Let's interact with the database
     IM = neoads.MemoryManager()
 
-    # Check if the list is already defined
+    # Check if the query collections exist
     try:
-        the_map = IM.get_object(collection_name)
+        query_collection = IM.get_object("QUERY_COLLECTIONS")
+    except neoads.exception.ObjectNotFound as e:
+        # Initialise the top level QUERY_COLLECTIONS map
+        query_collection = neoads.AbstractMap(name="QUERY_COLLECTIONS").save()
+
+    # Check if the particular collection is already defined
+    if neoads.CompositeString(collection_name) in query_collection:
         # If the list exists then check if it should be re-initialised
         if re_init:
-            the_map.destroy()
+            del(query_collection[neoads.CompositeString(collection_name)])
+            # Do a garbage collection step here
+            IM.garbage_collection()
             the_map = neoads.AbstractMap(name=collection_name).save()
+            the_key = neoads.CompositeString(collection_name).save() 
+            query_collection[the_key] = the_map
         else:
             click.echo(f"List {collection_name} already exists.")
             sys.exit(-1)
-    except neoads.exception.ObjectNotFound as e:
+    else:
         # If the list does not exist and it was asked to be recreated then this should
         # cause an error.
         if re_init:
-            click.echo(f"List {collection_name} cannot be re-initialised because it does not exist")
+            click.echo(f"Collection {collection_name} cannot be re-initialised because it does not exist")
             sys.exit(-1)
         # Otherwise go ahead and create it
         the_map = neoads.AbstractMap(name=collection_name).save()
+        # Add it to the collection
+        the_key = neoads.CompositeString(collection_name).save() 
+        query_collection[the_key] = the_map
 
-    # Do a garbage collection step here
-    IM.garbage_collect()
     # At this point, the_map has been initialised in one or another way.
     # Populate it
 
@@ -575,6 +554,53 @@ def init(collection_file, re_init):
 
 
 @query.command()
+@click.option("--verbose", "-v", is_flag=True, help="Includes actual (cypher) queries in the listing")
+@click.option("--collection-name", "-n", type=str, help="List the contents of a particular query collection, default is STD_QUERIES if it has been installed")
+def ls(verbose, collection_name):
+    """
+    List all available queries within a collection
+    """
+    IM = neoads.MemoryManager()
+    # TODO: HIGH, Perform a very typical validation for [A-Z_][A-Z_]* pattern on collection_name
+    collection_name = collection_name.upper() if collection_name else None
+
+    # Check if the query collections exist
+    try:
+        query_collection = IM.get_object("QUERY_COLLECTIONS")
+    except neoads.exception.ObjectNotFound as e:
+        click.echo("Query collections have not been initialised on this database, please see 'query init'")
+        sys.exit(-1)
+
+    # If a collection name has not been provided, list all collections
+    if collection_name is None:
+        click.echo("Collection, Number of queries")
+        for a_key in query_collection.keys_set[0].elements.all():
+            click.echo(f"{a_key.value[0].value}, {len(query_collection[a_key.value[0]])}")
+        sys.exit(0)
+
+    # Otherwise, check if the specified collection name exists.
+    if neoads.CompositeString(collection_name) not in query_collection:
+        click.echo(f"{collection_name} has not been installed in this database yet.\n")
+        sys.exit(-1)
+
+    # The collection exists, go ahead and list its contents.
+    q_map = query_collection[neoads.CompositeString(collection_name)]
+    # Get all contents to memory
+    list_contents={}
+    for a_key in q_map.keys_set[0].elements.all():
+        list_contents[a_key.value[0].value] = {"description":q_map[a_key.value[0]][neoads.CompositeString('description')].value,
+                                               "cypher":q_map[a_key.value[0]][neoads.CompositeString('query')].value}
+
+    # Decide what and how to "print"
+    if verbose:
+        yaml.dump(list_contents, sys.stdout)
+    else:
+        click.echo("QueryName, Description")
+        for a_key, a_val in list_contents.items():
+            click.echo(f"{a_key}, {a_val['description']}")
+ 
+
+@query.command()
 @click.argument("query-name", type=str)
 @click.option("--collection-name", "-n", type=str, default="STD_QUERIES", help="Choose the query from a particular list, default is STD_QUERIES if it has been installed")
 @click.option("--parameter", "-p", multiple=True)
@@ -585,12 +611,19 @@ def run(query_name, collection_name, parameter):
 
     # TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
     collection_name = collection_name.upper()
+
     IM = neoads.MemoryManager()
+    # Check if the query collections exist
+    try:
+        query_collection = IM.get_object("QUERY_COLLECTIONS")
+    except neoads.exception.ObjectNotFound as e:
+        click.echo("Query collections have not been initialised on this database, please see 'query init'")
+        sys.exit(-1)
 
     # Get the collection
-    try:
-        q_map = IM.get_object(collection_name)
-    except neoads.exception.ObjectNotFound as e:
+    if neoads.CompositeString(collection_name) in query_collection:
+        q_map = query_collection[neoads.CompositeString(collection_name)]
+    else:
         click.echo(f"{collection_name} has not been installed in this database yet.\n")
         sys.exit(-1)
 
@@ -630,16 +663,25 @@ def rm(collection_name, confirm):
     collection_name = collection_name.upper()
     IM = neoads.MemoryManager()
 
-    # Check if the collection exists
+    # Check if the query collections exist
     try:
-        q_map = IM.get_object(collection_name)
+        query_collection = IM.get_object("QUERY_COLLECTIONS")
     except neoads.exception.ObjectNotFound as e:
-        click.echo(f"{collection_name} has not been installed in this database yet.\n")
+        click.echo("Query collections have not been initialised on this database, please see 'query init'")
+        sys.exit(-1)
+
+
+    # Check if the specified collection exists
+    if neoads.CompositeString(collection_name) in query_collection:
+        q_map = query_collection[neoads.CompositeString(collection_name)]
+    else:
+        click.echo(f"{collection_name} has not been installed in this database yet. Please see 'query ls' for a list of the installed collections. \n")
         sys.exit(-1)
 
     # If the collection exists, then delete it (if the action is confirmed).
     if confirm:
         q_map.destroy()
+        del(query_collection[neoads.CompositeString(collection_name)])
         IM.garbage_collect()
     else:
         click.echo(f"{collection_name} exists and can be deleted. If you wish to delete it, please re-run the exact same rm command, appending '--confirm'")
