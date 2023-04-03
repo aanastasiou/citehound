@@ -515,8 +515,8 @@ def init(collection_file, re_init):
         if re_init:
             del(query_collection[neoads.CompositeString(collection_name)])
             # Do a garbage collection step here
-            IM.garbage_collection()
-            the_map = neoads.AbstractMap(name=collection_name).save()
+            IM.garbage_collect()
+            the_map = neoads.AbstractMap().save()
             the_key = neoads.CompositeString(collection_name).save() 
             query_collection[the_key] = the_map
         else:
@@ -529,7 +529,7 @@ def init(collection_file, re_init):
             click.echo(f"Collection {collection_name} cannot be re-initialised because it does not exist")
             sys.exit(-1)
         # Otherwise go ahead and create it
-        the_map = neoads.AbstractMap(name=collection_name).save()
+        the_map = neoads.AbstractMap().save()
         # Add it to the collection
         the_key = neoads.CompositeString(collection_name).save() 
         query_collection[the_key] = the_map

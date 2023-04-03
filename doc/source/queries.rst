@@ -142,6 +142,9 @@ This will produce something like:
        ORDER BY n_affiliated_authors DESC
      description: Number of authors affiliated with their respective institutes
 
+
+Elipses symbols denote entries that are not shown for clarity.
+
 You only see the first and last queries (at the time of writing) in this "dump" but it is enough to see that 
 what you get is a YAML file with a self-explanatory format.
 
@@ -177,6 +180,21 @@ If the collection does not exist, you will receive a comprehensive message about
 
 This might produce something like:
 
+::
+
+   year,n_articles
+   2023,25
+   2022,112
+   2021,81
+   ...
+   ...
+   ...
+   2005,31
+   2004,21
+   2003,15
+
+Elipses symbols denote entries that are not shown for clarity.
+
 Running queries with parameters
 -------------------------------
 
@@ -198,6 +216,23 @@ To do this, enter:
 
 This might produce something like:
 
+::
+
+   article_id,doi,title,pub_date
+   33379182,10.3390/polym13010078,Preparation and Performance of Supercritical Carbon Dioxide Thickener.,2020-12-28
+   33274488,10.1111/gcb.15470,Plants with less chlorophyll: A global change perspective.,2020-12-03
+   33170666,10.1021/acs.est.0c05385,Low-Carbon Urban Water Systems: Opportunities beyond Water and Wastewater Utilities?,2020-12-01
+   32900543,10.1016/j.jenvman.2020.111241,Sustainable wastewater management in Indonesia's fish processing industry: Bringing governance into scenario analysis.,2020-12-01
+   ...
+   ...
+   ...
+   32760112,10.1371/journal.pone.0235357,Between-cow variation in milk fatty acids associated with methane production.,2020-01-01
+   31622980,10.1093/jas/skz291,The effects of improved performance in the U.S. dairy cattle industry on environmental impacts between 2007 and 2017.,2020-01-01
+   32275725,10.1371/journal.pone.0230424,"Potential greenhouse gas reductions from Natural Climate Solutions in Oregon, USA.",2020-01-01
+
+
+Elipses symbols denote entries that are not shown for clarity.
+
 
 Other administration operations
 ===============================
@@ -209,20 +244,113 @@ Other administration operations
 
 .. note::
 
-   Citehound takes some precaution to prevent the user from performing actions that 
-   could lead to data loss.
+   * Citehound takes some precaution to prevent the user from performing actions that 
+     could lead to data loss.
 
-   Although the program will ask you at least once to confirm potentially dangerous 
-   operations (e.g. deletions), it will not stop you from carrying out an action.
+   * Although the program will ask you at least once to confirm potentially dangerous 
+     operations (e.g. deletions), it will not stop you from carrying out an action.
 
-   Both of these conditions are clearly noted in the following section.
-
-
-Just as you created ``STD_QUERIES``, it is possible to create your own query collections
+   * Both of these conditions are clearly noted in the following section.
 
 
+Just as you created ``STD_QUERIES``, it is possible to create and manage your own query collections and store 
+them along with a particular database.
 
 
+Creating custom query collections
+---------------------------------
 
+The process of creating a custom query collection is not entirely new, given what has been presented in this
+chapter this far.
+
+The basic steps involve creating a YAML file that describes your query collection and then storing them in the 
+database but there are some details in the parameters that are worth highlighting.
+
+First of all, let's create a suitable YAML file, here is a suggestion:
+
+::
+
+   COUNT_ARTICLES:
+      description: A simple article counter
+      cypher: MATCH (a:Article) return count(a) as n_articles
+
+
+This is a very simple query that counts the number of articles in the database.
+
+Store this in a text file and call it ``MYLIST.yaml``. The `basename <https://en.wikipedia.org/wiki/Basename>`_
+of that file is important because it will become your query collections **logical name**.
+
+To store this query collection (of 1, but hey, we have to start from somewhere) enter:
+
+::
+
+   > citehound_admin.py query init -f MYLIST.yaml
+
+
+Once this is done, try to list the query collections with:
+
+::
+
+   > citehound_admin.py query ls
+
+This should return something like:
+
+::
+
+   Collection, Number of queries
+   MYLIST, 1
+   STD_QUERIES, 11
+
+
+To list ``MYLIST`` itself and confirm its contents, enter:
+
+::
    
+   > citehound_admin.py query ls -n MYLIST
 
+Which should return something like:
+
+::
+
+   QueryName, Description
+   COUNT_ARTICLES, A simple article counter
+
+
+Updating custom query collections
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Updating a query collection only requires the addition of the ``--re-init`` parameter to the above 
+command line.
+
+Having edited your query collection text file (suppose here it is ``MYLIST.yaml``), to update it, enter:
+
+::
+
+   > citehound_admin.py query init -f MYLIST.yaml --re-init
+
+If everything has gone well, ``MYLIST`` should now report 2 queries as a result of the following listing:
+
+::
+
+   > citehound_admin.py query ls
+
+
+Removing custom query collections
+---------------------------------
+
+To remove a custom query collection, enter:
+
+::
+
+   > citehound_admin.py query rm -n MYLIST
+
+This command line will not actually remove ``MYLIST`` (yet) but it will verify that the collection exists 
+and that it can be removed.
+
+**To actually remove the collection, enter:**
+
+::
+
+   > citehound_admin.py query rm -n MYLIST --confirm
+
+This step will go ahead and remove ``MYLIST`` *without asking any further confirmation**
