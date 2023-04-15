@@ -221,49 +221,51 @@ def link():
 
     bim = citehound.IM
 
-    # First, match and link countries
-    bim.link_sets_of_entities("match (aCountry:Country) return toLower(aCountry.name) as theIndex, aCountry as theNode",
-                               "match (an_affiliation:PubmedAffiliation) return toLower(an_affiliation.original_affiliation) as theIndex, an_affiliation as theNode",
-                               COUNTRY_ASSOCIATION_LABEL,
-                               session_id="MySessionStep1",
-                               pre_processing_function = citehound.utils.affiliation_standardisation,
-                               perc_entries_right = 0.95)
+    with neomodel.db.transaction:
+        # First, match and link countries
+        bim.link_sets_of_entities("match (aCountry:Country) return toLower(aCountry.name) as theIndex, aCountry as theNode",
+                                   "match (an_affiliation:PubmedAffiliation) return toLower(an_affiliation.original_affiliation) as theIndex, an_affiliation as theNode",
+                                   COUNTRY_ASSOCIATION_LABEL,
+                                   session_id="MySessionStep1",
+                                   pre_processing_function = citehound.utils.affiliation_standardisation,
+                                   perc_entries_right = 0.95)
 
-    # Now, for each country that actually matched, get its institutions and try to match institutions too
-    matched_countries = bim.cypher_query(
-        "match (a:PubmedAffiliation)-[:ASSOCIATED_WITH{rel_label:'FROM_COUNTRY'}]-(b:Country) return distinct b.name as theIndex, b as theNode",
-        result_as="dict",
-        resolve_objects=True)
+        # Now, for each country that actually matched, get its institutions and try to match institutions too
+        matched_countries = bim.cypher_query(
+            "match (a:PubmedAffiliation)-[:ASSOCIATED_WITH{rel_label:'FROM_COUNTRY'}]-(b:Country) return distinct b.name as theIndex, b as theNode",
+            result_as="dict",
+            resolve_objects=True)
 
-    # For each country
-    for aCountry in matched_countries:
-        click.echo(f"Working on {aCountry}")
-        # Grab the affiliations that are associated with that particular country
-        # Grab the institutions that we know exist within that paritcular country
-        # Link the affiliations to institutes.
-        # REMEMBER SEMANTICS. Link by looking for LEFT in RIGHT. Therefore LEFT:Institutes, RIGHT:Affiliations
-        bim.link_sets_of_entities(
-            f"match (a:Institute)-[:IN_CITY]-(:City)-[:IN_COUNTRY]-(b:Country{{name:'{aCountry}'}}) return distinct toLower(a.name) as theIndex,a as theNode",
-            f"match (a:PubmedAffiliation)-[:ASSOCIATED_WITH{{rel_label:'FROM_COUNTRY'}}]-(b:Country{{name:'{aCountry}'}}) return distinct toLower(a.original_affiliation) as theIndex, a as theNode",
-            INSTITUTE_ASSOCIATION_LABEL,
-            session_id="MySessionStep2",
-            pre_processing_function=citehound.utils.affiliation_standardisation,
-            perc_entries_right=0.95)
+        # For each country
+        for aCountry in matched_countries:
+            click.echo(f"Working on {aCountry}")
+            # Grab the affiliations that are associated with that particular country
+            # Grab the institutions that we know exist within that paritcular country
+            # Link the affiliations to institutes.
+            # REMEMBER SEMANTICS. Link by looking for LEFT in RIGHT. Therefore LEFT:Institutes, RIGHT:Affiliations
+            bim.link_sets_of_entities(
+                f"match (a:Institute)-[:IN_CITY]-(:City)-[:IN_COUNTRY]-(b:Country{{name:'{aCountry}'}}) return distinct toLower(a.name) as theIndex,a as theNode",
+                f"match (a:PubmedAffiliation)-[:ASSOCIATED_WITH{{rel_label:'FROM_COUNTRY'}}]-(b:Country{{name:'{aCountry}'}}) return distinct toLower(a.original_affiliation) as theIndex, a as theNode",
+                INSTITUTE_ASSOCIATION_LABEL,
+                session_id="MySessionStep2",
+                pre_processing_function=citehound.utils.affiliation_standardisation,
+                perc_entries_right=0.95)
 
-    # Now grab those articles which where not connected NEITHER WITH A COUNTRY OR UNIVERSITY
-    bim.link_sets_of_entities("match (a:Institute) return distinct toLower(a.name) as theIndex,a as theNode",
-                               "match (a:PubmedAffiliation) where not (a)-[:ASSOCIATED_WITH{rel_label:'FROM_COUNTRY'}]-() and not (a)-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-() return distinct toLower(a.original_affiliation) as theIndex, a as theNode",
-                               INSTITUTE_ASSOCIATION_LABEL,
-                               session_id="MySessionStep3",
-                               pre_processing_function=citehound.utils.affiliation_standardisation,
-                               perc_entries_right=0.95)
+        # Now grab those articles which where not connected NEITHER WITH A COUNTRY OR UNIVERSITY
+        bim.link_sets_of_entities("match (a:Institute) return distinct toLower(a.name) as theIndex,a as theNode",
+                                   "match (a:PubmedAffiliation) where not (a)-[:ASSOCIATED_WITH{rel_label:'FROM_COUNTRY'}]-() and not (a)-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-() return distinct toLower(a.original_affiliation) as theIndex, a as theNode",
+                                   INSTITUTE_ASSOCIATION_LABEL,
+                                   session_id="MySessionStep3",
+                                   pre_processing_function=citehound.utils.affiliation_standardisation,
+                                   perc_entries_right=0.95)
 
-    click.echo("Finished linking.")
+        click.echo("Finished linking.")
 
 
 @db.command()
 @click.argument("what-to-drop", type=click.Choice(["all", "all-and-labels", "article-data", "ror"]))
-def drop(what_to_drop):
+@click.option("--confirm", is_flag=True, help="Confirms that the user indeed wishes to drop a category of records")
+def drop(what_to_drop, confirm):
     """
     Delete records and (optionally) remove the schema from the database.
     """
@@ -282,13 +284,17 @@ def drop(what_to_drop):
         post_action = "\n\nROR data removed.\n"
         action = "MATCH (a) WHERE 'City' IN labels(a) OR 'Country' IN labels(a) OR 'Institute' IN labels(a) DETACH DELETE a"
 
-    click.echo(pre_action)
-    citehound.IM.cypher_query(action)
-    click.echo(post_action)
+    if not confirm:
+        click.echo(f"Please append option --confirm to actually drop {what_to_drop} records")
+    else:
+        with neomodel.db.transaction:
+            click.echo(pre_action)
+            citehound.IM.cypher_query(action)
+            click.echo(post_action)
 
-    if (what_to_drop == "all-and-labels"):
-        neomodel.remove_labels()
-        click.echo("Labels removed.\n")
+            if (what_to_drop == "all-and-labels"):
+                neomodel.remove_labels()
+                click.echo("Labels removed.\n")
 
 
 @db.command()
@@ -502,55 +508,56 @@ def init(collection_file, re_init):
     # Let's interact with the database
     IM = neoads.MemoryManager()
 
-    # Check if the query collections exist
-    try:
-        query_collection = IM.get_object("QUERY_COLLECTIONS")
-    except neoads.exception.ObjectNotFound as e:
-        # Initialise the top level QUERY_COLLECTIONS map
-        query_collection = neoads.AbstractMap(name="QUERY_COLLECTIONS").save()
+    with neomodel.db.transaction:
+        # Check if the query collections exist
+        try:
+            query_collection = IM.get_object("QUERY_COLLECTIONS")
+        except neoads.exception.ObjectNotFound as e:
+            # Initialise the top level QUERY_COLLECTIONS map
+            query_collection = neoads.AbstractMap(name="QUERY_COLLECTIONS").save()
 
-    # Check if the particular collection is already defined
-    if neoads.CompositeString(collection_name) in query_collection:
-        # If the list exists then check if it should be re-initialised
-        if re_init:
-            del(query_collection[neoads.CompositeString(collection_name)])
-            # Do a garbage collection step here
-            IM.garbage_collect()
+        # Check if the particular collection is already defined
+        if neoads.CompositeString(collection_name) in query_collection:
+            # If the list exists then check if it should be re-initialised
+            if re_init:
+                del(query_collection[neoads.CompositeString(collection_name)])
+                # Do a garbage collection step here
+                IM.garbage_collect()
+                the_map = neoads.AbstractMap().save()
+                the_key = neoads.CompositeString(collection_name).save() 
+                query_collection[the_key] = the_map
+            else:
+                click.echo(f"List {collection_name} already exists.")
+                sys.exit(-1)
+        else:
+            # If the list does not exist and it was asked to be recreated then this should
+            # cause an error.
+            if re_init:
+                click.echo(f"Collection {collection_name} cannot be re-initialised because it does not exist")
+                sys.exit(-1)
+            # Otherwise go ahead and create it
             the_map = neoads.AbstractMap().save()
+            # Add it to the collection
             the_key = neoads.CompositeString(collection_name).save() 
             query_collection[the_key] = the_map
-        else:
-            click.echo(f"List {collection_name} already exists.")
-            sys.exit(-1)
-    else:
-        # If the list does not exist and it was asked to be recreated then this should
-        # cause an error.
-        if re_init:
-            click.echo(f"Collection {collection_name} cannot be re-initialised because it does not exist")
-            sys.exit(-1)
-        # Otherwise go ahead and create it
-        the_map = neoads.AbstractMap().save()
-        # Add it to the collection
-        the_key = neoads.CompositeString(collection_name).save() 
-        query_collection[the_key] = the_map
 
-    # At this point, the_map has been initialised in one or another way.
-    # Populate it
+        # At this point, the_map has been initialised in one or another way.
+        # Populate it
 
-    query_key = neoads.CompositeString("query").save()
-    desc_key = neoads.CompositeString("description").save()
-    # Add items
-    for a_query_name, query_dta in query_data.items():
-        # Create the entries for each 
-        q_name_ob = neoads.CompositeString(a_query_name).save()
-        q_value_ob = neoads.CompositeArrayObjectDataFrame(query_dta["cypher"]).save()
-        q_desc_ob = neoads.CompositeString(query_dta["description"]).save()
-        # The inner map has to be populated first
-        q_new_map = neoads.AbstractMap().save()
-        q_new_map[query_key] = q_value_ob
-        q_new_map[desc_key] = q_desc_ob
-        # The map can now be attached to the outer map
-        the_map[q_name_ob] = q_new_map
+        query_key = neoads.CompositeString("query").save()
+        desc_key = neoads.CompositeString("description").save()
+        # Add items
+        for a_query_name, query_dta in query_data.items():
+            # Create the entries for each 
+            q_name_ob = neoads.CompositeString(a_query_name).save()
+            q_value_ob = neoads.CompositeArrayObjectDataFrame(query_dta["cypher"]).save()
+            q_desc_ob = neoads.CompositeString(query_dta["description"]).save()
+            # The inner map has to be populated first
+            q_new_map = neoads.AbstractMap().save()
+            q_new_map[query_key] = q_value_ob
+            q_new_map[desc_key] = q_desc_ob
+            # The map can now be attached to the outer map
+            the_map[q_name_ob] = q_new_map
 
 
 @query.command()
@@ -663,28 +670,29 @@ def rm(collection_name, confirm):
     collection_name = collection_name.upper()
     IM = neoads.MemoryManager()
 
-    # Check if the query collections exist
-    try:
-        query_collection = IM.get_object("QUERY_COLLECTIONS")
-    except neoads.exception.ObjectNotFound as e:
-        click.echo("Query collections have not been initialised on this database, please see 'query init'")
-        sys.exit(-1)
+    with neomodel.db.transaction:
+        # Check if the query collections exist
+        try:
+            query_collection = IM.get_object("QUERY_COLLECTIONS")
+        except neoads.exception.ObjectNotFound as e:
+            click.echo("Query collections have not been initialised on this database, please see 'query init'")
+            sys.exit(-1)
 
 
-    # Check if the specified collection exists
-    if neoads.CompositeString(collection_name) in query_collection:
-        q_map = query_collection[neoads.CompositeString(collection_name)]
-    else:
-        click.echo(f"{collection_name} has not been installed in this database yet. Please see 'query ls' for a list of the installed collections. \n")
-        sys.exit(-1)
+        # Check if the specified collection exists
+        if neoads.CompositeString(collection_name) in query_collection:
+            q_map = query_collection[neoads.CompositeString(collection_name)]
+        else:
+            click.echo(f"{collection_name} has not been installed in this database yet. Please see 'query ls' for a list of the installed collections. \n")
+            sys.exit(-1)
 
-    # If the collection exists, then delete it (if the action is confirmed).
-    if confirm:
-        q_map.destroy()
-        del(query_collection[neoads.CompositeString(collection_name)])
-        IM.garbage_collect()
-    else:
-        click.echo(f"{collection_name} exists and can be deleted. If you wish to delete it, please re-run the exact same rm command, appending '--confirm'")
+        # If the collection exists, then delete it (if the action is confirmed).
+        if confirm:
+            q_map.destroy()
+            del(query_collection[neoads.CompositeString(collection_name)])
+            IM.garbage_collect()
+        else:
+            click.echo(f"{collection_name} exists and can be deleted. If you wish to delete it, please re-run the exact same rm command, appending '--confirm'")
 
 
 if __name__ == "__main__":
