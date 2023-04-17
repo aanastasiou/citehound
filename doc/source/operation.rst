@@ -19,7 +19,7 @@ So, the time has come to go through thousands of publications and somehow make s
 The most common research workflow involving Citehound proceeds as follows:
 
 1. Work on solid literature search strategy
-2. Run a thematic search on a literature database (e.g. Pubmed)
+2. Run a thematic search on a literature database (e.g. Pubmed [#]_)
 3. Download a bibliographical dataset in a supported format
 4. Import the bibliographical dataset to Citehound
 5. Link a given bibliographical dataset to external datasets
@@ -129,13 +129,13 @@ Importing a Pubmed bibliographical dataset to a project
               PB2XL -- result_set.xml --> BibAdmin
               BibAdmin -- import PUBMED --> BibDB
 
-Citehound was originally developed to process XML files exported from Pubmed.
+Citehound was originally developed to process XML files exported from Pubmed. [#]_
 
 The option to export a search "result set" as an XML file **used to** be available from Pubmed's search page but
 not any more. Unfortunately, the currently available options to export data from the search page, result in datasets 
 that are severely limited in terms of data processing.
 
-Citehound includes a convenient tool that can download Pubmed data in XML format given a list of PMIDs.
+Citehound includes a convenient tool that can download Pubmed data in XML format given a list of PMIDs [#]_.
 
 Obtaining Pubmed XML data
 -------------------------

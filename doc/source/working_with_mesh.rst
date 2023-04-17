@@ -1,4 +1,4 @@
-Working With the MeSH hierarchy
+The MeSH hierarchy in Citehound
 ===============================
 
 Rationale
@@ -13,8 +13,7 @@ publications in the different thematic subjects of the MeSH hierarhcy.
 Introduction
 ------------
 MeSH is a *...hierarchically-organised terminology for indexing and cataloging 
-of biomedical information such as MEDLINE/PUBmed and other NLM databases"*. For 
-more information please see `here <https://www.nlm.nih.gov/mesh/>`_
+of biomedical information such as MEDLINE/PUBmed and other NLM databases"* [#]_.
 
 MeSH has been in existence since 1966, first in paper form, later in electronic 
 format (XML) and since 2002 regularly updated and the files published via FTP.
@@ -26,7 +25,7 @@ composing its hierarchy has a unique **DescriptorUI** and a number of other data
 items associated with it. For a complete listing of the data associated with each 
 descriptor, please see [here](https://www.nlm.nih.gov/mesh/xml_data_elements.html).
 
-Extracted Data Items
+Extracted data items
 --------------------
 For the purposes of Citehound, we are focusing on the following fields:
 
@@ -92,7 +91,7 @@ This introduces two additional linear data structures that increase the density 
 between the DescriptorUIs.
 
 
-Other Hieararchies / Data structures
+Other Hierarchies / Data structures
 ------------------------------------
 There are at least three additional structural parts to the MeSH hierarchy co-existing in the same data file. 
 These are as follows:
@@ -147,11 +146,7 @@ This last relationship is the vital link between the articles and the MeSH hiera
 and insights to the database.
 
 
-Brief Use Case (Sumarise a large set of publications)
------------------------------------------------------
+-----
 
-
-
-Conclusion
-----------
+.. [#]  For more information please see `here <https://www.nlm.nih.gov/mesh/>`_
 
