@@ -22,6 +22,8 @@ import collections
 
 import pandas
 
+import warnings
+
 
 # TODO: HIGH, Document these functions.
 def rptr(a_message):
@@ -55,19 +57,21 @@ class InsightManager:
             #                     filename="insightql.log",
             #                     level=logging.INFO)
             conn_uri = None
-            try:
-                conn_uri = connection_uri or os.environ["NEO4J_BOLT_URL"]
-            except KeyError:
-                try:
+            self._data_importers = {}
+            if "NEO4J_BOLT_URL" not in os.environ:
+                if "NEO4J_USERNAME" not in os.environ and \
+                   "NEO4J_PASSWORD" not in os.environ:
+                    warnings.warn("The NEO4J_USERNAME, NEO4J_PASSWORD, NEO4J_BOLT_URI environment variables are not set. Cannot connect to database")
+                else:
                     uname = uname or os.environ["NEO4J_USERNAME"]
                     pword = pword or os.environ["NEO4J_PASSWORD"]
                     conn_uri = f"bolt://{uname}:{pword}@{host}:{port}"
-                except KeyError:
-                    raise exceptions.ManagerError("The NEO4J_USERNAME, NEO4J_PASSWORD variables are not set. "
-                                                 "Cannot connect to database")
+            else:
+                conn_uri = connection_uri or os.environ["NEO4J_BOLT_URL"]
             self._connection_URI = conn_uri
-            neomodel.db.set_connection(self._connection_URI)
-            self._data_importers = {}
+
+            if self._connection_URI is not None:
+                neomodel.db.set_connection(self._connection_URI)
 
         @property
         def importers(self):
