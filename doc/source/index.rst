@@ -29,9 +29,7 @@ via its unifying data model.
    installation
    operation
    queries
-   examples
    methods
-   devnotes
    current_todos
    api
 
