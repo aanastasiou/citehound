@@ -3,47 +3,56 @@ Working with Citehound projects
 ================================
 
 This section describes the typical process for loading a given bibliographical dataset into
-Citehound before analysing it.
+Citehound and running queries on it.
 
 It is assumed here that you have already gone through the :ref:`citehound_installation` section that covers building
-up the ``project_base`` "infrastructure" of datasets. Although a bibliographical dataset (a long list of data about
-academic papers) can be loaded independently of ``project_base``, this would severely limit the possible querying
-capabilities, especially in the case of mining Pubmed data.
+up the ``project_base`` "infrastructure" of datasets. [#]_ 
 
 
 Setting off to a new project
 ============================
 
-So, the time has come to go through thousands of publications and somehow make sense of it all.
-
 The most common research workflow involving Citehound proceeds as follows:
 
-1. Work on solid literature search strategy
-2. Run a thematic search on a literature database (e.g. Pubmed [#]_)
-3. Download a bibliographical dataset in a supported format
+1. Work on *a solid literature search strategy*
+2. Run a thematic search on a literature database (e.g. Pubmed)
+3. Download the bibliographical dataset
 4. Import the bibliographical dataset to Citehound
 5. Link a given bibliographical dataset to external datasets
 6. Proceed with further analysis
 
-Hopefully, the first item in this list does not come as a surprise. Citehound was not built to substitute the part of
+Hopefully, the first item in this list does not come as a surprise. Citehound was **not** built to substitute the part of
 comprehending the information. You still need to make the effort of composing the picture that emerges from the
-bibliography and how it fits in a given research context. What Citehound can help with is navigating through large
-volumes of academic papers to summarise, or highlight, a particular aspect of the collection (e.g. *"How does research
-on a given topic scale throughout the years given a bibliographical datset?"*). For more information around organising
-a literature review, please
-see `this guide <https://kib.ki.se/en/search-evaluate/systematic-reviews/structured-literature-reviews-guide-students>`_
+bibliography and how it fits to a given research context. What Citehound helps with is navigating through large volumes 
+of academic papers to summarise, or highlight, a particular aspect of the collection. For more information around organising 
+a literature review, please see
+`this guide <https://kib.ki.se/en/search-evaluate/systematic-reviews/structured-literature-reviews-guide-students>`_
 or any other similar introduction to "Structured Literature Reviews".
 
-The result of this search strategy is a set of rules (or "constraints") that define what constitutes an acceptable
+The result of the search strategy is a set of rules (or "constraints") that define what constitutes an acceptable
 paper for a given bibliographical dataset or not. This is a very important step in the whole analysis because
 it becomes the semantic thread that binds together the concepts that are presented throughout the papers.
 
 These first two steps already encode a large part of the success of a research project on bibliographical data (or,
 that of a literature review).
 
-Steps 3 onwards simply upload and link the data within Citehound and allow you to produce the evidence for answering
-a question such as the one given above (*"How does research on a given topic scale throughout the years given a
-bibliographical datset?"*).
+Steps 3 onwards simply upload and link the data within Citehound and allow you to navigate a large bibliographic dataset 
+or produce the evidence for answering questions such as:
+
+* How does research on a given topic scale throughout the years given a bibliographical datset?
+* Who is the most prolific author?
+* Who are other authors they tend to work together;
+
+...and others.
+
+The rest of this guide describes steps 3 onwards focusing on bibliographical data originating from Pubmed. [#]_
+
+
+Creating a new Citehound "project"
+==================================
+
+When using Citehound, it is advised to allocate every different "literature review" or "bibliographical data research project" 
+to its own underlying database.
 
 .. mermaid::
 
@@ -69,14 +78,6 @@ bibliographical datset?"*).
               BibSys <--> DA
               DA --> Output
 
-The rest of this guide describes steps 3 onwards focusing on bibliographical data originating from Pubmed.
-
-
-Creating a new Citehound project
-=================================
-
-Within Citehound, every different "literature review" or "bibliographical data research project" has its own underlying
-database.
 
 This is basically a Neo4J database, preloaded with the Citehound data model and a number of datasets.
 
@@ -129,11 +130,10 @@ Importing a Pubmed bibliographical dataset to a project
               PB2XL -- result_set.xml --> BibAdmin
               BibAdmin -- import PUBMED --> BibDB
 
-Citehound was originally developed to process XML files exported from Pubmed. [#]_
-
-The option to export a search "result set" as an XML file **used to** be available from Pubmed's search page but
-not any more. Unfortunately, the currently available options to export data from the search page, result in datasets 
-that are severely limited in terms of data processing.
+Citehound was originally developed to process XML files exported from Pubmed. The option to export a search 
+"result set" as an XML file **used to** be available from Pubmed's search page but not any more. Unfortunately, 
+the currently available options to export data from the search page, result in datasets that are severely 
+limited in terms of data processing.
 
 Citehound includes a convenient tool that can download Pubmed data in XML format given a list of PMIDs [#]_.
 
@@ -142,11 +142,16 @@ Obtaining Pubmed XML data
 
 To download a given set of publication data in XML format:
 
-1. Run your query on pubmed.gov.
-2. Export your result set in PMID format, suppose it is saved in ``pubmed_articles.pmid``.
-3. To fetch the article data in XML format:
+1. Run your query on `PubMed <https://pubmed.ncbi.nlm.nih.gov/>`_.
+2. Export your result set in PMID format (suppose it is saved in ``pubmed_articles.pmid``).
+
+To fetch the article data in XML format:
    
    * ``> citehound_admin.py fetch pubmedxml pubmed_articles.pmid > pubmed_articles.xml``
+
+
+Importing Pubmed XML data
+-------------------------
 
 Now, given the ``pubmed_articles.xml`` Pubmed XML file, importing it to Citehound is achieved by:
 
@@ -178,9 +183,8 @@ Data linking
               BibAdmin -- db_problink --> BibDB
               BibDB --> BibAdmin
 
-
-At this point, we have three different datasets in the system but without any connections between them. In order to link
-the newly imported Pubmed bibliographical dataset with ROR, you need to run a "probabilistic linking" step.
+At this point, we have three different datasets in the system with minimal links between them. In order to link
+the newly imported Pubmed bibliographical dataset with ROR, you need to run a "data linking" step.
 
 This is achieved with:
 
@@ -188,7 +192,7 @@ This is achieved with:
 
     > citehound_admin.py db link
 
-Very briefly, this script applies blocking on countries and then for each country runs a probabilistic linkage step
+Very briefly, this script applies blocking on countries and then for each country runs a linkage step
 for the country's institutions.
 
 For more information about the topic of "Record Linkage", `start here <https://en.wikipedia.org/wiki/Record_linkage>`_
@@ -202,6 +206,10 @@ Onwards now, to detailed data processing examples.
 
 -----
 
+.. [#] Although a bibliographical dataset (a long list of data about academic papers) can be loaded independently of 
+       ``project_base``, this would severely limit the possible querying capabilities, especially in the case of 
+       mining Pubmed data.
+
 .. [#] So far, it has been possible to work with Pubmed, DBLP and ERIC without any problem. However, due to our
        specific interest, Citehound's Pubmed data processing capability has been more developed and is used here as a
        demonstrator.
@@ -213,5 +221,4 @@ Onwards now, to detailed data processing examples.
        database is available from `this link <https://www.nlm.nih.gov/databases/download/pubmed_medline.html>`_. With
        these files it is possible to create a local indexable and searchable "pubmed engine"...with a little bit more
        effort of course.
-
 
