@@ -221,45 +221,44 @@ def link():
 
     bim = citehound.IM
 
-    with neomodel.db.transaction:
-        # First, match and link countries
-        bim.link_sets_of_entities("match (aCountry:Country) return toLower(aCountry.name) as theIndex, aCountry as theNode",
-                                   "match (an_affiliation:PubmedAffiliation) return toLower(an_affiliation.original_affiliation) as theIndex, an_affiliation as theNode",
-                                   COUNTRY_ASSOCIATION_LABEL,
-                                   session_id="MySessionStep1",
-                                   pre_processing_function = citehound.utils.affiliation_standardisation,
-                                   perc_entries_right = 0.95)
+    # First, match and link countries
+    bim.link_sets_of_entities("match (aCountry:Country) return toLower(aCountry.name) as theIndex, aCountry as theNode",
+                               "match (an_affiliation:PubmedAffiliation) return toLower(an_affiliation.original_affiliation) as theIndex, an_affiliation as theNode",
+                               COUNTRY_ASSOCIATION_LABEL,
+                               session_id="MySessionStep1",
+                               pre_processing_function = citehound.utils.affiliation_standardisation,
+                               perc_entries_right = 0.95)
 
-        # Now, for each country that actually matched, get its institutions and try to match institutions too
-        matched_countries = bim.cypher_query(
-            "match (a:PubmedAffiliation)-[:ASSOCIATED_WITH{rel_label:'FROM_COUNTRY'}]-(b:Country) return distinct b.name as theIndex, b as theNode",
-            result_as="dict",
-            resolve_objects=True)
+    # Now, for each country that actually matched, get its institutions and try to match institutions too
+    matched_countries = bim.cypher_query(
+        "match (a:PubmedAffiliation)-[:ASSOCIATED_WITH{rel_label:'FROM_COUNTRY'}]-(b:Country) return distinct b.name as theIndex, b as theNode",
+        result_as="dict",
+        resolve_objects=True)
 
-        # For each country
-        for aCountry in matched_countries:
-            click.echo(f"Working on {aCountry}")
-            # Grab the affiliations that are associated with that particular country
-            # Grab the institutions that we know exist within that paritcular country
-            # Link the affiliations to institutes.
-            # REMEMBER SEMANTICS. Link by looking for LEFT in RIGHT. Therefore LEFT:Institutes, RIGHT:Affiliations
-            bim.link_sets_of_entities(
-                f"match (a:Institute)-[:IN_CITY]-(:City)-[:IN_COUNTRY]-(b:Country{{name:'{aCountry}'}}) return distinct toLower(a.name) as theIndex,a as theNode",
-                f"match (a:PubmedAffiliation)-[:ASSOCIATED_WITH{{rel_label:'FROM_COUNTRY'}}]-(b:Country{{name:'{aCountry}'}}) return distinct toLower(a.original_affiliation) as theIndex, a as theNode",
-                INSTITUTE_ASSOCIATION_LABEL,
-                session_id="MySessionStep2",
-                pre_processing_function=citehound.utils.affiliation_standardisation,
-                perc_entries_right=0.95)
+    # For each country
+    for aCountry in matched_countries:
+        click.echo(f"Working on {aCountry}")
+        # Grab the affiliations that are associated with that particular country
+        # Grab the institutions that we know exist within that paritcular country
+        # Link the affiliations to institutes.
+        # REMEMBER SEMANTICS. Link by looking for LEFT in RIGHT. Therefore LEFT:Institutes, RIGHT:Affiliations
+        bim.link_sets_of_entities(
+            f"match (a:Institute)-[:IN_CITY]-(:City)-[:IN_COUNTRY]-(b:Country{{name:'{aCountry}'}}) return distinct toLower(a.name) as theIndex,a as theNode",
+            f"match (a:PubmedAffiliation)-[:ASSOCIATED_WITH{{rel_label:'FROM_COUNTRY'}}]-(b:Country{{name:'{aCountry}'}}) return distinct toLower(a.original_affiliation) as theIndex, a as theNode",
+            INSTITUTE_ASSOCIATION_LABEL,
+            session_id="MySessionStep2",
+            pre_processing_function=citehound.utils.affiliation_standardisation,
+            perc_entries_right=0.95)
 
-        # Now grab those articles which where not connected NEITHER WITH A COUNTRY OR UNIVERSITY
-        bim.link_sets_of_entities("match (a:Institute) return distinct toLower(a.name) as theIndex,a as theNode",
-                                   "match (a:PubmedAffiliation) where not (a)-[:ASSOCIATED_WITH{rel_label:'FROM_COUNTRY'}]-() and not (a)-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-() return distinct toLower(a.original_affiliation) as theIndex, a as theNode",
-                                   INSTITUTE_ASSOCIATION_LABEL,
-                                   session_id="MySessionStep3",
-                                   pre_processing_function=citehound.utils.affiliation_standardisation,
-                                   perc_entries_right=0.95)
+    # Now grab those articles which where not connected NEITHER WITH A COUNTRY OR UNIVERSITY
+    bim.link_sets_of_entities("match (a:Institute) return distinct toLower(a.name) as theIndex,a as theNode",
+                               "match (a:PubmedAffiliation) where not (a)-[:ASSOCIATED_WITH{rel_label:'FROM_COUNTRY'}]-() and not (a)-[:ASSOCIATED_WITH{rel_label:'FROM_INSTITUTE'}]-() return distinct toLower(a.original_affiliation) as theIndex, a as theNode",
+                               INSTITUTE_ASSOCIATION_LABEL,
+                               session_id="MySessionStep3",
+                               pre_processing_function=citehound.utils.affiliation_standardisation,
+                               perc_entries_right=0.95)
 
-        click.echo("Finished linking.")
+    click.echo("Finished linking.")
 
 
 @db.command()
