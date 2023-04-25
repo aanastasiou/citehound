@@ -132,6 +132,24 @@ To fetch the article data in XML format:
    
    * ``> citehound_admin.py fetch pubmedxml pubmed_articles.pmid > pubmed_articles.xml``
 
+.. note::
+
+   Citehound uses a set of standard calls towards NCBI's API to download the XML data of a set of 
+   PMIDs.
+
+   If you do not have an API key, then a connection is rate limited to 3 requests per second.
+   **WITH** an API key, this rate goes up to 10 requests per second. A "request" here does not correspond
+   to a single "article" but rather a bunch of articles. Citehound usually downloads bibliographical 
+   data in "bunches" of up to 300 entries.
+
+   If you do have an NCBI API key, then you can make it known to Citehound by setting the 
+   environment variable ``NCBI_API_KEY``.
+
+   If Citehound finds the ``NCBI_API_KEY`` then it will be "hitting" NCBI at the fast rate, otherwise
+   it will be falling back to not exceeding the low rate.
+
+   For more information on how to obtain an NCBI API KEY, please see `here <https://support.nlm.nih.gov/knowledgebase/article/KA-05317/en-us>`_
+
 
 Importing Pubmed XML data
 -------------------------
