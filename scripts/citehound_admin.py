@@ -121,6 +121,7 @@ import time
 import neoads
 
 import yaml
+import shutil
 
 @click.group()
 def citehound_admin():
@@ -137,6 +138,56 @@ def db():
     Database operations
     """
     pass
+
+@db.command()
+@click.argument("project-name", type=str)
+@click.option("--based-on", "-b", type=str, help="Copies across the data space from another project")
+def create(project_name, based_on):
+    """
+    Create a new data space
+    """
+    # Validate project name
+    project_name_val_rule = re.compile("[a-zA-Z][a-zA-Z_0-9]+")
+
+    if not project_name_val_rule.match(project_name):
+        click.echo(f"ERROR: project-name should start with a letter and contain only letters, numbers and the '_' character. Received:{project_name}\n")
+        sys.exit(-1)
+
+    # Check that the environment variables are set
+    if "CITEHOUND_DATA" not in os.environ:
+        click.echo("ERROR: CITEHOUND_DATA not set")
+        sys.exit(-1)
+
+    # Check that the path does not exist
+    project_path = f"{os.environ['CITEHOUND_DATA'].rstrip('/')}/{project_name}"
+        
+    if os.path.exists(project_path):
+        click.echo(f"ERROR: Path {project_path} exists. No action was taken")
+        sys.exit(-1)
+
+    if based_on is not None:
+        # Validate based_on
+        if not project_name_val_rule.match(based_on):
+            click.echo(f"ERROR: based-on should start with a letter and contain only letters, numbers and the '_' character. Received:{based_on}\n")
+            sys.exit(-1)
+        project_based_on = f"{os.environ['CITEHOUND_DATA'].rstrip('/')}/{based_on}"
+        # Make sure it exists
+        if not os.path.exists(project_based_on):
+            click.echo(f"ERROR: based_on project path ({project_based_on}) does not exist. No action was taken")
+            sys.exit(-1)
+
+    # At this point we are ready to create a new project
+    # Make new directories as required
+    os.makedirs(f"{project_path}/data", exist_ok=True)
+    os.makedirs(f"{project_path}/logs", exist_ok=True)
+
+    # Copy files across if required
+    if based_on is not None:
+        shutil.copytree(project_based_on, project_path, dirs_exist_ok=True)
+
+    click.echo(f"Project {project_name} created.")
+
+        
 
 @db.command()
 @click.argument("output-format", type=click.Choice(["graphml", "dot"], case_sensitive=False),)
