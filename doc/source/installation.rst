@@ -24,7 +24,7 @@ that can be used to "seed" other projects without having to carry out this lengt
 Citehound software installation & configuration
 ================================================
 
-This section of the installation is written primarily with * the Linux Operating System* in mind [#]_.
+This section of the installation is written primarily with * the Linux Operating System* in mind [#f1]_.
 
 Pre-requisites
 --------------
@@ -33,25 +33,31 @@ Pre-requisites
 
 2. Make sure that the system has:
 
-    * Python 3 and at least `virtualenv <https://pypi.org/project/virtualenv/>`_.
-    * `Graphviz <https://graphviz.org/>`_
-    * The zip package.
-    * Qt and PyQt libraries (`PyQt5 <https://pypi.org/project/PyQt5/>`_ at the time of writing).
+   * Python 3 
+
+     * And at least `virtualenv <https://pypi.org/project/virtualenv/>`_.
+
+   * `Graphviz <https://graphviz.org/>`_
+
+   * The zip package.
+
+   * A "container manager" (either Docker or Podman)
 
 3. The Neo4J database server
 
-    * You might already have a server instance available for this; or
-    * Run the server using the Neo4j Docker image.
+   * You might already have a server instance available for this; or
+   * Run the server using the Neo4j container image; or
+   * Use *"Neo4J management"* software.
 
-4. (Optionally) a *"Neo4J management"* software.
 
-   * Download and install `ineo <https://github.com/cohesivestack/ineo>`_
+The absolutely essential resource here is the Neo4j database which can be managed in a 
+number of different ways. 
 
-     * Citehound relies heavily on a graph database and requires at least 1 running Neo4J server.
-     * You can install and manage one or more Neo4J servers locally or over the network (e.g. on a cloud
-       computing provider)
-     * However, we have found that certain tasks are made much easier by a Neo4J management software such as `ineo`
-       and this is why it is recommended here.
+Citehound contains some basic support for managing an underlying containerised Neo4j 
+database and the rest of this section is written with that in mind. More information 
+about managing a number of different servers using ``ineo`` can be found in the 
+:ref:`Appendix <usingineo>`.
+
 
 Installing Citehound
 ---------------------
@@ -85,59 +91,62 @@ This concludes the installation of the basic software we are going to need in th
 Configuration
 -------------
 
-1. Install a neo4j server using `ineo`:
-
-   ::
-
-       > ineo create -v 4.4.0 -d project_base
-
-   This will download and configure a new instance based on neo4j (community edition) version 4.4.0.
-
-   Take your time to review the installation because there are some key differences from a default community
-   installation. To do this, go ahead and run:
-
-   ::
-
-       > ineo list
-
-   which will most likely reply with something like:
-
-   ::
-
-       > instance 'project_base'
-         VERSION: 4.4.0
-         EDITION: community
-         PATH:    /home/someuser/.ineo/instances/project_base
-         PORT:    7474
-         HTTPS:   7475
-         BOLT:    7476
-
-   .. warning ::
-       Please take note of the ports that each interface is running on. Especially the BOLT
-       port, because it will be required when constructing the ``NEO4J_BOLT_URL`` in the next step.
-
-2. Configure environment variables:
+1. Configure environment variables:
 
    ::
 
        > export NEO4J_USERNAME=neo4j
        > export NEO4J_PASSWORD=somepassword
-       > export NEO4J_BOLT_URL="bolt://$NEO4J_USERNAME:$NEO4J_PASSWORD@localhost:7476"
+       > export NEO4J_BOLT_URL="bolt://$NEO4J_USERNAME:$NEO4J_PASSWORD@localhost:7687"
+       > export CITEHOUND_CONTAINER_BIN=`which podman`
+       > export CITEHOUND_CONTAINER_IMG="docker.io/neo4j:4.4.18"
+       > export CITEHOUND_DATA="/home/someuser/citehound_data/"
 
    .. warning::
-       Please note the port that the BOLT URL is pointing at, it is not a standard neo4j port and
-       it has to match the one on your server, otherwise you will keep getting errors.
+       Please note the port that the BOLT URL is pointing at should match the one your Neo4j server is using, otherwise you will keep getting errors.
 
-3. Initialise a Citehound database
+   These environment variables are as follows:
+
+   * **NEO4J_USERNAME**: The username that is used to auhenticate with the database server
+   * **NEO4J_PASSWORD**: The password that is used to auhenticate with the database server
+   * **NEO4J_BOLT_URL**: The BOLT interface URL that is used to communicate with the database server
+   * **CITEHOUND_CONTAINER_BIN**: The binary for the container manager (here `podman <https://podman.io/>`_).
+   * **CITEHOUND_CONTAINER_IMG**: The "image" the database server will run from, this should match the database server you wish to use. For more information please see `here <https://neo4j.com/docs/operations-manual/current/docker/>`_.
+   * **CITEHOUND_DATA**: An *existing directory* that will be used to host all Citehound projects in.
+
+
+This concludes with the basic configuration of the Citehound package.
+
+Creating ``project_base``
+=========================
+
+1. Create a Citehound project
+
+   ::
+
+     > citehound_admin.py db create project_base
+
+   This step will create a sub-directory ``project_base`` within the directory you have 
+   configured via the environment variable ``CITEHOUND_DATA``. This is where all data 
+   for ``project_base`` are going to be held.
+
+2. Activate the Citehound project
+
+   ::
+
+     > citehound_admin.py db start project_base
+
+3. Initialise the Citehound database for ``project_base``
+
    This step initialises the *running* Neo4j server with a schema that enforces specific constraints that protect
    against common errors, accelerate queries via indexes and effectively performs de-duplication of data.
 
    ::
 
-       > cd citehound
        > citehound_admin.py db init
 
-This concludes with the basic configuration of the Citehound package.
+
+This concludes with the basic configuration of the Citehound base project.
 
 
 Loading common datasets
@@ -188,8 +197,14 @@ To import ROR to your ``project_base``:
 
 1. Make sure that your ``project_base`` is active:
 
-   * ``> ineo status project_base``
-   * If it is not running, start it with ``> ineo start project_base``
+   * ``> podman container ls -a``
+
+   If you cannot see your neo4j image up and running, then start it with:
+
+   * ``citehound_admin.py db start project_base``
+
+To achieve he same using ``ineo`` please see :ref:`here <ineo_basic_startup>`
+
 
 2. Fetch the latest ROR dataset:
 
@@ -254,9 +269,6 @@ The typical workflow is as follows:
 
 1. Make sure that your ``project_base`` is activated:
 
-   * ``> ineo status project_base``
-   * If it is not running, start it with ``> ineo start project_base``
-
 2. Fetch the MESH datasets
 
    * ``> citehound_admin.py fetch mesh``
@@ -287,22 +299,30 @@ It also means that you now have a solid ``project_base`` project that you can us
 kickstart a given bibliographic research project.
 
 
-Archiving ``project_base``
-==========================
+Preserving and re-using ``project_base``
+========================================
 
-To avoid having to repeat this process to pre-load another database with the MeSH and ROR datasets it would be good to simply archive your whole ``project_base`` directory.
+To avoid having to repeat this process to pre-load another database with the MeSH and ROR datasets it would be good to preserve ``project_base`` and keep it free from bibliographical data (i.e. actual publication data).
 
-This can be found in ``~/.ineo/instances/project_base`` and it can be compressed with a simple: ``> zip -r project_base.zip ~/.ineo/instances/project_base/*``.
+To create another database that is **BASED ON** ``project_base`` (i.e. is preloaded with 
+ROR and MeSH):
+::
+
+  > citehound_admin.py db create my_project --based-on project_base
+
+When you then come to activate ``my_project`` you will notice that it already contains 
+the ROR and MeSH hierarchies pre-loaded.
+
+If you are using ``ineo`` as your Neo4J DBMS manager, please see :ref:`here <ineo_preserve_and_reuse>`
 
 
 Conclusion
 ==========
 
-This concludes the process of creating the base project. The next step now is to import bibliographical data for a
-given analysis project.
-
+This concludes the process of creating the base project. The next step now is to import bibliographical data for a given analysis project.
 
 
 -----
 
-.. [#] Citehound was developed on Ubuntu 16.04 and revised under Ubuntu 22.04. Some prototyping of its functionality took place in the last few versions of Python 2 but the main system was developed on early versions of Python3. During the revisions of the code base circa Nov-Dec 2021, changes had to be applied to bring the system online. There is a certain satisfaction in turning the key years later and hearing the engine turning as if you stopped tinkering with it the previous day.
+.. [#f1] Citehound was developed on Ubuntu 16.04 and revised under Ubuntu 22.04. Some prototyping of its functionality took place in the last few versions of Python 2 but the main system was developed on early versions of Python3. During the revisions of the code base circa Nov-Dec 2021, changes had to be applied to bring the system online. There is a certain satisfaction in turning the key years later and hearing the engine turning as if you stopped tinkering with it the previous day.
+

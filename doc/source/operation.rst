@@ -83,35 +83,18 @@ This is basically a Neo4J database, preloaded with the Citehound data model and 
 
 This process is outlined in section :ref:`citehound_installation` and it results in ``project_base``.
 
-If you are using ``ineo`` as your Neo4J manager, using ``project_base`` as the basis to a new project is as easy as
-copying between two "instance" directories.
+To create the (example) project ``pubmed_project_1``:
 
-For example, to kickstart a ``pubmed_project_1`` from ``project_base``, all you have to do is:
+::
 
-1. Ensure that ``project_base`` is not running
+  > citehound_admin.py db create pubmed_project_1 --based-on project_base
 
-   * ``> ineo stop project_base``
-
-2. Drop to a terminal and copy ``project_base`` to ``pubmed_project_1``
-
-   ::
-
-        > cd ~/.ineo/instances
-        > mkdir pubmed_project_1
-        > cp -r project_base/ pubmed_project_1/
-
-   * Now ``pubmed_project_1`` is pre-loaded with everything available in ``project_base``.
-
-
-3. Start ``pubmed_project_1``
-
-   * ``> ineo start pubmed_project_1``
 
 This concludes with the creation of the ``pubmed_project_1`` and we are now ready to import a bibliographical dataset.
 
 
-Importing a Pubmed bibliographical dataset to a project
-=======================================================
+Importing a Pubmed bibliographical dataset into ``pubmed_project_1``
+====================================================================
 
 .. _label_something:
 
@@ -155,10 +138,7 @@ Importing Pubmed XML data
 
 Now, given the ``pubmed_articles.xml`` Pubmed XML file, importing it to Citehound is achieved by:
 
-1. Make sure that your ``pubmed_project_1`` is activated:
-
-   * ``> ineo status pubmed_project_1``
-   * If it is not running, start it with ``> ineo start pubmed_project_1``
+1. Make sure that your ``pubmed_project_1`` is active
 
 2. Import the dataset
 
@@ -202,7 +182,7 @@ Conclusion
 
 This concludes the process of importing and linking a Pubmed bibliographical dataset.
 
-Onwards now, to detailed data processing examples.
+Onwards now, to working with queries.
 
 -----
 

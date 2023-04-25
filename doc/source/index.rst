@@ -32,6 +32,7 @@ via its unifying data model.
    methods
    current_todos
    api
+   appendix
 
 
 

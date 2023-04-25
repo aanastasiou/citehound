@@ -62,9 +62,10 @@ contains quite a few queries to get you started.
 
 To install these queries on a given database, all you have to do is:
 
-::
+1. Make sure that a given bibliographical project is active
 
-   > citehound_admin.py query init
+2. ``> citehound_admin.py query init``
+
 
 Browsing and exporting query collections
 ========================================
@@ -354,3 +355,9 @@ and that it can be removed.
    > citehound_admin.py query rm -n MYLIST --confirm
 
 This step will go ahead and remove ``MYLIST`` *without asking any further confirmation**
+
+Conclusion
+==========
+
+This concludes with the installation of queries on a given bibliographical dataset.
+

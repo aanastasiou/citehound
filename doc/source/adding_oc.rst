@@ -27,7 +27,7 @@ So, the key problem now is how to do this efficiently.
 Working with the OC dataset
 ---------------------------
 
-The dataset is massive (~50GB) but `sqlite` seems to be able to handle it well.
+The dataset is massive (~50GB at the time of writing) but `sqlite` seems to be able to handle it well.
 
 Installation
 ^^^^^^^^^^^^
@@ -35,7 +35,7 @@ Prior to starting the installation make sure that you have at least 300GB of dis
 and optionally `sqlitestudio <https://sqlitestudio.pl/index.rvt>`_ too.
 
 1. Download the dataset `data.zip`
-2. Decompress it. At this point the dataset is ~50GB.
+2. Decompress it. At this point the dataset is ~50GB (at the time of writing).
 3. Start sqlite3 and run the following script::
 
     BEGIN;
