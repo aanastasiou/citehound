@@ -673,8 +673,8 @@ def ls(verbose, collection_name):
     # If a collection name has not been provided, list all collections
     if collection_name is None:
         click.echo("Collection, Number of queries")
-        for a_key in query_collection.keys_set[0].elements.all():
-            click.echo(f"{a_key.value[0].value}, {len(query_collection[a_key.value[0]])}")
+        for a_key in list(query_collection.keys):
+            click.echo(f"{a_key.value}, {len(query_collection[a_key])}")
         sys.exit(0)
 
     # Otherwise, check if the specified collection name exists.
@@ -686,9 +686,9 @@ def ls(verbose, collection_name):
     q_map = query_collection[neoads.CompositeString(collection_name)]
     # Get all contents to memory
     list_contents={}
-    for a_key in q_map.keys_set[0].elements.all():
-        list_contents[a_key.value[0].value] = {"description":q_map[a_key.value[0]][neoads.CompositeString('description')].value,
-                                               "cypher":q_map[a_key.value[0]][neoads.CompositeString('query')].value}
+    for a_key in list(q_map.keys):
+        list_contents[a_key.value] = {"description":q_map[a_key][neoads.CompositeString('description')].value,
+                                               "cypher":q_map[a_key][neoads.CompositeString('query')].value}
 
     # Decide what and how to "print"
     if verbose:
