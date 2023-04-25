@@ -122,6 +122,7 @@ import neoads
 
 import yaml
 import shutil
+import subprocess
 
 @click.group()
 def citehound_admin():
@@ -138,6 +139,48 @@ def db():
     Database operations
     """
     pass
+
+@db.command()
+@click.argument("project-name", type=str)
+def start(project_name):
+    """
+    Starts a containerised DBMS on the data space defined by "project_name"
+    """
+    # Validate project name
+    project_name_val_rule = re.compile("[a-zA-Z][a-zA-Z_0-9]+")
+
+    if not project_name_val_rule.match(project_name):
+        click.echo(f"ERROR: project-name should start with a letter and contain only letters, numbers and the '_' character. Received:{project_name}\n")
+        sys.exit(-1)
+
+    # Check that the environment variables are set
+    if "CITEHOUND_DATA" not in os.environ:
+        click.echo("ERROR: CITEHOUND_DATA not set")
+        sys.exit(-1)
+
+    if "CITEHOUND_CONTAINER_BIN" not in os.environ:
+        click.echo("ERROR: CITEHOUND_CONTAINER_BIN not set")
+        sys.exit(-1)
+
+    if "CITEHOUND_CONTAINER_IMG" not in os.environ:
+        click.echo("ERROR: CITEHOUND_CONTAINER_IMG not set")
+        sys.exit(-1)
+
+    project_path = f"{os.environ['CITEHOUND_DATA'].rstrip('/')}/{project_name}"
+
+    # Check that the project path exists
+    if not (os.path.exists(f"{project_path}/data") and os.path.exists(f"{project_path}/logs")):
+        click.echo(f"ERROR: Path {project_path} does not exist. No action was taken")
+        sys.exit(-1)
+
+    process_str = f"{os.environ['CITEHOUND_CONTAINER_BIN']} run --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH={os.environ['NEO4J_USERNAME']}/{os.environ['NEO4J_PASSWORD']} --volume={project_path}/data:/data --volume={project_path}/logs:/logs {os.environ['CITEHOUND_CONTAINER_IMG']}"
+
+    p = subprocess.Popen(process_str,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT,
+                         shell=True)
+
+    click.echo(f"{project_name} started up.")
 
 @db.command()
 @click.argument("project-name", type=str)
@@ -187,7 +230,6 @@ def create(project_name, based_on):
 
     click.echo(f"Project {project_name} created.")
 
-        
 
 @db.command()
 @click.argument("output-format", type=click.Choice(["graphml", "dot"], case_sensitive=False),)
