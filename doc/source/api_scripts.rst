@@ -3,15 +3,15 @@ Scripts
 
 .. _citehound_admin_doc:
 
-``citehound_admin.py``
+``cadmin.py``
 -----------------------
-.. automodule:: scripts.citehound_admin
+.. automodule:: scripts.cadmin
    :members:
    :undoc-members:
 
-``citehound_mesh.py``
+``cmeshprep.py``
 ---------------------------------
-.. automodule:: scripts.citehound_mesh
+.. automodule:: scripts.cmeshprep
    :members:
    :undoc-members:
 

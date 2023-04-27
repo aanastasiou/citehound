@@ -87,7 +87,7 @@ To create the (example) project ``pubmed_project_1``:
 
 ::
 
-  > citehound_admin.py db create pubmed_project_1 --based-on project_base
+  > cadmin.py db create pubmed_project_1 --based-on project_base
 
 
 This concludes with the creation of the ``pubmed_project_1`` and we are now ready to import a bibliographical dataset.
@@ -105,7 +105,7 @@ Importing a Pubmed bibliographical dataset into ``pubmed_project_1``
               PB1[(Pubmed<br/>Articles)]
               PB3[pubmed.gov]
               PB2XL[pubmed2xl.com]
-              BibAdmin[citehound_admin.py]
+              BibAdmin[cadmin.py]
               BibDB[(Citehound)]
 
               PB1 --> PB3
@@ -130,7 +130,7 @@ To download a given set of publication data in XML format:
 
 To fetch the article data in XML format:
    
-   * ``> citehound_admin.py fetch pubmedxml pubmed_articles.pmid > pubmed_articles.xml``
+   * ``> cadmin.py fetch pubmedxml pubmed_articles.pmid > pubmed_articles.xml``
 
 .. note::
 
@@ -160,7 +160,7 @@ Now, given the ``pubmed_articles.xml`` Pubmed XML file, importing it to Citehoun
 
 2. Import the dataset
 
-   * ``> citehound_admin.py ingest data PUBMED pubmed_articles.xml``
+   * ``> cadmin.py ingest data PUBMED pubmed_articles.xml``
 
 
 This concludes with importing a bibliographic dataset in Citehound.
@@ -175,7 +175,7 @@ Data linking
     :caption: Simplified diagram of the data linking process.
 
        graph RL
-              BibAdmin[citehound_admin.py]
+              BibAdmin[cadmin.py]
               BibDB[(Citehound)]
 
               BibAdmin -- db_problink --> BibDB
@@ -188,7 +188,7 @@ This is achieved with:
 
 ::
 
-    > citehound_admin.py db link
+    > cadmin.py db link
 
 Very briefly, this script applies blocking on countries and then for each country runs a linkage step
 for the country's institutions.

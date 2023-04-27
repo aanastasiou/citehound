@@ -124,7 +124,7 @@ Creating ``project_base``
 
    ::
 
-     > citehound_admin.py db create project_base
+     > cadmin.py db create project_base
 
    This step will create a sub-directory ``project_base`` within the directory you have 
    configured via the environment variable ``CITEHOUND_DATA``. This is where all data 
@@ -134,7 +134,7 @@ Creating ``project_base``
 
    ::
 
-     > citehound_admin.py db start project_base
+     > cadmin.py db start project_base
 
 3. Initialise the Citehound database for ``project_base``
 
@@ -143,7 +143,7 @@ Creating ``project_base``
 
    ::
 
-       > citehound_admin.py db init
+       > cadmin.py db init
 
 
 This concludes with the basic configuration of the Citehound base project.
@@ -155,15 +155,15 @@ Loading common datasets
 Prior to doing any meaningful work with Citehound, it is recommended to pre-load some datasets that
 improve the precision and recall of queries against a given bibliographical dataset.
 
-This is achieved largely by the ``citehound_admin.py`` program and the data flow is depicted in the following figure.
+This is achieved largely by the ``cadmin.py`` program and the data flow is depicted in the following figure.
 
 .. mermaid::
 
    graph LR;
        PB2[(Pubmed<br/>MeSH Terms)];
        GRID[(grid.ac)];
-       BibAdmin[citehound_admin.py];
-       BibMESH[citehound_mesh_preprocess.py];
+       BibAdmin[cadmin.py];
+       BibMESH[cmeshprep.py];
        BibDB[(Citehound)];
 
        GRID -- fetch_GRID.sh --> BibAdmin;
@@ -201,14 +201,14 @@ To import ROR to your ``project_base``:
 
    If you cannot see your neo4j image up and running, then start it with:
 
-   * ``citehound_admin.py db start project_base``
+   * ``cadmin.py db start project_base``
 
 To achieve he same using ``ineo`` please see :ref:`here <ineo_basic_startup>`
 
 
 2. Fetch the latest ROR dataset:
 
-   * ``> citehound_admin.py fetch ror``
+   * ``> cadmin.py fetch ror``
    * This downloads the latest release of ROR to the current working directory.
 
      - To send the file to a different directory, add the option ``--od``. For 
@@ -224,7 +224,7 @@ To achieve he same using ``ineo`` please see :ref:`here <ineo_basic_startup>`
 
    ::
 
-       > citehound_admin.py ingest data ROR ./v1.20-2023-02-28-ror-data.json
+       > cadmin.py ingest data ROR ./v1.20-2023-02-28-ror-data.json
 
 
 This concludes with the importing of the ROR dataset. 
@@ -271,7 +271,7 @@ The typical workflow is as follows:
 
 2. Fetch the MESH datasets
 
-   * ``> citehound_admin.py fetch mesh``
+   * ``> cadmin.py fetch mesh``
 
      * This will download a set of XML files in the current working directory. These 
        datasets are fetched from a `pre-determined location <https://www.nlm.nih.gov/databases/download/mesh.html>`_.
@@ -290,7 +290,7 @@ The typical workflow is as follows:
 
    ::
 
-       > citehound_admin.py ingest data MESH ./MESH_historical_tree.json
+       > cadmin.py ingest data MESH ./MESH_historical_tree.json
 
 
 This concludes with the data importing process.
@@ -308,7 +308,7 @@ To create another database that is **BASED ON** ``project_base`` (i.e. is preloa
 ROR and MeSH):
 ::
 
-  > citehound_admin.py db create my_project --based-on project_base
+  > cadmin.py db create my_project --based-on project_base
 
 When you then come to activate ``my_project`` you will notice that it already contains 
 the ROR and MeSH hierarchies pre-loaded.

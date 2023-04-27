@@ -18,7 +18,7 @@ you can find out more about it by entering:
 
 ::
 
-   > citehound_admin.py query --help
+   > cadmin.py query --help
 
 
 Some terminology
@@ -64,7 +64,7 @@ To install these queries on a given database, all you have to do is:
 
 1. Make sure that a given bibliographical project is active
 
-2. ``> citehound_admin.py query init``
+2. ``> cadmin.py query init``
 
 
 Browsing and exporting query collections
@@ -76,7 +76,7 @@ To confirm this, enter:
 
 ::
 
-   > citehound_admin.py query ls
+   > cadmin.py query ls
 
 This should return somehing like:
 
@@ -91,7 +91,7 @@ To see which queries are stored inside ``STD_QUERIES``, enter:
 
 ::
 
-   > citehound_admin.py query ls -n STD_QUERIES
+   > cadmin.py query ls -n STD_QUERIES
 
 The parameter ``-n`` (or ``--collection-name``) specifies the query collection to list (``ls``).
 
@@ -122,7 +122,7 @@ To get a complete "dump" of everything, enter:
 
 ::
 
-   > citehound_admin.py query ls -n STD_QUERIES --verbose
+   > cadmin.py query ls -n STD_QUERIES --verbose
 
 This will produce something like:
 
@@ -157,7 +157,7 @@ In general, to run queries in a collection you use:
 
 ::
 
-   > citehound_admin.py query run
+   > cadmin.py query run
 
 There are two types of ``run`` operations you can run, those 
 that have parameters and those that do not.
@@ -174,7 +174,7 @@ To do this enter:
 
 ::
 
-   > citehound_admin.py query run N_ARTICLES_PER_YEAR
+   > cadmin.py query run N_ARTICLES_PER_YEAR
 
 Notice here, no query collection was specified and the system assumes that you are referring to ``STD_QUERIES``. 
 If the collection does not exist, you will receive a comprehensive message about it.
@@ -208,7 +208,7 @@ To do this, enter:
 
 ::
 
-   > citehound_admin.py query run ARTICLES_OF_YEAR -p year=2020
+   > cadmin.py query run ARTICLES_OF_YEAR -p year=2020
 
 .. note::
 
@@ -285,14 +285,14 @@ To store this query collection (of 1, but hey, we have to start from somewhere) 
 
 ::
 
-   > citehound_admin.py query init -f MYLIST.yaml
+   > cadmin.py query init -f MYLIST.yaml
 
 
 Once this is done, try to list the query collections with:
 
 ::
 
-   > citehound_admin.py query ls
+   > cadmin.py query ls
 
 This should return something like:
 
@@ -307,7 +307,7 @@ To list ``MYLIST`` itself and confirm its contents, enter:
 
 ::
    
-   > citehound_admin.py query ls -n MYLIST
+   > cadmin.py query ls -n MYLIST
 
 Which should return something like:
 
@@ -327,13 +327,13 @@ Having edited your query collection text file (suppose here it is ``MYLIST.yaml`
 
 ::
 
-   > citehound_admin.py query init -f MYLIST.yaml --re-init
+   > cadmin.py query init -f MYLIST.yaml --re-init
 
 If everything has gone well, ``MYLIST`` should now report 2 queries as a result of the following listing:
 
 ::
 
-   > citehound_admin.py query ls
+   > cadmin.py query ls
 
 
 Removing custom query collections
@@ -343,7 +343,7 @@ To remove a custom query collection, enter:
 
 ::
 
-   > citehound_admin.py query rm -n MYLIST
+   > cadmin.py query rm -n MYLIST
 
 This command line will not actually remove ``MYLIST`` (yet) but it will verify that the collection exists 
 and that it can be removed.
@@ -352,7 +352,7 @@ and that it can be removed.
 
 ::
 
-   > citehound_admin.py query rm -n MYLIST --confirm
+   > cadmin.py query rm -n MYLIST --confirm
 
 This step will go ahead and remove ``MYLIST`` *without asking any further confirmation**
 
