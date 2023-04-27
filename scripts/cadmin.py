@@ -7,7 +7,7 @@ Administrator
 ::
 
 
-    Usage: citehound_admin.py [OPTIONS] COMMAND [ARGS]...
+    Usage: cadmin.py [OPTIONS] COMMAND [ARGS]...
     
       Citehound -- Administrator.
     
@@ -27,7 +27,7 @@ Database operations
 ::
 
 
-    Usage: citehound_admin.py db [OPTIONS] COMMAND [ARGS]...
+    Usage: cadmin.py db [OPTIONS] COMMAND [ARGS]...
     
       Database operations
     
@@ -46,7 +46,7 @@ Fetch external datasets
 
 ::
 
-    Usage: citehound_admin.py fetch [OPTIONS] COMMAND [ARGS]...
+    Usage: cadmin.py fetch [OPTIONS] COMMAND [ARGS]...
     
       Download data dependencies
     
@@ -64,7 +64,7 @@ List and use data loaders
 
 ::
 
-    Usage: citehound_admin.py ingest [OPTIONS] COMMAND [ARGS]...
+    Usage: cadmin.py ingest [OPTIONS] COMMAND [ARGS]...
     
       Data import operations
     
@@ -80,7 +80,7 @@ List, update query collections
 
 ::
 
-    Usage: citehound_admin.py query [OPTIONS] COMMAND [ARGS]...
+    Usage: cadmin.py query [OPTIONS] COMMAND [ARGS]...
     
       Manage query collections and run standardised queries.
     

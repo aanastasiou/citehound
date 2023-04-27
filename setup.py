@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.0.1'
+version = '0.0.2'
 
 setup(name='citehound',
       version=version,
@@ -11,8 +11,8 @@ setup(name='citehound',
       keywords='scientometrics bibliography research review',
       author='Athanasios Anastasiou',
       author_email='athanastasiou@gmail.com',
-      scripts=["scripts/citehound_admin.py", 
-               "scripts/citehound_mesh.py",],
+      scripts=["scripts/cadmin.py", 
+               "scripts/cmeshprep.py",],
       packages=["citehound", ],
       include_package_data=True,
       zip_safe=True,

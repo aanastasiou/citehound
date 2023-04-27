@@ -2,7 +2,7 @@
 """
 ::
 
-    Usage: citehound_mesh.py [OPTIONS] COMMAND [ARGS]...
+    Usage: cmeshprep.py [OPTIONS] COMMAND [ARGS]...
     
       MeSH data preprocessor
     
@@ -18,7 +18,7 @@ MeSH Preprocessing
 
 ::
 
-    Usage: citehound_mesh.py preprocess [OPTIONS]
+    Usage: cmeshprep.py preprocess [OPTIONS]
     
       MESH data importing
     
@@ -36,7 +36,7 @@ MeSH Visualisation
 
 ::
 
-    Usage: citehound_mesh.py visualise [OPTIONS] INPUT_FILE TOP_LEVEL_ELEMENT
+    Usage: cmeshprep.py visualise [OPTIONS] INPUT_FILE TOP_LEVEL_ELEMENT
     
       MeSH tree visualisation.
     
