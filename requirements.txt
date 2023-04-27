@@ -1,0 +1,10 @@
+pygraphviz
+networkx
+neomodel
+lxml
+click
+matplotlib
+pyyaml
+neoads @ git+git@github.com:aanastasiou/neoads.git
+sphinx
+
