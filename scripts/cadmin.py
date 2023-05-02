@@ -26,19 +26,21 @@ Database operations
 
 ::
 
-
     Usage: cadmin.py db [OPTIONS] COMMAND [ARGS]...
-    
-      Database operations
-    
+
+    Database operations
+
     Options:
       --help  Show this message and exit.
-    
+
     Commands:
+      create     Create a new data space
       drop       Delete records and (optionally) remove the schema from the...
       getschema  Visualises the current schema of the database
       init       Initialises (an empty) Neo4j database with the Citehound...
       link       Runs a probabilistic linking step that links countries and...
+      ls         Lists established database projects
+      start      Starts a containerised DBMS on the data space defined by...
 
 
 Fetch external datasets
@@ -139,6 +141,23 @@ def db():
     Database operations
     """
     pass
+
+@db.command()
+def ls():
+    """
+    Lists established database projects
+    """
+    # Check that the environment variables are set
+    if "CITEHOUND_DATA" not in os.environ:
+        click.echo("ERROR: CITEHOUND_DATA not set")
+        sys.exit(-1)
+
+    # Get all directories under CITEHOUND_DATA
+    data_dirs = list(filter(lambda x:not x.startswith('.'), os.listdir(f"{os.environ['CITEHOUND_DATA'].rstrip('/')}/")))
+
+    for a_data_dir in data_dirs:
+        click.echo(f"{a_data_dir}")
+
 
 @db.command()
 @click.argument("project-name", type=str)

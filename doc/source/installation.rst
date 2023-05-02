@@ -161,17 +161,17 @@ This is achieved largely by the ``cadmin.py`` program and the data flow is depic
 
    graph LR;
        PB2[(Pubmed<br/>MeSH Terms)];
-       GRID[(grid.ac)];
+       GRID[(ror.org)];
        BibAdmin[cadmin.py];
        BibMESH[cmeshprep.py];
        BibDB[(Citehound)];
 
-       GRID -- fetch_GRID.sh --> BibAdmin;
-       BibAdmin -- import GRID --> BibDB;
+       GRID -- fetch ror --> BibAdmin;
+       BibAdmin -- ingest data ROR ror_version.json --> BibDB;
 
-       PB2-- fetch_MESH.sh --> BibMESH;
-       BibMESH -- MESH_master_tree.json --> BibAdmin;
-       BibAdmin -- import MESH --> BibDB;
+       PB2 -- fetch mesh--> BibMESH;
+       BibMESH --> BibAdmin;
+       BibAdmin -- ingest data MESH MESH_master_tree.json --> BibDB;
 
 
 Importing ROR
