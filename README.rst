@@ -38,4 +38,14 @@ links affiliations to their ROR identifiers and runs queries on the database.
 Use Citehound as an aid to your literature search or literature review writing or as a basis for 
 applications making use of bibliographical data.
 
+Installation
+------------
+
+1. Clone the repository
+2. Create a virtualenv
+3. Activate the virtualenv
+4. Install requirements (``> pip install -r requirements.txt``)
+5. Install citehound (``> pip install ./``)
+6. Configure citehound
+
 

@@ -5,6 +5,8 @@ lxml
 click
 matplotlib
 pyyaml
-neoads @ git+git@github.com:aanastasiou/neoads.git
+pandas
+-e git+https://github.com/aanastasiou/neoads.git#egg=neoads
 sphinx
+sphinxcontrib-mermaid
 
