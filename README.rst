@@ -46,6 +46,6 @@ Installation
 3. Activate the virtualenv
 4. Install requirements (``> pip install -r requirements.txt``)
 5. Install citehound (``> pip install ./``)
-6. Configure citehound
 
-
+For more information on installing additional datasets, your own bibliographic data and the operation of citehound, 
+please see `the project's documentation on readthedocs <https://citehound.readthedocs.io>`_
