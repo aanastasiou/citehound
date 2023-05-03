@@ -153,10 +153,9 @@ def ls():
         sys.exit(-1)
 
     # Get all directories under CITEHOUND_DATA
-    data_dirs = list(filter(lambda x:not x.startswith('.'), os.listdir(f"{os.environ['CITEHOUND_DATA'].rstrip('/')}/")))
-
-    for a_data_dir in data_dirs:
-        click.echo(f"{a_data_dir}")
+    for a_dir in os.listdir(f"{os.environ['CITEHOUND_DATA'].rstrip('/')}/"):
+        if not a_dir.startswith('.') and os.path.isdir(f"{os.environ['CITEHOUND_DATA'].rstrip('/')}/{a_dir}"):
+            click.echo(f"{a_dir}")
 
 
 @db.command()
