@@ -9,20 +9,28 @@ class PluginPropertyBase:
     """
     Models the properties along with their constraints for each plugin
     """
-    def __init__(self, default_value):
+    def __init__(self, default_value, prompt=""):
         self._value = None
-        self.value = default_value
+        self._default_value = self._validate(default_value)
+        self._prompt = prompt
 
     def validate(self, a_value):
         pass
+
+    @property
+    def prompt(self):
+        return self.prompt
 
     @property
     def value(self):
         return self._value
 
     @value.setter
-    def value(set, new_value):
+    def value(self, new_value):
         self._value = self.validate(new_value)
+
+    def reset(self):
+        self._value = self._default_value
 
 
 class PluginPropertyInt(PluginPropertyBase):
@@ -102,23 +110,25 @@ class PluginBase:
         """Called to reset the state of the plugin without re-initialising it"""
         pass
 
-    def on_before_process(self, frame_in):
+    def on_before_process(self):
         """Called just before the main processing step."""
         return frame_in
 
-    def on_process(self, frame_in):
+    def on_process(self):
         """Performs the main processing step."""
         return frame_in
 
-    def on_after_process(self, frame_in):
+    def on_after_process(self):
         """Called just after the main processing step."""
         return frame_in
 
-    def __call__(self, frame_in):
+    def __call__(self):
         if not self._is_active:
             return frame_in
-
-        return self.on_after_process(self.on_process(self.on_before_process(frame_in)))
+        
+        self.on_before_process()
+        self.on_process()
+        self.on_after_process()
 
     def __repr__(self):
         return f"             Name:{self.description['name']}\nShort Description:{self.description['short_desc']}\n Long Description:{self.description['long_desc']}\n"
