@@ -11,11 +11,11 @@ class PluginPropertyBase:
     """
     def __init__(self, default_value, prompt=""):
         self._value = None
-        self._default_value = self._validate(default_value)
+        self._default_value = self.validate(default_value)
         self._prompt = prompt
 
     def validate(self, a_value):
-        pass
+        return a_value
 
     @property
     def prompt(self):
