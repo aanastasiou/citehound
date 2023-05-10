@@ -5,6 +5,60 @@ Basic definition of the plugin system.
 :date: September 2019
 """
 
+class PluginPropertyBase:
+    """
+    Models the properties along with their constraints for each plugin
+    """
+    def __init__(self, default_value):
+        self._value = None
+        self.value = default_value
+
+    def validate(self, a_value):
+        pass
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(set, new_value):
+        self._value = self.validate(new_value)
+
+
+class PluginPropertyInt(PluginPropertyBase):
+    def __init__(self, default_value=0):
+        super().__init__(default_value)
+
+    def validate(self, a_value):
+        return int(a_value)
+
+
+class PluginPropertyFloat(PluginPropertyBase):
+    def __init__(self, default_value=0.0):
+        super().__init__(default_value)
+
+    def validate(self, a_value):
+        return float(a_value)
+
+
+class PluginPropertyString(PluginPropertyBase):
+    def __init__(self, default_value="", str_pattern=None):
+        self._str_pattern = str_pattern
+        super().__init__(default_value)
+
+    def validate(self, a_value):
+        if str_pattern is None:
+            return str(a_value)
+        else:
+            try:
+                if not self._str_pattern.match(a_value):
+                    raise Exception(f"{a_value} does not conform to the string pattern")
+                else:
+                    return str(a_value)
+            except TypeError:
+                raise Exception(f"Expected string received {a_value}")
+
+
 class PluginBase:
     """
     Abstract class for plugins.
