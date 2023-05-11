@@ -5,14 +5,29 @@ Basic definition of the plugin system.
 :date: September 2019
 """
 
+import re
+
 class PluginPropertyBase:
     """
     Models the properties along with their constraints for each plugin
     """
-    def __init__(self, default_value, prompt=""):
-        self._value = None
+    def __init__(self, default_value=None, prompt="", required=False):
         self._default_value = self.validate(default_value)
         self._prompt = prompt
+        self._required = required
+        self._private_name = None
+
+    def __set_name__(self, owner, name):
+        self._private_name = f"_{name}"
+
+    def __get__(self, obj, obj_type=None):
+        if obj is None:
+            return self
+        else:
+            return getattr(obj, self._private_name)
+
+    def __set__(self, object, value):
+        setattr(object, self._private_name, self.validate(value))
 
     def validate(self, a_value):
         return a_value
@@ -22,49 +37,111 @@ class PluginPropertyBase:
         return self.prompt
 
     @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, new_value):
-        self._value = self.validate(new_value)
-
-    def reset(self):
-        self._value = self._default_value
+    def default_value(self):
+        return self._default_value
 
 
 class PluginPropertyInt(PluginPropertyBase):
-    def __init__(self, default_value=0):
-        super().__init__(default_value)
+    def __init__(self, default_value=0, prompt="", vmin=None, vmax=None):
+        super().__init__(default_value, prompt)
+        self._vmin = vmin
+        self._vmax = vmax
+    
+    @property
+    def vmin(self):
+        return self._vmin
 
-    def validate(self, a_value):
-        return int(a_value)
+    @property
+    def vmax(self):
+        return self._vmax
+
+    def validate(self, new_value):
+        if not issubclass(type(new_value), int):
+            raise TypeError(f"{self._name} expects int or float, received {type(new_value)}")
+        if self._vmin is not None:
+            if new_value < self._vmin:
+                raise ValueError(f"Expected value to be {self._vmin} > x, received {new_value}")
+        if self._vmax is not None:
+            if new_value > self._vmax:
+                raise ValueError(f"Expected value to be x < {self._vmax}, received {new_value}")
+        return int(new_value)
 
 
 class PluginPropertyFloat(PluginPropertyBase):
-    def __init__(self, default_value=0.0):
-        super().__init__(default_value)
+    def __init__(self, default_value=0.0, prompt="", vmin=None, vmax=None):
+        super().__init__(default_value, prompt)
+        self._vmin = vmin
+        self._vmax = vmax
+    
+    @property
+    def vmin(self):
+        return self._vmin
 
-    def validate(self, a_value):
-        return float(a_value)
+    @property
+    def vmax(self):
+        return self._vmax
+
+    def validate(self, new_value):
+        if not issubclass(type(new_value), float):
+            raise TypeError(f"{self._name} expects int or float, received {type(new_value)}")
+        if self._vmin is not None:
+            if new_value < self._vmin:
+                raise ValueError(f"Expected value to be {self._vmin} > x, received {new_value}")
+        if self._vmax is not None:
+            if new_value > self._vmax:
+                raise ValueError(f"Expected value to be x < {self._vmax}, received {new_value}")
+        return float(new_value)
 
 
 class PluginPropertyString(PluginPropertyBase):
-    def __init__(self, default_value="", str_pattern=None):
-        self._str_pattern = str_pattern
-        super().__init__(default_value)
+    def __init__(self, default_value=0.0, prompt="", choices=None, max_length=None):
+        super().__init__(default_value, prompt)
+        self._choices = choices
+        self._max_length = max_length
 
-    def validate(self, a_value):
-        if str_pattern is None:
-            return str(a_value)
-        else:
-            try:
-                if not self._str_pattern.match(a_value):
-                    raise Exception(f"{a_value} does not conform to the string pattern")
-                else:
-                    return str(a_value)
-            except TypeError:
-                raise Exception(f"Expected string received {a_value}")
+    @property
+    def choices(self):
+        return self._choices.keys()
+
+    @property
+    def max_length(self):
+        return self._max_length
+
+    def validate(self, new_value):
+        if not issubclass(type(new_value), str):
+            raise TypeError(f"{self._name} expects str, received {type(new_value)}")
+        if self._max_length is not None:
+            if len(new_value) >= max_length:
+                raise ValueError(f"{self._name} should be at most {self._max_length} characters long, was {len(new_value)}")
+        if self._choices is not None:
+            if new_value not in self_choices:
+                raise ValueError(f"{self._name} expects values in {list(self._choices.keys())}, received {new_value}")
+            return self._choices[new_value]
+        return new_value
+
+
+class PluginPropertyRegexProperty(PluginPropertyBase):
+    def __init__(self, default_value=None, prompt="", expression=None):
+        super().__init__(default_value, prompt)
+        self._expression = re.compile(expression)
+
+    @property
+    def expression(self):
+        return self._expression
+
+    def validate(self, new_value):
+        if not issubclass(type(new_value), str):
+            raise TypeError(f"{self._name} expects str, received {type(new_value)}")
+        if not self._expression.match(new_value):
+            raise ValueError(f"{self._name} is expected to conform to {self._expression}, received {new_value}")
+        return new_value
+
+
+class PluginPropertyBoolean(PluginPropertyBase):
+    def validate(self, new_value):
+        if not issubclass(type(new_value), bool):
+            raise TypeError(f"{self._name} expects bool, received {type(new_value)}")
+        return new_value
 
 
 class PluginBase:
@@ -76,6 +153,7 @@ class PluginBase:
     def __init__(self):
         self._is_active = False
         self._description = {}
+        self.reset()
 
     @property
     def description(self):
@@ -132,6 +210,11 @@ class PluginBase:
 
     def __repr__(self):
         return f"             Name:{self.description['name']}\nShort Description:{self.description['short_desc']}\n Long Description:{self.description['long_desc']}\n"
+
+    def reset(self):
+        for a_var in vars(self.__class__):
+            if issubclass(type(getattr(self.__class__,a_var)), PPropertyDescriptorBase):
+                setattr(self, a_var, getattr(self.__class__,a_var).default_value)
 
 
 # class PluginAdapter:
