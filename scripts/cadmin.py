@@ -105,11 +105,8 @@ import re
 import click
 import json
 import networkx
-import citehound
 
-import citehound.models.core
-import citehound.models.pubmed
-import citehound.models.grid
+from citehound.citehound_manager import CM
 import citehound.utils
 from citehound import std_queries
 from neomodel import install_all_labels, remove_all_labels
