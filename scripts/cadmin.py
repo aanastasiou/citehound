@@ -106,7 +106,7 @@ import click
 import json
 import networkx
 
-from citehound.citehound_manager import CM
+from citehound import CM
 import citehound.utils
 from citehound import std_queries
 from neomodel import install_all_labels, remove_all_labels
