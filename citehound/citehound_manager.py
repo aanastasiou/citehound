@@ -18,6 +18,8 @@ from . import exceptions
 from . import batchprocess
 from . import datainput
 
+from neoads import MemoryManager
+
 import collections
 
 import pandas
@@ -69,9 +71,13 @@ class CitehoundManager:
             else:
                 conn_uri = connection_uri or os.environ["NEO4J_BOLT_URL"]
             self._connection_URI = conn_uri
-
             if self._connection_URI is not None:
                 neomodel.db.set_connection(self._connection_URI)
+                self._mem_manager = MemoryManager(connection_uri = self._connection_URI, reset_connection=False)
+            else:
+                # TODO: HIGH, Raise exception as it is impossible to initialise the required objects
+                pass
+
 
         @property
         def importers(self):
