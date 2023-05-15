@@ -592,7 +592,7 @@ def init(collection_file, re_init):
         query_data = std_queries.STD_QUERIES
 
     else:
-        collection_name = os.path.splitext(collection_file)[0].upper()
+        collection_name = os.path.basename(collection_file).upper()
 
         # Check the form of the list name
         if re.compile("^[A-Z_][A-Z_]*$").match(collection_name) is None:
