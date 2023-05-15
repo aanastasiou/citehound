@@ -111,13 +111,12 @@ import citehound.utils
 from citehound import std_queries
 from neomodel import install_all_labels, remove_all_labels
 import neomodel
+import neoads
 
 import requests
 import datetime
 from xml.etree import ElementTree
 import time
-
-import neoads
 
 import yaml
 import shutil
@@ -613,7 +612,7 @@ def init(collection_file, re_init):
                sys.exit(-1)
 
     # Let's interact with the database
-    IM = neoads.MemoryManager()
+    IM = CM._mem_manager
 
     with neomodel.db.transaction:
         # Check if the query collections exist
@@ -674,7 +673,7 @@ def ls(verbose, collection_name):
     """
     List all available queries within a collection
     """
-    IM = neoads.MemoryManager()
+    IM = CM._mem_manager
     # TODO: HIGH, Perform a very typical validation for [A-Z_][A-Z_]* pattern on collection_name
     collection_name = collection_name.upper() if collection_name else None
 
@@ -726,7 +725,8 @@ def run(query_name, collection_name, parameter):
     # TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
     collection_name = collection_name.upper()
 
-    IM = neoads.MemoryManager()
+    IM = CM._mem_manager
+
     # Check if the query collections exist
     try:
         query_collection = IM.get_object("QUERY_COLLECTIONS")
@@ -775,7 +775,7 @@ def rm(collection_name, confirm):
 
     # TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
     collection_name = collection_name.upper()
-    IM = neoads.MemoryManager()
+    IM = CM._mem_manager
 
     with neomodel.db.transaction:
         # Check if the query collections exist
