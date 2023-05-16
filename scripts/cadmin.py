@@ -130,6 +130,37 @@ def citehound_admin():
     """
     pass
 
+@citehound_admin.group()
+def plugin():
+    """
+    Work with plugins
+    """
+    pass
+
+@plugin.command()
+def ls():
+    """
+    List all available plugins
+    """
+    click.echo("Installed plugins")
+    for a_plugin in CM._plugin_manager.list_plugins():
+        click.echo(a_plugin)
+
+@plugin.command()
+@click.argument("plugin_name", type=str)
+def run(plugin_name):
+    """
+    Select and launch a plugin
+    """
+    if plugin_name not in CM._plugin_manager.list_plugins():
+        click.echo(f"Plugin {plugin_name} is not installed.\n")
+        sys.exit(-1)
+    else:
+        # 1. Load the plugin through the console UI wrapper 
+        # 2. Initialise it
+        # 3. Create a transaction
+        # 4. Call the plugin with the current CM object and transaction
+        pass
 
 @citehound_admin.group()
 def db():

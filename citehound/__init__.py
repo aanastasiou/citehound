@@ -17,6 +17,7 @@ import neomodel
 from . import exceptions
 from . import batchprocess
 from . import datainput
+from .plugin.plugin_manager import PluginManager
 
 from neoads import MemoryManager
 
@@ -77,6 +78,8 @@ class CitehoundManager:
             else:
                 # TODO: HIGH, Raise exception as it is impossible to initialise the required objects
                 pass
+
+            self._plugin_manager = PluginManager()
 
 
         @property
