@@ -23,6 +23,8 @@ setup(name='citehound',
       packages=["citehound", ],
       include_package_data=True,
       zip_safe=True,
-      install_requires=["pygraphviz", "networkx", "neomodel", "lxml", "click", "matplotlib", "pyyaml", "pkgutil"],
+      install_requires=["pygraphviz", "networkx", "neomodel", 
+                        "lxml", "click", "matplotlib", 
+                        "pyyaml", "pkgutil", "prompt_toolkit"],
       # entry_points=""
       )
