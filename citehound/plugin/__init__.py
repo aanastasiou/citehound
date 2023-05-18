@@ -13,13 +13,24 @@ class PluginPropertyBase:
 
     This is a Python descriptor.
 
+    :param default_value:
+    :param prompt:
+    :param help_str:
+    :param required:
+
+    :type default_value:
+    :type prompt:
+    :type help_str:
+    :type required:
+
     """
     # TODO: HIGH, enable the mandatory / optional value passing
-    def __init__(self, default_value=None, prompt="", required=False):
+    def __init__(self, default_value=None, prompt="", help_str="", required=False):
         self._default_value = default_value 
         self._prompt = prompt
         self._required = required
         self._private_name = None
+        self._help_str = help_str
 
     def __set_name__(self, owner, name):
         """
@@ -47,6 +58,10 @@ class PluginPropertyBase:
     def default_value(self):
         return self._default_value
 
+    @property
+    def help_str(self):
+        return self._help_str
+
 
 class PluginPropertyInt(PluginPropertyBase):
     """
@@ -58,8 +73,8 @@ class PluginPropertyInt(PluginPropertyBase):
     * A `prompt` (that provides a hint to user interfaces used to populate a given variable).
     * `vmin, vmax` such that `vmin < x < vmax`. 
     """
-    def __init__(self, default_value=0, prompt="", vmin=None, vmax=None):
-        super().__init__(default_value, prompt)
+    def __init__(self, default_value=0, prompt="", help_str="", required=False, vmin=None, vmax=None):
+        super().__init__(default_value, prompt, help_str, required)
         self._vmin = vmin
         self._vmax = vmax
     
@@ -87,8 +102,8 @@ class PluginPropertyInt(PluginPropertyBase):
 
 
 class PluginPropertyFloat(PluginPropertyBase):
-    def __init__(self, default_value=0.0, prompt="", vmin=None, vmax=None):
-        super().__init__(default_value, prompt)
+    def __init__(self, default_value=0.0, prompt="", help_str="", required=False, vmin=None, vmax=None):
+        super().__init__(default_value, prompt, help_str, required)
         self._vmin = vmin
         self._vmax = vmax
     
@@ -119,8 +134,8 @@ class PluginPropertyFloat(PluginPropertyBase):
 
 
 class PluginPropertyString(PluginPropertyBase):
-    def __init__(self, default_value=0.0, prompt="", choices=None, max_length=None):
-        super().__init__(default_value, prompt)
+    def __init__(self, default_value=0.0, prompt="", help_str="", required=False, choices=None, max_length=None):
+        super().__init__(default_value, prompt, help_str, required)
         self._choices = choices
         self._max_length = max_length
 
@@ -146,8 +161,8 @@ class PluginPropertyString(PluginPropertyBase):
 
 
 class PluginPropertyRegexProperty(PluginPropertyBase):
-    def __init__(self, default_value=None, prompt="", expression=None):
-        super().__init__(default_value, prompt)
+    def __init__(self, default_value=None, prompt="", help_str="", required=False, expression=None):
+        super().__init__(default_value, prompt, help_str, required)
         self._expression = re.compile(expression)
 
     @property
@@ -163,8 +178,8 @@ class PluginPropertyRegexProperty(PluginPropertyBase):
 
 
 class PluginPropertyMapped(PluginPropertyBase):
-    def __init__(self, default_value=None, prompt="", valid_values={"yes":True, "no":False}):
-        super().__init__(default_value, prompt)
+    def __init__(self, default_value=None, prompt="", help_str="", required=False, valid_values={"yes":True, "no":False}):
+        super().__init__(default_value, prompt, help_str, required)
         self._valid_values = valid_values
 
     @property
@@ -240,4 +255,16 @@ class PluginBase:
             if issubclass(type(getattr(self.__class__,a_var)), PluginPropertyBase):
                 setattr(self, a_var, getattr(self.__class__,a_var).default_value)
 
+    def list_user_props(self):
+        """
+        Return metadata associated with the parameters of a plugin.
+        """
+        var_metadata={}
+        for a_var in vars(self.__class__):
+            if issubclass(type(getattr(self.__class__, a_var)), PluginPropertyBase):
+                var_metadata[a_var] = {"default_value": getattr(self.__class__, a_var).default_value,
+                                       "prompt": getattr(self.__class__, a_var).prompt,
+                                       "help_str": getattr(self.__class__, a_var).help_str}
+
+        return var_metadata
 
