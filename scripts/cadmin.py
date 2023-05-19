@@ -167,7 +167,7 @@ def info(plugin, only_param_metadata):
 
 
 @plugin.command()
-def ls(plugin):
+def ls():
     """
     List all available plugins
     """
@@ -178,26 +178,50 @@ def ls(plugin):
 
 @plugin.command()
 @click.argument("plugin_name", type=str)
-def launch(plugin_name):
+@click.option("--parameter", "-p", multiple=True)
+def launch(plugin_name, parameter):
     """
     Select and launch a plugin
     """
     if plugin_name not in CM._plugin_manager.installed_plugins:
         click.echo(f"Plugin {plugin_name} is not installed.\n")
         sys.exit(-1)
-    else:
-        # Load the plugin
-        selected_plugin = CM._plugin_manager.load_plugin(plugin)()
 
-        # Wrap the plugin in the TUI adapter
-        wraped_plugin = adapters.PluginAdapterTUI(selected_plugin)
+    # Collect parameters provided at the command line
+    params = {}
+    for a_param in parameter:
+        if "=" not in a_param:
+            click.echo(f"Parameters are expected as -p param=param_value. Please revise {a_param} and try again")
+            sys.exit(-1)
+        key, value = a_param.split("=")
+        params[key] = value
+    
+    # Load the plugin
+    selected_plugin = CM._plugin_manager.load_plugin(plugin_name)()
 
-        # Populate the user parameters from the user
-        wraped_plugin.setup_plugin()
+    # Wrap the plugin in the TUI adapter
+    wraped_plugin = adapters.PluginAdapterTUI(selected_plugin)
 
-        # 3. Create a transaction
-        # 4. Call the plugin with the current CM object and transaction
-        pass
+    # Populate parameters provided at the command line
+    for a_param, a_value in params.items():
+        setattr(selected_plugin, a_param, a_value)
+
+    # If there are remaining required parameters that were not populated at the command line 
+    # but are required for the plugin, ask the user for those remaining parameters using 
+    # the appropriate interface.     
+    wraped_plugin.setup_plugin()
+
+    # Initialise the plugin
+    selected_plugin.on_init_plugin()
+
+    # Create a transaction and launch the plugin with the current CM object and transaction
+    # TODO: HIGH, This should go into CM and every time it is called it should be returning the last bookmark
+    with neomodel.db.transaction:
+        selected_plugin()
+
+    # Cleanup after the plugin
+    selected_plugin.on_cleanup_plugin()
+
 
 @citehound_admin.group()
 def db():
@@ -813,10 +837,11 @@ def run(query_name, collection_name, parameter):
     params = {}
     for a_param in parameter:
         if "=" not in a_param:
-            click.echo(f"Parameters are expected as -p param=param_value. Please revise {a_param} adn try again")
+            click.echo(f"Parameters are expected as -p param=param_value. Please revise {a_param} and try again")
             sys.exit(-1)
         key, value = a_param.split("=")
         if not (value.startswith("'") and value.endswith("'")):
+            # TODO: HIGH, correct this "int" casting here, it might be any type supported by neo4j
             try:
                 value = int(value)
             except ValueError:

@@ -37,6 +37,7 @@ class PluginPropertyBase:
         Creates the private member attribute.
         """
         self._private_name = f"_{name}"
+        setattr(owner, self._private_name, None)
 
     def __get__(self, obj, obj_type=None):
         if obj is None:
@@ -49,6 +50,10 @@ class PluginPropertyBase:
 
     def validate(self, a_value):
         return a_value
+
+    @property
+    def required(self):
+        return self._required
 
     @property
     def prompt(self):
@@ -228,7 +233,8 @@ class PluginBase:
             if issubclass(type(getattr(self.__class__, a_var)), PluginPropertyBase):
                 var_metadata[a_var] = {"default_value": getattr(self.__class__, a_var).default_value,
                                        "prompt": getattr(self.__class__, a_var).prompt,
-                                       "help_str": getattr(self.__class__, a_var).help_str}
+                                       "help_str": getattr(self.__class__, a_var).help_str,
+                                       "required": getattr(self.__class__, a_var).required}
         return var_metadata
 
     def on_init_plugin(self):
