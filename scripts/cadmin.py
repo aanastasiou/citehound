@@ -725,7 +725,11 @@ def run(query_name, collection_name, parameter):
     """
     Select and run a query from a collection.
     """
-
+    is_int = re.compile("[0-9]+")
+    is_float = re.compile("[0-9]+?\.[0-9]+")
+    is_string = re.compile("\".*?\"")
+    is_date = re.compile("[0-9]+\-[0-9]+\-[0-9]+")
+    
     # TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
     collection_name = collection_name.upper()
 
@@ -748,15 +752,20 @@ def run(query_name, collection_name, parameter):
     params = {}
     for a_param in parameter:
         if "=" not in a_param:
-            click.echo(f"Parameters are expected as -p param=param_value. Please revise {a_param} adn try again")
+            click.echo(f"Parameters are expected as -p param=param_value. Please revise {a_param} and try again")
             sys.exit(-1)
         key, value = a_param.split("=")
-        if not (value.startswith("'") and value.endswith("'")):
-            try:
-                value = int(value)
-            except ValueError:
-                click.echo(f"Parameters without single quotes are assumed to be nummeric, please revise {a_param} and try again")
-                sys.exit(-1)
+        if is_int.match(value):
+            value = int(value)
+        elif is_float.match(value):
+            value = float(value)
+        elif is_string.match(value):
+            value = str(value).replace("\"", "")
+        elif is_date.match(value):
+            value = str(value).replace("\"", "")
+        else:
+            click.echo(f"At the moment, parameter values can be either integers, floats, strings or dates. Received {key} = {a_param}.")
+            sys.exit(-1)
         params[key] = value
 
     # Check if the query exists.
