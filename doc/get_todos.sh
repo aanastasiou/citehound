@@ -7,5 +7,6 @@
 #
 
 echo "TODO List as of "`date`
-egrep "TODO:" -Hn $1/*.py|sed -e 's/:[ \t]*#//g'
+# egrep "TODO:" -Hn $1/*.py|sed -e 's/:[ \t]*#//g'
+egrep -r "TODO:" -Hn $1|sed -e 's/:[ \t]*#//g'
 
