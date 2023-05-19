@@ -105,11 +105,13 @@ import re
 import click
 import json
 import networkx
+from neomodel import install_all_labels, remove_all_labels
 
 from citehound import CM
 import citehound.utils
 from citehound import std_queries
-from neomodel import install_all_labels, remove_all_labels
+from citehound import exceptions
+from citehound.plugin import adapters
 import neomodel
 import neoads
 
@@ -138,26 +140,61 @@ def plugin():
     pass
 
 @plugin.command()
-def ls():
+@click.argument("plugin", type=str)
+@click.option("--only-param-metadata", "-m", is_flag=True, default=False, help="List only the parameter metadata")
+def info(plugin, only_param_metadata):
+    """
+    Returns extensive information about all aspects of a plugin.
+    """
+    try:
+        selected_plugin = CM._plugin_manager.load_plugin(plugin)()
+    except exceptions.PluginNotFound as e:
+        click.echo(e.message)
+        sys.exit(-1)
+
+    if not only_param_metadata:
+        plugin_description = selected_plugin.description
+        click.echo(f"\nName: {plugin_description['name']}\n\n")
+        click.echo(f"Short Description:\n{plugin_description['short_desc']}\n")
+        click.echo(f"Long Description:\n{plugin_description['long_desc']}\n\n")
+
+    plugin_user_params = selected_plugin.user_properties
+    click.echo("Param.Name, Default value, Prompt, Description")
+    for a_param, param_metadata in plugin_user_params.items():
+        click.echo(f"{a_param}, {param_metadata['default_value']}, {param_metadata['prompt']}, {param_metadata['help_str']}")
+
+    click.echo("\n")
+
+
+@plugin.command()
+def ls(plugin):
     """
     List all available plugins
     """
     click.echo("Installed plugins")
-    for a_plugin in CM._plugin_manager.list_plugins():
+    for a_plugin in CM._plugin_manager.installed_plugins:
         click.echo(a_plugin)
+       
 
 @plugin.command()
 @click.argument("plugin_name", type=str)
-def run(plugin_name):
+def launch(plugin_name):
     """
     Select and launch a plugin
     """
-    if plugin_name not in CM._plugin_manager.list_plugins():
+    if plugin_name not in CM._plugin_manager.installed_plugins:
         click.echo(f"Plugin {plugin_name} is not installed.\n")
         sys.exit(-1)
     else:
-        # 1. Load the plugin through the console UI wrapper 
-        # 2. Initialise it
+        # Load the plugin
+        selected_plugin = CM._plugin_manager.load_plugin(plugin)()
+
+        # Wrap the plugin in the TUI adapter
+        wraped_plugin = adapters.PluginAdapterTUI(selected_plugin)
+
+        # Populate the user parameters from the user
+        wraped_plugin.setup_plugin()
+
         # 3. Create a transaction
         # 4. Call the plugin with the current CM object and transaction
         pass

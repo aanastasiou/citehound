@@ -218,6 +218,19 @@ class PluginBase:
         """
         return self._description
 
+    @property
+    def user_properties(self):
+        """
+        Return metadata associated with the parameters of a plugin.
+        """
+        var_metadata={}
+        for a_var in vars(self.__class__):
+            if issubclass(type(getattr(self.__class__, a_var)), PluginPropertyBase):
+                var_metadata[a_var] = {"default_value": getattr(self.__class__, a_var).default_value,
+                                       "prompt": getattr(self.__class__, a_var).prompt,
+                                       "help_str": getattr(self.__class__, a_var).help_str}
+        return var_metadata
+
     def on_init_plugin(self):
         """Initialise the plugin and make sure that its state is valid."""
         pass
@@ -255,16 +268,4 @@ class PluginBase:
             if issubclass(type(getattr(self.__class__,a_var)), PluginPropertyBase):
                 setattr(self, a_var, getattr(self.__class__,a_var).default_value)
 
-    def list_user_props(self):
-        """
-        Return metadata associated with the parameters of a plugin.
-        """
-        var_metadata={}
-        for a_var in vars(self.__class__):
-            if issubclass(type(getattr(self.__class__, a_var)), PluginPropertyBase):
-                var_metadata[a_var] = {"default_value": getattr(self.__class__, a_var).default_value,
-                                       "prompt": getattr(self.__class__, a_var).prompt,
-                                       "help_str": getattr(self.__class__, a_var).help_str}
-
-        return var_metadata
-
+    
