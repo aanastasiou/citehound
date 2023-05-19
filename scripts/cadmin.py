@@ -1,8 +1,8 @@
 #!/bin/env python
 """
 
-Administrator
--------------
+Citehound administration
+------------------------
 
 ::
 
@@ -21,8 +21,8 @@ Administrator
       query   Standard query operations over the database.
 
 
-Database operations
--------------------
+Work with database projects
+---------------------------
 
 ::
 
@@ -61,8 +61,8 @@ Fetch external datasets
       ror        Latest version of the ROR dataset
 
 
-List and use data loaders
--------------------------
+Ingesting data sets
+-------------------
 
 ::
 
@@ -77,8 +77,9 @@ List and use data loaders
       data  Selects an importer and imports a data file into Citehound
       ls    Lists the available data importers.
 
-List, update query collections
-------------------------------
+
+Working wih queries
+-------------------
 
 ::
 
@@ -94,6 +95,25 @@ List, update query collections
       ls    List all available queries within a collection
       rm    Remove a query collection from the database.
       run   Select and run a query from a collection.
+
+
+Working with plugins
+--------------------
+
+::
+
+    Usage: cadmin.py plugin [OPTIONS] COMMAND [ARGS]...
+    
+      Work with plugins
+    
+    Options:
+      --help  Show this message and exit.
+    
+    Commands:
+      info    Returns extensive information about all aspects of a plugin.
+      launch  Select and launch a plugin
+      ls      List all available plugins
+
 
 :author: Athanasios Anastasiou
 :date: Mar 2023

@@ -29,6 +29,7 @@ via its unifying data model.
    installation
    operation
    queries
+   plugins
    methods
    current_todos
    api
