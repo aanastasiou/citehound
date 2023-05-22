@@ -156,6 +156,11 @@ def citehound_admin():
 def plugin():
     """
     Work with plugins
+
+    Citehound plugins are packaged and distributed as Python modules.
+    
+    Therefore, for cadmin.py to be able to list available plugins, they 
+    have to be installed in the current local environment.
     """
     pass
 
@@ -201,7 +206,8 @@ def ls():
 @click.option("--parameter", "-p", multiple=True)
 def launch(plugin_name, parameter):
     """
-    Select and launch a plugin
+    Select and launch a plugin.
+
     """
     if plugin_name not in CM._plugin_manager.installed_plugins:
         click.echo(f"Plugin {plugin_name} is not installed.\n")
@@ -222,9 +228,21 @@ def launch(plugin_name, parameter):
     # Wrap the plugin in the TUI adapter
     wraped_plugin = adapters.PluginAdapterTUI(selected_plugin)
 
+    plugin_param_errors = []
+
     # Populate parameters provided at the command line
     for a_param, a_value in params.items():
-        setattr(selected_plugin, a_param, a_value)
+        try:
+            setattr(selected_plugin, a_param, a_value)
+        except (ValueError, TypeError) as e:
+            plugin_param_errors.append({"name": a_param, "error":e})
+
+    if len(plugin_param_errors):
+        click.echo("There were errors trying to set parameters:")
+
+        for an_error in plugin_param_errors:
+            click.echo(f"{an_error['name']}, {an_error['error']}")
+        sys.exit(-1)
 
     # If there are remaining required parameters that were not populated at the command line 
     # but are required for the plugin, ask the user for those remaining parameters using 
