@@ -17,6 +17,9 @@ import neomodel
 from . import exceptions
 from . import batchprocess
 from . import datainput
+from .plugin.plugin_manager import PluginManager
+
+from neoads import MemoryManager
 
 import collections
 
@@ -31,8 +34,8 @@ def rptr(a_message):
     sys.stdout.write(f"{a_message}{''.join([' '] * (40 - len(a_message)))}{datetime.datetime.now()}\n")
 
 
-class InsightManager:
-    class __InsightManager:
+class CitehoundManager:
+    class __CitehoundManager:
         """
         The main object via which all operations are carried out on the system
         """
@@ -69,9 +72,15 @@ class InsightManager:
             else:
                 conn_uri = connection_uri or os.environ["NEO4J_BOLT_URL"]
             self._connection_URI = conn_uri
-
             if self._connection_URI is not None:
                 neomodel.db.set_connection(self._connection_URI)
+                self._mem_manager = MemoryManager(connection_uri = self._connection_URI, reset_connection=False)
+            else:
+                # TODO: HIGH, Raise exception as it is impossible to initialise the required objects
+                pass
+
+            self._plugin_manager = PluginManager()
+
 
         @property
         def importers(self):
@@ -265,8 +274,8 @@ class InsightManager:
     instance = None
 
     def __init__(self, connection_uri=None, uname=None, pword=None, host="localhost", port=7687):
-        if not InsightManager.instance:
-            InsightManager.instance = InsightManager.__InsightManager(connection_uri=connection_uri,
+        if not CitehoundManager.instance:
+            CitehoundManager.instance = CitehoundManager.__CitehoundManager(connection_uri=connection_uri,
                                                                       uname=uname,
                                                                       pword=pword,
                                                                       host=host,
@@ -276,7 +285,7 @@ class InsightManager:
         return getattr(self.instance, item)
 
 
-# Configure an InsightManager
+# Configure an CitehoundManager
 grid_importer_record = {"name": "GRID",
                         "description": "Imports the GRID database (https://www.grid.ac/). Expects a JSON file.",
                         "object": datainput.GRIDDataItemBatchInsert()}
@@ -300,10 +309,10 @@ pubmed_batch_importer_record = {"name": "PUBMED_BATCH",
                                 "object": datainput.PUBMEDDataItemBatchInsert()}
 
 # Create the insight manager singleton object
-IM = InsightManager()
+CM = CitehoundManager()
 # Register the importers
-IM.register_importer(grid_importer_record)
-IM.register_importer(ror_importer_record)
-IM.register_importer(mesh_importer_record)
-IM.register_importer(pubmed_importer_record)
-IM.register_importer(pubmed_batch_importer_record)
+CM.register_importer(grid_importer_record)
+CM.register_importer(ror_importer_record)
+CM.register_importer(mesh_importer_record)
+CM.register_importer(pubmed_importer_record)
+CM.register_importer(pubmed_batch_importer_record)

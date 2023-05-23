@@ -26,3 +26,12 @@ class ManagerError(InsightException):
     Raised in the event of an exception at the point of interaction of the InsightManager with any external entities.
     """
     pass
+
+class PluginError(InsightException):
+    """
+    Raised in the event of a plugin related error
+    """
+    pass
+
+class PluginNotFound(PluginError):
+    pass

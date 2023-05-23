@@ -10,5 +10,6 @@ Citehound API
     api_manager
     api_models
     api_datainput
+    api_plugins
     api_utilities
     api_exceptions

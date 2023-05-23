@@ -1,2 +1,12 @@
 Version 0.0.3
 
+* Tighter integration between neoads.MemoryManager and CitehoundManager
+* Citehound is now a namespace module
+* Most operations are carried out via a top level singleton object (CM)
+
+  * The goal is for all operations to be carried out by the top level object.
+
+* Fixed bug in the initialisation of external query collections
+
+* Started work on the plugin system
+

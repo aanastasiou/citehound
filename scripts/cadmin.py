@@ -1,8 +1,8 @@
 #!/bin/env python
 """
 
-Administrator
--------------
+Citehound administration
+------------------------
 
 ::
 
@@ -21,8 +21,8 @@ Administrator
       query   Standard query operations over the database.
 
 
-Database operations
--------------------
+Work with database projects
+---------------------------
 
 ::
 
@@ -61,8 +61,8 @@ Fetch external datasets
       ror        Latest version of the ROR dataset
 
 
-List and use data loaders
--------------------------
+Ingesting data sets
+-------------------
 
 ::
 
@@ -77,8 +77,9 @@ List and use data loaders
       data  Selects an importer and imports a data file into Citehound
       ls    Lists the available data importers.
 
-List, update query collections
-------------------------------
+
+Working wih queries
+-------------------
 
 ::
 
@@ -95,6 +96,25 @@ List, update query collections
       rm    Remove a query collection from the database.
       run   Select and run a query from a collection.
 
+
+Working with plugins
+--------------------
+
+::
+
+    Usage: cadmin.py plugin [OPTIONS] COMMAND [ARGS]...
+    
+      Work with plugins
+    
+    Options:
+      --help  Show this message and exit.
+    
+    Commands:
+      info    Returns extensive information about all aspects of a plugin.
+      launch  Select and launch a plugin
+      ls      List all available plugins
+
+
 :author: Athanasios Anastasiou
 :date: Mar 2023
 """
@@ -105,22 +125,20 @@ import re
 import click
 import json
 import networkx
-import citehound
+from neomodel import install_all_labels, remove_all_labels
 
-import citehound.models.core
-import citehound.models.pubmed
-import citehound.models.grid
+from citehound import CM
 import citehound.utils
 from citehound import std_queries
-from neomodel import install_all_labels, remove_all_labels
+from citehound import exceptions
+from citehound.plugin import adapters
 import neomodel
+import neoads
 
 import requests
 import datetime
 from xml.etree import ElementTree
 import time
-
-import neoads
 
 import yaml
 import shutil
@@ -133,6 +151,114 @@ def citehound_admin():
 
     """
     pass
+
+@citehound_admin.group()
+def plugin():
+    """
+    Work with plugins
+
+    Citehound plugins are packaged and distributed as Python modules.
+    
+    Therefore, for cadmin.py to be able to list available plugins, they 
+    have to be installed in the current local environment.
+    """
+    pass
+
+@plugin.command()
+@click.argument("plugin", type=str)
+@click.option("--only-param-metadata", "-m", is_flag=True, default=False, help="List only the parameter metadata")
+def info(plugin, only_param_metadata):
+    """
+    Returns extensive information about all aspects of a plugin.
+    """
+    try:
+        selected_plugin = CM._plugin_manager.load_plugin(plugin)()
+    except exceptions.PluginNotFound as e:
+        click.echo(e.message)
+        sys.exit(-1)
+
+    if not only_param_metadata:
+        plugin_description = selected_plugin.description
+        click.echo(f"\nName: {plugin_description['name']}\n\n")
+        click.echo(f"Short Description:\n{plugin_description['short_desc']}\n")
+        click.echo(f"Long Description:\n{plugin_description['long_desc']}\n\n")
+
+    plugin_user_params = selected_plugin.user_properties
+    click.echo("Param.Name, Default value, Prompt, Description")
+    for a_param, param_metadata in plugin_user_params.items():
+        click.echo(f"{a_param}, {param_metadata['default_value']}, {param_metadata['prompt']}, {param_metadata['help_str']}")
+
+    click.echo("\n")
+
+
+@plugin.command()
+def ls():
+    """
+    List all available plugins
+    """
+    click.echo("Installed plugins")
+    for a_plugin in CM._plugin_manager.installed_plugins:
+        click.echo(a_plugin)
+       
+
+@plugin.command()
+@click.argument("plugin_name", type=str)
+@click.option("--parameter", "-p", multiple=True)
+def launch(plugin_name, parameter):
+    """
+    Select and launch a plugin.
+
+    """
+    if plugin_name not in CM._plugin_manager.installed_plugins:
+        click.echo(f"Plugin {plugin_name} is not installed.\n")
+        sys.exit(-1)
+
+    # Collect parameters provided at the command line
+    params = {}
+    for a_param in parameter:
+        if "=" not in a_param:
+            click.echo(f"Parameters are expected as -p param=param_value. Please revise {a_param} and try again")
+            sys.exit(-1)
+        key, value = a_param.split("=")
+        params[key] = value
+    
+    # Load the plugin
+    selected_plugin = CM._plugin_manager.load_plugin(plugin_name)()
+
+    # Wrap the plugin in the TUI adapter
+    wraped_plugin = adapters.PluginAdapterTUI(selected_plugin)
+
+    plugin_param_errors = []
+
+    # Populate parameters provided at the command line
+    for a_param, a_value in params.items():
+        try:
+            setattr(selected_plugin, a_param, a_value)
+        except (ValueError, TypeError) as e:
+            plugin_param_errors.append({"name": a_param, "error":e})
+
+    if len(plugin_param_errors):
+        click.echo("There were errors trying to set parameters:")
+
+        for an_error in plugin_param_errors:
+            click.echo(f"{an_error['name']}, {an_error['error']}")
+        sys.exit(-1)
+
+    # If there are remaining required parameters that were not populated at the command line 
+    # but are required for the plugin, ask the user for those remaining parameters using 
+    # the appropriate interface.     
+    wraped_plugin.setup_plugin()
+
+    # Initialise the plugin
+    selected_plugin.on_init_plugin()
+
+    # Create a transaction and launch the plugin with the current CM object and transaction
+    # TODO: HIGH, This should go into CM and every time it is called it should be returning the last bookmark
+    with neomodel.db.transaction:
+        selected_plugin()
+
+    # Cleanup after the plugin
+    selected_plugin.on_cleanup_plugin()
 
 
 @citehound_admin.group()
@@ -596,7 +722,7 @@ def init(collection_file, re_init):
         query_data = std_queries.STD_QUERIES
 
     else:
-        collection_name = os.path.splitext(collection_file)[0].upper()
+        collection_name = os.path.splitext(os.path.basename(collection_file))[0].upper()
 
         # Check the form of the list name
         if re.compile("^[A-Z_][A-Z_]*$").match(collection_name) is None:
@@ -616,7 +742,7 @@ def init(collection_file, re_init):
                sys.exit(-1)
 
     # Let's interact with the database
-    IM = neoads.MemoryManager()
+    IM = CM._mem_manager
 
     with neomodel.db.transaction:
         # Check if the query collections exist
@@ -677,7 +803,7 @@ def ls(verbose, collection_name):
     """
     List all available queries within a collection
     """
-    IM = neoads.MemoryManager()
+    IM = CM._mem_manager
     # TODO: HIGH, Perform a very typical validation for [A-Z_][A-Z_]* pattern on collection_name
     collection_name = collection_name.upper() if collection_name else None
 
@@ -733,7 +859,8 @@ def run(query_name, collection_name, parameter):
     # TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
     collection_name = collection_name.upper()
 
-    IM = neoads.MemoryManager()
+    IM = CM._mem_manager
+
     # Check if the query collections exist
     try:
         query_collection = IM.get_object("QUERY_COLLECTIONS")
@@ -787,7 +914,7 @@ def rm(collection_name, confirm):
 
     # TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
     collection_name = collection_name.upper()
-    IM = neoads.MemoryManager()
+    IM = CM._mem_manager
 
     with neomodel.db.transaction:
         # Check if the query collections exist

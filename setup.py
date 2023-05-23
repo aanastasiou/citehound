@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.0.2'
+version = '0.0.3'
 
 setup(name='citehound',
       version=version,
@@ -23,6 +23,8 @@ setup(name='citehound',
       packages=["citehound", ],
       include_package_data=True,
       zip_safe=True,
-      install_requires=["pygraphviz", "networkx", "neomodel", "lxml", "click", "matplotlib", "pyyaml"],
+      install_requires=["pygraphviz", "networkx", "neomodel", 
+                        "lxml", "click", "matplotlib", 
+                        "pyyaml", "pkgutil", "prompt_toolkit"],
       # entry_points=""
       )
