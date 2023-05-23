@@ -16,19 +16,16 @@ class PluginPropertyBase:
     :param default_value:
     :param prompt:
     :param help_str:
-    :param required:
 
     :type default_value:
     :type prompt:
     :type help_str:
-    :type required:
 
     """
     # TODO: HIGH, enable the mandatory / optional value passing
-    def __init__(self, default_value=None, prompt="", help_str="", required=False):
-        self._default_value = default_value 
+    def __init__(self, default_value=None, prompt="", help_str=""):
+        self._default_value = default_value if default_value is None else self.validate(default_value)
         self._prompt = prompt
-        self._required = required
         self._private_name = None
         self._help_str = help_str
 
@@ -37,7 +34,7 @@ class PluginPropertyBase:
         Creates the private member attribute.
         """
         self._private_name = f"_{name}"
-        setattr(owner, self._private_name, None)
+        setattr(owner, self._private_name, self._default_value)
 
     def __get__(self, obj, obj_type=None):
         if obj is None:
@@ -50,10 +47,6 @@ class PluginPropertyBase:
 
     def validate(self, a_value):
         return a_value
-
-    @property
-    def required(self):
-        return self._required
 
     @property
     def prompt(self):
@@ -78,10 +71,10 @@ class PluginPropertyInt(PluginPropertyBase):
     * A `prompt` (that provides a hint to user interfaces used to populate a given variable).
     * `vmin, vmax` such that `vmin < x < vmax`. 
     """
-    def __init__(self, default_value=0, prompt="", help_str="", required=False, vmin=None, vmax=None):
-        super().__init__(default_value, prompt, help_str, required)
+    def __init__(self, default_value=None, prompt="", help_str="", vmin=None, vmax=None):
         self._vmin = vmin
         self._vmax = vmax
+        super().__init__(default_value, prompt, help_str)
     
     @property
     def vmin(self):
@@ -99,7 +92,7 @@ class PluginPropertyInt(PluginPropertyBase):
 
         if self._vmin is not None:
             if new_value < self._vmin:
-                raise ValueError(f"Expected value to be {self._vmin} > x, received {new_value}")
+                raise ValueError(f"Expected value to be x > {self._vmin}, received {new_value}")
         if self._vmax is not None:
             if new_value > self._vmax:
                 raise ValueError(f"Expected value to be x < {self._vmax}, received {new_value}")
@@ -107,10 +100,10 @@ class PluginPropertyInt(PluginPropertyBase):
 
 
 class PluginPropertyFloat(PluginPropertyBase):
-    def __init__(self, default_value=0.0, prompt="", help_str="", required=False, vmin=None, vmax=None):
-        super().__init__(default_value, prompt, help_str, required)
+    def __init__(self, default_value=None, prompt="", help_str="", vmin=None, vmax=None):
         self._vmin = vmin
         self._vmax = vmax
+        super().__init__(default_value, prompt, help_str)
     
     @property
     def vmin(self):
@@ -139,10 +132,10 @@ class PluginPropertyFloat(PluginPropertyBase):
 
 
 class PluginPropertyString(PluginPropertyBase):
-    def __init__(self, default_value=0.0, prompt="", help_str="", required=False, choices=None, max_length=None):
-        super().__init__(default_value, prompt, help_str, required)
+    def __init__(self, default_value=None, prompt="", help_str="", choices=None, max_length=None):
         self._choices = choices
         self._max_length = max_length
+        super().__init__(default_value, prompt, help_str)
 
     @property
     def choices(self):
@@ -156,19 +149,19 @@ class PluginPropertyString(PluginPropertyBase):
         if not issubclass(type(new_value), str):
             raise TypeError(f"{self._private_name} expects str, received {type(new_value)}")
         if self._max_length is not None:
-            if len(new_value) >= max_length:
+            if len(new_value) >= self._max_length:
                 raise ValueError(f"{self._private_name} should be at most {self._max_length} characters long, was {len(new_value)}")
         if self._choices is not None:
-            if new_value not in self_choices:
+            if new_value not in self._choices:
                 raise ValueError(f"{self._private_name} expects values in {list(self._choices.keys())}, received {new_value}")
             return self._choices[new_value]
         return new_value
 
 
-class PluginPropertyRegexProperty(PluginPropertyBase):
-    def __init__(self, default_value=None, prompt="", help_str="", required=False, expression=None):
-        super().__init__(default_value, prompt, help_str, required)
+class PluginPropertyRegex(PluginPropertyBase):
+    def __init__(self, expression, default_value=None, prompt="", help_str="") :
         self._expression = re.compile(expression)
+        super().__init__(default_value, prompt, help_str)
 
     @property
     def expression(self):
@@ -183,9 +176,9 @@ class PluginPropertyRegexProperty(PluginPropertyBase):
 
 
 class PluginPropertyMapped(PluginPropertyBase):
-    def __init__(self, default_value=None, prompt="", help_str="", required=False, valid_values={"yes":True, "no":False}):
-        super().__init__(default_value, prompt, help_str, required)
+    def __init__(self, default_value=None, prompt="", help_str="", valid_values={"yes":True, "no":False}):
         self._valid_values = valid_values
+        super().__init__(default_value, prompt, help_str)
 
     @property
     def valid_values(self):
@@ -234,7 +227,7 @@ class PluginBase:
                 var_metadata[a_var] = {"default_value": getattr(self.__class__, a_var).default_value,
                                        "prompt": getattr(self.__class__, a_var).prompt,
                                        "help_str": getattr(self.__class__, a_var).help_str,
-                                       "required": getattr(self.__class__, a_var).required}
+                                       }
         return var_metadata
 
     def on_init_plugin(self):
@@ -251,17 +244,23 @@ class PluginBase:
 
     def on_before_process(self):
         """Called just before the main processing step."""
-        return frame_in
+        pass
 
     def on_process(self):
         """Performs the main processing step."""
-        return frame_in
+        pass
 
     def on_after_process(self):
         """Called just after the main processing step."""
-        return frame_in
+        pass
 
     def __call__(self):
+        # Check that all mandatory parameters have been given appropriate values
+        for prop, prop_metadata in self.user_properties.items():
+            if prop_metadata["default_value"] is None and \
+               getattr(self, f"_{prop}") is None:
+                   raise TypeError(f"Parameter {prop} is mandatory but has not been set.")
+
         self.on_before_process()
         self.on_process()
         self.on_after_process()
@@ -272,6 +271,6 @@ class PluginBase:
     def reset(self):
         for a_var in vars(self.__class__):
             if issubclass(type(getattr(self.__class__,a_var)), PluginPropertyBase):
-                setattr(self, a_var, getattr(self.__class__,a_var).default_value)
+                setattr(self, f"_{a_var}", getattr(self.__class__,a_var).default_value)
 
     
