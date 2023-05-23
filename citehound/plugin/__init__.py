@@ -272,5 +272,6 @@ class PluginBase:
         for a_var in vars(self.__class__):
             if issubclass(type(getattr(self.__class__,a_var)), PluginPropertyBase):
                 setattr(self, f"_{a_var}", getattr(self.__class__,a_var).default_value)
+        self.on_reset_plugin()
 
     
