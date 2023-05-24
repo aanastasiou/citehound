@@ -199,9 +199,19 @@ class PluginBase:
     
     All parameters that the plugin exposes to its environment, need to be set as properties.
     """
-    def __init__(self):
+    def __init__(self, citehound_manager):
         self._description = {}
+        self._cm_object = citehound_manager
         self.reset()
+
+    @property
+    def current_cm(self):
+        """
+        Returns the CitehoundManager object that was passed to the plugin during initialisation.
+
+        All operations towards the current database should be applied directly via this object.
+        """
+        return self._cm_object
 
     @property
     def description(self):

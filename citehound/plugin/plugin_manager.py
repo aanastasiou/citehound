@@ -20,6 +20,8 @@ class PluginManager:
                                             pkgutil.iter_modules())))
         final_list = []
         for a_plugin in installed_plugins:
+            # Editable plugins are handled slightly differently, because they
+            # return a "finder" rather than the module itself
             if "__editable__" in a_plugin:
                 module_to_append = list(importlib.import_module(a_plugin).MAPPING.keys())[0] # Only one module is expected in each plugin.
             else:

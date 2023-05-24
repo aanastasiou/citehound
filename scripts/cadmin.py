@@ -223,7 +223,7 @@ def launch(plugin_name, parameter):
         params[key] = value
     
     # Load the plugin
-    selected_plugin = CM._plugin_manager.load_plugin(plugin_name)()
+    selected_plugin = CM._plugin_manager.load_plugin(plugin_name)(citehound.CM)
 
     # Wrap the plugin in the TUI adapter
     wraped_plugin = adapters.PluginAdapterTUI(selected_plugin)
