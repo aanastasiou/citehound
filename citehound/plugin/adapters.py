@@ -1,4 +1,4 @@
-from . import PluginPropertyBase
+from . import PluginPropertyBase, SpecialPropertyValues
 import prompt_toolkit
 
 class PluginAdapterTUI:
@@ -26,7 +26,7 @@ class PluginAdapterTUI:
         plugin_param_errors = []
 
         for a_var in vars(plugin_type):
-            if issubclass(type(getattr(plugin_type, a_var)), PluginPropertyBase) and getattr(self._plugin_object, a_var) is None:
+            if issubclass(type(getattr(plugin_type, a_var)), PluginPropertyBase) and getattr(self._plugin_object, a_var) is SpecialPropertyValues.UNDEFINED:
                 valid_value_entered = False
                 while not valid_value_entered:
                     user_value = prompt_toolkit.prompt(getattr(getattr(plugin_type, a_var),"prompt"))

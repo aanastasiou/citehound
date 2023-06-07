@@ -9,10 +9,19 @@ import re
 import os
 import pathlib
 import collections
+import enum
 
 PluginMetadata = collections.namedtuple("PluginMetadata",
                                         ["name", "short_desc", "long_desc"],
                                         defaults = [None, None])
+
+class SpecialPropertyValues(enum.Enum):
+    """
+    Special values for plugin properties.
+    """
+    # Denotes that the property has not even been attempted to be set by the user.
+    UNDEFINED = 1
+
 
 class PluginPropertyBase:
     """
@@ -30,8 +39,8 @@ class PluginPropertyBase:
 
     """
     # TODO: HIGH, enable the mandatory / optional value passing
-    def __init__(self, default_value=None, prompt="", help_str=""):
-        self._default_value = default_value if default_value is None else self.validate(default_value)
+    def __init__(self, default_value=SpecialPropertyValues.UNDEFINED, prompt="", help_str=""):
+        self._default_value = default_value if default_value is SpecialPropertyValues.UNDEFINED else self.validate(default_value)
         self._prompt = prompt
         self._private_name = None
         self._help_str = help_str
@@ -78,7 +87,7 @@ class PluginPropertyInt(PluginPropertyBase):
     * A `prompt` (that provides a hint to user interfaces used to populate a given variable).
     * `vmin, vmax` such that `vmin < x < vmax`. 
     """
-    def __init__(self, default_value=None, prompt="", help_str="", vmin=None, vmax=None):
+    def __init__(self, default_value=SpecialPropertyValues.UNDEFINED, prompt="", help_str="", vmin=None, vmax=None):
         self._vmin = vmin
         self._vmax = vmax
         super().__init__(default_value, prompt, help_str)
@@ -107,7 +116,7 @@ class PluginPropertyInt(PluginPropertyBase):
 
 
 class PluginPropertyFloat(PluginPropertyBase):
-    def __init__(self, default_value=None, prompt="", help_str="", vmin=None, vmax=None):
+    def __init__(self, default_value=SpecialPropertyValues.UNDEFINED, prompt="", help_str="", vmin=None, vmax=None):
         self._vmin = vmin
         self._vmax = vmax
         super().__init__(default_value, prompt, help_str)
@@ -139,7 +148,7 @@ class PluginPropertyFloat(PluginPropertyBase):
 
 
 class PluginPropertyString(PluginPropertyBase):
-    def __init__(self, default_value=None, prompt="", help_str="", choices=None, max_length=None):
+    def __init__(self, default_value=SpecialPropertyValues.UNDEFINED, prompt="", help_str="", choices=None, max_length=None):
         self._choices = choices
         self._max_length = max_length
         super().__init__(default_value, prompt, help_str)
@@ -166,7 +175,7 @@ class PluginPropertyString(PluginPropertyBase):
 
 
 class PluginPropertyRegex(PluginPropertyBase):
-    def __init__(self, expression, default_value=None, prompt="", help_str="") :
+    def __init__(self, expression, default_value=SpecialPropertyValues.UNDEFINED, prompt="", help_str="") :
         self._expression = re.compile(expression)
         super().__init__(default_value, prompt, help_str)
 
@@ -183,7 +192,7 @@ class PluginPropertyRegex(PluginPropertyBase):
 
 
 class PluginPropertyMapped(PluginPropertyBase):
-    def __init__(self, default_value=None, prompt="", help_str="", valid_values={"yes":True, "no":False}):
+    def __init__(self, default_value=SpecialPropertyValues.UNDEFINED, prompt="", help_str="", valid_values={"yes":True, "no":False}):
         self._valid_values = valid_values
         super().__init__(default_value, prompt, help_str)
 
@@ -221,7 +230,7 @@ class PluginPropertyFSPath(PluginPropertyBase):
     :param exists: Whether the path should exist or not (at the time of validation).
     :type exists: bool
     """
-    def __init__(self, default_value=None, prompt="", help_str="", 
+    def __init__(self, default_value=SpecialPropertyValues.UNDEFINED, prompt="", help_str="", 
                  file_okay = True, dir_okay=True, resolve_path=False, 
                  writeable=False, readable=True, executable=False,
                  exists=False):
@@ -373,8 +382,8 @@ class PluginBase:
 
         # Check that all mandatory parameters have been given appropriate values
         for prop, prop_metadata in self.user_properties.items():
-            if prop_metadata["default_value"] is None and \
-               getattr(self, f"_{prop}") is None:
+            if prop_metadata["default_value"] is SpecialPropertyValues.UNDEFINED and \
+               getattr(self, f"_{prop}") is SpecialPropertyValues.UNDEFINED:
                    raise ValueError(f"Parameter {prop} is mandatory but has not been set.")
 
         self.on_before_process()
