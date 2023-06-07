@@ -290,7 +290,8 @@ class PluginPropertyFSPath(PluginPropertyBase):
                 if self._dir_okay and not self._file_okay:
                     raise ValueError(f"{self._private_name} expects a directory, received {new_path}")
                 elif not self._dir_okay and self._file_okay:
-                    raise ValueError(f"{self._private_name} expects a file, received {new_path}")           
+                    raise ValueError(f"{self._private_name} expects a file, received {new_path}")
+        return str(new_path)
             
 
 class PluginBase:
