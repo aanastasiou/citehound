@@ -276,21 +276,22 @@ class PluginPropertyFSPath(PluginPropertyBase):
             if not new_path.exists():
                 raise ValueError(f"{self._private_name} expects an existing file, received {new_path} which does not exist")
 
-            if self._dir_okay and not new_path.is_dir():
-                raise ValueError(f"{self._private_name} expects directory, received {new_path}")
+            if self._executable and not os.access(new_path, os.X_OK):
+                raise ValueError(f"{self._private_name} expects an executable path and {new_path} is not")
 
-        if self._file_okay and not new_path.is_file():
-            raise ValueError(f"{self._private_name} expects a file, received {new_path}")
+            if self._writeable and not os.access(new_path, os.W_OK):
+                raise ValueError(f"{self._private_name} expects a writeable path and {new_path} is not")
 
-        if self._executable and not os.access(new_path, os.X_OK):
-            raise ValueError(f"{self._private_name} expects an executable path and {new_path} is not")
+            if self._readable and not os.access(new_path, os.R_OK):
+                raise ValueError(f"{self._private_name} expects a readable path and {new_path} is not")
 
-        if self._writeable and not os.access(new_path, os.W_OK):
-            raise ValueError(f"{self._private_name} expects a writeable path and {new_path} is not")
-
-        if self._readable and not os.access(new_path, os.R_OK):
-            raise ValueError(f"{self._private_name} expects a readable path and {new_path} is not")
-
+            dir_file_test = [self._dir_okay and new_path.is_dir(), self._file_okay and new_path.is_file()]
+            if not dir_file_test == [self._dir_okay, self._file_okay]:
+                if self._dir_okay and not self._file_okay:
+                    raise ValueError(f"{self._private_name} expects a directory, received {new_path}")
+                elif not self._dir_okay and self._file_okay:
+                    raise ValueError(f"{self._private_name} expects a file, received {new_path}")           
+            
 
 class PluginBase:
     """
