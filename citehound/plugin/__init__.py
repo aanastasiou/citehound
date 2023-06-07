@@ -232,6 +232,7 @@ class PluginPropertyFSPath(PluginPropertyBase):
         self._readable = readable
         self._executable = executable
         self._exists = exists
+
         super().__init__(default_value, prompt, help_str)
 
     @property
@@ -271,14 +272,15 @@ class PluginPropertyFSPath(PluginPropertyBase):
         if self._resolve_path:
             new_path = new_path.resolve()
 
-        if self._dir_okay and not new_path.is_dir():
-            raise ValueError(f"{self._private_name} expects directory, received {new_path}")
+        if self._exists:
+            if not new_path.exists():
+                raise ValueError(f"{self._private_name} expects an existing file, received {new_path} which does not exist")
+
+            if self._dir_okay and not new_path.is_dir():
+                raise ValueError(f"{self._private_name} expects directory, received {new_path}")
 
         if self._file_okay and not new_path.is_file():
             raise ValueError(f"{self._private_name} expects a file, received {new_path}")
-
-        if self._exists and not new_path.exists():
-            raise ValueError(f"{self._private_name} expects an existing file, received {new_path} which does not exist")
 
         if self._executable and not os.access(new_path, os.X_OK):
             raise ValueError(f"{self._private_name} expects an executable path and {new_path} is not")

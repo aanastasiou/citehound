@@ -4,9 +4,9 @@ import pytest
 
 
 class ImaginaryPlugin(PluginBase):
-    unbounded_optional_float = PluginPropertyFloat()
-    positive_optional_float = PluginPropertyFloat()
-    negative_optional_float = PluginPropertyFloat()
+    unbounded_mandatory_float = PluginPropertyFloat()
+    positive_optional_float = PluginPropertyFloat(default_value=120, vmin=0)
+    negative_optional_float = PluginPropertyFloat(default_value=-120, vmax=0)
 
     
     def __init__(self, citehound_manager=None):
@@ -20,6 +20,8 @@ def test_propertyfloat_bounds():
     Floating point properties should only allow floating point numbers within specified bounds.
     """
     u = ImaginaryPlugin()
+
+    u.unbounded_mandatory_float=3.1415928
  
     with pytest.raises(ValueError):
         u.positive_optional_float = -1.2
