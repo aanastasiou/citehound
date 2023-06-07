@@ -6,6 +6,13 @@ Basic definition of the plugin system.
 """
 
 import re
+import os
+import pathlib
+import collections
+
+PluginMetadata = collections.namedtuple("PluginMetadata",
+                                        ["name", "short_desc", "long_desc"],
+                                        defaults = [None, None])
 
 class PluginPropertyBase:
     """
@@ -193,14 +200,104 @@ class PluginPropertyMapped(PluginPropertyBase):
 
         return self._valid_values[new_value]
 
+
+class PluginPropertyFSPath(PluginPropertyBase):
+    """
+    Manages a path property
+
+    :param file_okay: Whether the path should point to a file.
+    :type file_okay: bool
+    :param dir_okay: Whether the path should point to a directory.
+    :type dir_okay: bool
+    :param resolve_path: Whether the path should be resolved (i.e. even 
+                         relative paths being stored in the property as absolute)
+    :type resolve_path: bool
+    :param writeable: Whether the path should be writeable by the current process.
+    :type writeable: bool
+    :param readable: Whether the path should be readable by the current process.
+    :type readable: bool
+    :param executable: Whether the path should be executable by the current process.
+    :type executable: bool
+    :param exists: Whether the path should exist or not (at the time of validation).
+    :type exists: bool
+    """
+    def __init__(self, default_value=None, prompt="", help_str="", 
+                 file_okay = True, dir_okay=True, resolve_path=False, 
+                 writeable=False, readable=True, executable=False,
+                 exists=False):
+        self._file_okay = file_okay
+        self._dir_okay = dir_okay
+        self._resolve_path = resolve_path
+        self._writeable = writeable
+        self._readable = readable
+        self._executable = executable
+        self._exists = exists
+        super().__init__(default_value, prompt, help_str)
+
+    @property
+    def file_okay(self):
+        return self._file_okay
+
+    @property
+    def dir_okay(self):
+        return self._dir_okay
+
+    @property
+    def resolve_path(self):
+        return self._resolve_path
+
+    @property
+    def writeable(self):
+        return self._writeable
+
+    @property
+    def readable(self):
+        return self._readable
+    
+    @property
+    def executable(self):
+        return self._executable
+
+    @property
+    def exists(self):
+        return self._exists
+
+    def validate(self, new_value):
+        if not issubclass(type(new_value), str):
+            raise TypeError(f"{self._private_name} expects str, received {type(new_value)}")
+
+        new_path = pathlib.Path(new_value)
+
+        if self._resolve_path:
+            new_path = new_path.resolve()
+
+        if self._dir_okay and not new_path.is_dir():
+            raise ValueError(f"{self._private_name} expects directory, received {new_path}")
+
+        if self._file_okay and not new_path.is_file():
+            raise ValueError(f"{self._private_name} expects a file, received {new_path}")
+
+        if self._exists and not new_path.exists():
+            raise ValueError(f"{self._private_name} expects an existing file, received {new_path} which does not exist")
+
+        if self._executable and not os.access(new_path, os.X_OK):
+            raise ValueError(f"{self._private_name} expects an executable path and {new_path} is not")
+
+        if self._writeable and not os.access(new_path, os.W_OK):
+            raise ValueError(f"{self._private_name} expects a writeable path and {new_path} is not")
+
+        if self._readable and not os.access(new_path, os.R_OK):
+            raise ValueError(f"{self._private_name} expects a readable path and {new_path} is not")
+
+
 class PluginBase:
     """
     Abstract class for plugins.
     
     All parameters that the plugin exposes to its environment, need to be set as properties.
     """
-    def __init__(self, citehound_manager):
-        self._description = {}
+    def __init__(self, citehound_manager=None):
+        self._description = PluginMetadata(name = "PluginBase")
         self._cm_object = citehound_manager
         self.reset()
 
@@ -215,9 +312,9 @@ class PluginBase:
 
     @property
     def description(self):
-        """Returns a dictionary with human readable descriptions of the plugin's functionality.
+        """Returns a PluginMetadata named tuple with human readable descriptions of the plugin's functionality.
         
-        The dictionary has the following structure:
+        The named tuple has the following structure:
 
         name:str
         short_desc: str
@@ -265,18 +362,23 @@ class PluginBase:
         pass
 
     def __call__(self):
+        # Check that a valid Citehound Manager has been passed as a parameter
+        # TODO: HIGH, Add a proper exception from the CM hierarchy below
+        if self._cm_object is None:
+            raise Exception("Plugins expect a valid CM")
+
         # Check that all mandatory parameters have been given appropriate values
         for prop, prop_metadata in self.user_properties.items():
             if prop_metadata["default_value"] is None and \
                getattr(self, f"_{prop}") is None:
-                   raise TypeError(f"Parameter {prop} is mandatory but has not been set.")
+                   raise ValueError(f"Parameter {prop} is mandatory but has not been set.")
 
         self.on_before_process()
         self.on_process()
         self.on_after_process()
 
     def __repr__(self):
-        return f"             Name:{self.description['name']}\nShort Description:{self.description['short_desc']}\n Long Description:{self.description['long_desc']}\n"
+        return f"             Name:{self.description.name}\nShort Description:{self.description.short_desc}\n Long Description:{self.description.long_desc}\n"
 
     def reset(self):
         for a_var in vars(self.__class__):
