@@ -40,7 +40,7 @@ class PluginPropertyBase:
     """
     # TODO: HIGH, enable the mandatory / optional value passing
     def __init__(self, default_value=SpecialPropertyValues.UNDEFINED, prompt="", help_str=""):
-        self._default_value = default_value if default_value is SpecialPropertyValues.UNDEFINED else self.validate(default_value)
+        self._default_value = default_value if default_value is SpecialPropertyValues.UNDEFINED else self.validate(default_value) if default_value is not None else None
         self._prompt = prompt
         self._private_name = None
         self._help_str = help_str
@@ -59,7 +59,13 @@ class PluginPropertyBase:
             return getattr(obj, self._private_name)
 
     def __set__(self, object, value):
-        setattr(object, self._private_name, self.validate(value))
+        # Optional values can still be empty (None) (For example, the user can have the option to set a file,
+        # but not take it. In that case, the property should still allow for None as a value.
+        if not (value is None and self._default_value is SpecialPropertyValues.UNDEFINED):
+            setattr(object, self._private_name, self.validate(value))
+        else:
+            setattr(object, self._private_name, value)
+
 
     def validate(self, a_value):
         return a_value
@@ -112,7 +118,7 @@ class PluginPropertyInt(PluginPropertyBase):
         if self._vmax is not None:
             if new_value > self._vmax:
                 raise ValueError(f"Expected value to be x < {self._vmax}, received {new_value}")
-        return int(new_value)
+        return new_value
 
 
 class PluginPropertyFloat(PluginPropertyBase):
@@ -395,7 +401,7 @@ class PluginBase:
 
     def reset(self):
         for a_var in vars(self.__class__):
-            if issubclass(type(getattr(self.__class__,a_var)), PluginPropertyBase):
+            if issubclass(type(getattr(self.__class__,a_var)), PluginPropertyBase) and hasattr(self, f"_{a_var}"):
                 setattr(self, f"_{a_var}", getattr(self.__class__,a_var).default_value)
         self.on_reset_plugin()
 

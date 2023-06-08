@@ -179,9 +179,9 @@ def info(plugin, only_param_metadata):
 
     if not only_param_metadata:
         plugin_description = selected_plugin.description
-        click.echo(f"\nName: {plugin_description['name']}\n\n")
-        click.echo(f"Short Description:\n{plugin_description['short_desc']}\n")
-        click.echo(f"Long Description:\n{plugin_description['long_desc']}\n\n")
+        click.echo(f"\nName: {plugin_description.name}\n\n")
+        click.echo(f"Short Description:\n{plugin_description.short_desc}\n")
+        click.echo(f"Long Description:\n{plugin_description.long_desc}\n\n")
 
     plugin_user_params = selected_plugin.user_properties
     click.echo("Param.Name, Default value, Prompt, Description")
