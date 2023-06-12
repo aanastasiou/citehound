@@ -144,6 +144,8 @@ import yaml
 import shutil
 import subprocess
 
+import pyparsing
+
 @click.group()
 def citehound_admin():
     """
@@ -851,11 +853,16 @@ def run(query_name, collection_name, parameter):
     """
     Select and run a query from a collection.
     """
-    is_int = re.compile("[0-9]+")
-    is_float = re.compile("[0-9]+?\.[0-9]+")
-    is_string = re.compile("\".*?\"")
-    is_date = re.compile("[0-9]+\-[0-9]+\-[0-9]+")
-    
+    # Build a query parameter validator that can validate primitive types and arrays of primitive types for queries 
+
+    int_value = pyparsing.Regex("-?[0-9]+").set_parse_action(lambda s, loc, toks:int(toks[0]))
+    float_value = pyparsing.Regex("-?[0-9]+?\.[0-9]+").set_parse_action(lambda s, loc, toks: float(toks[0]))
+    str_value = (pyparsing.Regex("\".*?\"") ^ pyparsing.Regex("'.*?'")).set_parse_action(lambda s, loc, toks:toks[0][1:-1])
+    date_value = (pyparsing.Regex("\'[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\'") ^ pyparsing.Regex("\"[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\""))
+    lvalue = pyparsing.Group(date_value("date") ^ int_value("integer") ^ str_value("string") ^ float_value("float"))
+    list_value = pyparsing.Group(pyparsing.Suppress("[") + pyparsing.delimited_list(lvalue)  + pyparsing.Suppress("]").set_parse_action(lambda s,loc,toks:list(toks)))
+    query_parameter = lvalue("single_value") ^ list_value("list_of")
+
     # TODO: HIGH, Add validation to collection_name here for [A-Z_][A-Z_]*
     collection_name = collection_name.upper()
 
@@ -882,18 +889,16 @@ def run(query_name, collection_name, parameter):
             click.echo(f"Parameters are expected as -p param=param_value. Please revise {a_param} and try again")
             sys.exit(-1)
         key, value = a_param.split("=")
-        if is_int.match(value):
-            value = int(value)
-        elif is_float.match(value):
-            value = float(value)
-        elif is_string.match(value):
-            value = str(value).replace("\"", "")
-        elif is_date.match(value):
-            value = str(value).replace("\"", "")
-        else:
-            click.echo(f"At the moment, parameter values can be either integers, floats, strings or dates. Received {key} = {a_param}.")
+        try:
+            value = query_parameter.parse_string(value, parse_all=True)
+            if "single_value" in value:
+                value = value[0]
+            else:
+                value = list(map(lambda x:x[0], value["list"]))
+        except pyparsing.ParseException as pe:
+            click.echo(f"At the moment, parameter values can be either integers, floats, strings, dates and single layer lists thereof. Received {key} = {value}.")
             sys.exit(-1)
-        params[key] = value
+        params[key] = value[0]
 
     # Check if the query exists.
     if neoads.CompositeString(query_name.upper()) in q_map.keys_set[0]:
