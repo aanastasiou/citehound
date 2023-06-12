@@ -892,13 +892,13 @@ def run(query_name, collection_name, parameter):
         try:
             value = query_parameter.parse_string(value, parse_all=True)
             if "single_value" in value:
-                value = value[0]
+                value = value[0][0]
             else:
-                value = list(map(lambda x:x[0], value["list"]))
+                value = list(map(lambda x:x[0], value["list_of"]))
         except pyparsing.ParseException as pe:
             click.echo(f"At the moment, parameter values can be either integers, floats, strings, dates and single layer lists thereof. Received {key} = {value}.")
             sys.exit(-1)
-        params[key] = value[0]
+        params[key] = value
 
     # Check if the query exists.
     if neoads.CompositeString(query_name.upper()) in q_map.keys_set[0]:
