@@ -394,7 +394,7 @@ def getschema(output_format, schema_ext, isolated):
     def filter_dict_attr(a_dict, attrs_to_drop):
         return dict(filter(lambda x: x[0] not in attrs_to_drop, a_dict.items()))
 
-    schema_data = citehound.IM.cypher_query("call db.schema.visualization", resolve_objects=False, result_as="raw")
+    schema_data = citehound.CM.cypher_query("call db.schema.visualization", resolve_objects=False, result_as="raw")
 
     # Build the network first
     network_data = schema_data[0]
@@ -458,7 +458,7 @@ def link():
     COUNTRY_ASSOCIATION_LABEL = "FROM_COUNTRY"
     INSTITUTE_ASSOCIATION_LABEL = "FROM_INSTITUTE"
 
-    bim = citehound.IM
+    bim = citehound.CM
 
     # First, match and link countries
     bim.link_sets_of_entities("match (aCountry:Country) return toLower(aCountry.name) as theIndex, aCountry as theNode",
@@ -527,7 +527,7 @@ def drop(what_to_drop, confirm):
     else:
         with neomodel.db.transaction:
             click.echo(pre_action)
-            citehound.IM.cypher_query(action)
+            citehound.CM.cypher_query(action)
             click.echo(post_action)
 
             if (what_to_drop == "all-and-labels"):
@@ -540,7 +540,7 @@ def init():
     """
     Initialises (an empty) Neo4j database with the Citehound schema.
     """
-    n_items_in_db = citehound.IM.number_of_items_in_db
+    n_items_in_db = citehound.CM.number_of_items_in_db
     if n_items_in_db > 0:
         click.echo(f"\n\nThe database contains {n_items_in_db} items.\nNo action was taken.\n\n")
     else:
@@ -560,7 +560,7 @@ def ls():
     """
     Lists the available data importers.
     """
-    for an_importer in citehound.IM.importers.values():
+    for an_importer in citehound.CM.importers.values():
         click.echo(f"{an_importer['name']}\t{an_importer['description']}")
 
 
@@ -571,7 +571,7 @@ def data(dataset_type, dataset_path):
     """
     Selects an importer and imports a data file into Citehound
     """
-    citehound.IM.import_data(dataset_type.upper(), dataset_path)
+    citehound.CM.import_data(dataset_type.upper(), dataset_path)
 
 @citehound_admin.group()
 def fetch():
