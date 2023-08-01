@@ -1,6 +1,6 @@
 [project]
 name = "citehound"
-version = "0.0.3"
+version = "0.0.4"
 description = "A platform that enables systematic research over bibliographic data sources."
 readme = "./README.rst"
 authors = [{name="Athanasios Anastasiou", email="athanastasiou@gmail.com"}]
