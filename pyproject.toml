@@ -1,0 +1,53 @@
+[project]
+name = "citehound"
+version = "0.0.3"
+description = "A platform that enables systematic research over bibliographic data sources."
+readme = "./README.rst"
+authors = [{name="Athanasios Anastasiou", email="athanastasiou@gmail.com"}]
+keywords=["scientometrics", "bibliography", "research", "review", "nlp"]
+classifiers= ["Development Status :: 3 - Alpha",
+              "Environment :: Console",
+              "License :: OSI Approved :: Apple Public Source License",
+              "Operating System :: POSIX :: Linux",
+              "Programming Language :: Python :: 3",
+              "Topic :: Scientific/Engineering",
+              "Topic :: Text Processing",
+              "Topic :: Utilities"
+]
+
+requires-python = ">=3.11"
+
+dependencies = ["pygraphviz", 
+		"networkx", 
+		"neomodel",
+		"lxml", 
+		"click", 
+		"matplotlib", 
+		"pyyaml", 
+		"pkgutil", 
+		"prompt_toolkit"
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pandas"
+]
+
+# license
+
+[project.urls]
+#Homepage = ""
+documentation = "https://citehound.readthedocs.io/en/latest/"
+repository = "https://github.com/aanastasiou/citehound/"
+changelog = "https://github.com/aanastasiou/citehound/blob/main/Changelog"
+
+[build-system]
+build-backend = 'setuptools.build_meta'
+requires = [
+    'setuptools',
+]
+
+[tool.setuptools]
+packages = ["citehound"]
+
