@@ -5,13 +5,13 @@ Scripts
 
 ``cadmin.py``
 -----------------------
-.. automodule:: scripts.cadmin
+.. automodule:: citehound.scripts.cadmin
    :members:
    :undoc-members:
 
 ``cmeshprep.py``
 ---------------------------------
-.. automodule:: scripts.cmeshprep
+.. automodule:: citehound.scripts.cmeshprep
    :members:
    :undoc-members:
 

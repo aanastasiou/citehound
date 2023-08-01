@@ -24,9 +24,12 @@ dependencies = ["pygraphviz",
 		"click", 
 		"matplotlib", 
 		"pyyaml", 
-		"pkgutil", 
 		"prompt_toolkit"
 ]
+
+[project.scripts]
+cadmin = "citehound.scripts.cadmin:citehound_admin"
+cmeshprep = "citehound.scripts.cmeshprep:citehound_mesh"
 
 [project.optional-dependencies]
 test = [
